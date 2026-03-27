@@ -1,0 +1,1634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Competitive Intelligence Dashboard — Trusting Social</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #1a2744;
+    --navy-light: #243358;
+    --blue: #2E75B6;
+    --blue-light: #3d8fd4;
+    --blue-pale: #e8f1fa;
+    --high: #c0392b;
+    --high-bg: #fdf0ef;
+    --high-border: #f5c6c3;
+    --medium: #d35400;
+    --medium-bg: #fef5ec;
+    --medium-border: #f9d5b3;
+    --low: #27ae60;
+    --low-bg: #edfaf3;
+    --low-border: #b9e9ce;
+    --gray-50: #f8f9fc;
+    --gray-100: #f0f2f7;
+    --gray-200: #e2e6ee;
+    --gray-300: #c8cedb;
+    --gray-500: #7a849a;
+    --gray-700: #3d4560;
+    --gray-900: #1a2033;
+    --text: #1e2540;
+    --text-light: #596080;
+    --white: #ffffff;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 2px 12px rgba(26,39,68,0.08);
+    --shadow-md: 0 4px 24px rgba(26,39,68,0.12);
+    --shadow-lg: 0 8px 40px rgba(26,39,68,0.16);
+    --transition: all 0.2s ease;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--gray-50);
+    color: var(--text);
+    line-height: 1.6;
+    font-size: 15px;
+  }
+
+  /* ─── HEADER ─── */
+  .header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+    color: var(--white);
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.25);
+  }
+
+  .header-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 24px 32px 20px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .header-title-block { flex: 1; min-width: 240px; }
+
+  .header-eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 4px;
+  }
+
+  .header h1 {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+    line-height: 1.2;
+  }
+
+  .header-subtitle {
+    font-size: 13.5px;
+    color: rgba(255,255,255,0.65);
+    font-weight: 400;
+  }
+
+  .header-stats {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .stat-card {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: var(--radius-sm);
+    padding: 12px 18px;
+    text-align: center;
+    min-width: 130px;
+    backdrop-filter: blur(8px);
+    transition: var(--transition);
+  }
+
+  .stat-card:hover { background: rgba(255,255,255,0.14); }
+
+  .stat-number {
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 3px;
+  }
+
+  .stat-number.high { color: #ff6b6b; }
+  .stat-number.medium { color: #ffa94d; }
+  .stat-number.low { color: #69db7c; }
+  .stat-number.total { color: var(--white); }
+
+  .stat-label {
+    font-size: 11px;
+    color: rgba(255,255,255,0.6);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+  }
+
+  /* ─── MAIN CONTENT ─── */
+  .main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 32px 32px 64px;
+  }
+
+  /* ─── SECTION HEADERS ─── */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .section-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: -0.3px;
+  }
+
+  .section-badge {
+    font-size: 11px;
+    font-weight: 600;
+    background: var(--blue-pale);
+    color: var(--blue);
+    padding: 3px 9px;
+    border-radius: 20px;
+    letter-spacing: 0.4px;
+  }
+
+  /* ─── FILTER BAR ─── */
+  .filter-bar {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    box-shadow: var(--shadow);
+  }
+
+  .filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .filter-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    white-space: nowrap;
+  }
+
+  .filter-btn {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1.5px solid var(--gray-200);
+    background: var(--white);
+    color: var(--gray-700);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    white-space: nowrap;
+  }
+
+  .filter-btn:hover { border-color: var(--blue); color: var(--blue); }
+
+  .filter-btn.active {
+    background: var(--navy);
+    border-color: var(--navy);
+    color: var(--white);
+  }
+
+  .filter-divider {
+    width: 1px;
+    height: 28px;
+    background: var(--gray-200);
+    flex-shrink: 0;
+  }
+
+  .search-wrapper {
+    flex: 1;
+    min-width: 200px;
+    position: relative;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray-500);
+    pointer-events: none;
+    font-size: 14px;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 7px 12px 7px 34px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 20px;
+    font-size: 13.5px;
+    font-family: inherit;
+    color: var(--text);
+    background: var(--white);
+    outline: none;
+    transition: var(--transition);
+  }
+
+  .search-input:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(46,117,182,0.1);
+  }
+
+  .search-input::placeholder { color: var(--gray-500); }
+
+  /* ─── SUBJECT COMPANY CARD ─── */
+  .subject-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    margin-bottom: 32px;
+    box-shadow: var(--shadow);
+    border-left: 4px solid var(--blue);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .subject-card::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 300px; height: 100%;
+    background: linear-gradient(135deg, transparent 0%, rgba(46,117,182,0.03) 100%);
+    pointer-events: none;
+  }
+
+  .subject-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  .subject-name-block { flex: 1; }
+
+  .subject-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--gray-500);
+    margin-bottom: 6px;
+  }
+
+  .subject-name {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+  }
+
+  .subject-name a {
+    color: inherit;
+    text-decoration: none;
+    transition: var(--transition);
+  }
+
+  .subject-name a:hover { color: var(--blue); }
+
+  .subject-meta {
+    font-size: 13px;
+    color: var(--text-light);
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .subject-meta span { display: flex; align-items: center; gap: 5px; }
+
+  .sa-badge {
+    background: #fdf0ef;
+    color: var(--high);
+    border: 1.5px solid #f5c6c3;
+    border-radius: 6px;
+    padding: 6px 16px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    animation: pulse 2.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(192,57,43,0.2); }
+    50% { box-shadow: 0 0 0 6px rgba(192,57,43,0); }
+  }
+
+  .subject-products {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .product-card {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+  }
+
+  .product-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .product-dot {
+    width: 7px;
+    height: 7px;
+    background: var(--blue);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .product-desc {
+    font-size: 12.5px;
+    color: var(--text-light);
+    line-height: 1.5;
+  }
+
+  .subject-differentiators { margin-top: 4px; }
+
+  .diff-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    color: var(--gray-500);
+    margin-bottom: 10px;
+  }
+
+  .diff-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .diff-list li {
+    font-size: 13.5px;
+    color: var(--text);
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .diff-list li::before {
+    content: '✓';
+    color: var(--blue);
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* ─── AREA TAGS ─── */
+  .area-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 20px;
+    letter-spacing: 0.3px;
+  }
+
+  .area-tag.credit {
+    background: #e8f4fd;
+    color: #1a6fa8;
+    border: 1px solid #bdddf5;
+  }
+
+  .area-tag.ekyc {
+    background: #f0ebff;
+    color: #6b3fa0;
+    border: 1px solid #d4c5f7;
+  }
+
+  .area-tag.ai {
+    background: #e6faf3;
+    color: #1a7a52;
+    border: 1px solid #b5ecd6;
+  }
+
+  /* ─── COMPETITOR GRID ─── */
+  .competitor-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 40px;
+  }
+
+  @media (max-width: 1100px) { .competitor-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 700px) { .competitor-grid { grid-template-columns: 1fr; } }
+
+  .comp-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .comp-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .comp-card.hidden { display: none; }
+
+  .comp-card-top {
+    padding: 18px 20px 14px;
+    border-bottom: 1px solid var(--gray-100);
+  }
+
+  .comp-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .threat-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 20px;
+    flex-shrink: 0;
+  }
+
+  .threat-badge.HIGH { background: var(--high-bg); color: var(--high); border: 1.5px solid var(--high-border); }
+  .threat-badge.MEDIUM { background: var(--medium-bg); color: var(--medium); border: 1.5px solid var(--medium-border); }
+  .threat-badge.LOW { background: var(--low-bg); color: var(--low); border: 1.5px solid var(--low-border); }
+
+  .comp-rank {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--gray-500);
+    background: var(--gray-100);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 3px;
+    line-height: 1.3;
+  }
+
+  .comp-name a {
+    color: inherit;
+    text-decoration: none;
+    transition: var(--transition);
+  }
+
+  .comp-name a:hover { color: var(--blue); }
+
+  .comp-name a::after {
+    content: ' ↗';
+    font-size: 12px;
+    opacity: 0.5;
+  }
+
+  .comp-card-tags {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .comp-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    padding: 12px 20px;
+    background: var(--gray-50);
+    border-bottom: 1px solid var(--gray-100);
+  }
+
+  .stat-item { text-align: center; }
+
+  .stat-item-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--gray-500);
+    margin-bottom: 2px;
+  }
+
+  .stat-item-value {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  /* ─── EXPANDABLE DETAILS ─── */
+  .comp-details-toggle {
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+    transition: var(--transition);
+    background: var(--white);
+  }
+
+  .comp-details-toggle:hover { background: var(--gray-50); }
+
+  .details-toggle-label {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--blue);
+  }
+
+  .toggle-icon {
+    font-size: 12px;
+    color: var(--blue);
+    transition: transform 0.25s ease;
+    font-style: normal;
+    font-weight: 700;
+  }
+
+  .toggle-icon.open { transform: rotate(180deg); }
+
+  .comp-details-body {
+    padding: 0 20px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease, padding 0.25s ease;
+  }
+
+  .comp-details-body.open {
+    max-height: 800px;
+    padding: 16px 20px 20px;
+  }
+
+  .details-section { margin-bottom: 14px; }
+  .details-section:last-child { margin-bottom: 0; }
+
+  .details-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    color: var(--gray-500);
+    margin-bottom: 6px;
+  }
+
+  .details-text {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .details-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .details-list.strengths li::before { content: '+ '; color: var(--low); font-weight: 700; }
+  .details-list.weaknesses li::before { content: '− '; color: var(--high); font-weight: 700; }
+
+  .details-list li {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  .signal-box {
+    background: linear-gradient(135deg, #f0f6ff 0%, #e8f1fa 100%);
+    border: 1px solid #c8ddf2;
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    font-size: 12.5px;
+    color: #1a4a7a;
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  /* ─── COMPARISON TABLE ─── */
+  .comparison-section {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    margin-bottom: 40px;
+  }
+
+  .comparison-header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--gray-100);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .table-wrapper { overflow-x: auto; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+
+  thead th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 11.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--gray-100);
+    transition: var(--transition);
+    cursor: default;
+  }
+
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--gray-50); }
+
+  tbody td {
+    padding: 12px 16px;
+    color: var(--text);
+    vertical-align: middle;
+  }
+
+  td.rank-col {
+    font-weight: 700;
+    color: var(--gray-500);
+    font-size: 13px;
+    text-align: center;
+    width: 40px;
+  }
+
+  td.company-col { font-weight: 600; color: var(--navy); }
+
+  .check { color: var(--low); font-weight: 700; font-size: 14px; }
+  .dash { color: var(--gray-300); }
+
+  td.threat-col { white-space: nowrap; }
+  td.funding-col { font-size: 12.5px; white-space: nowrap; }
+  td.edge-col { font-size: 12.5px; color: var(--text-light); max-width: 200px; }
+
+  /* ─── GAPS SECTION ─── */
+  .gaps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  .gap-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .gap-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+  }
+
+  .gap-card.highest::before { background: linear-gradient(180deg, #c0392b, #e74c3c); }
+  .gap-card.high::before { background: linear-gradient(180deg, #d35400, #e67e22); }
+  .gap-card.medium::before { background: linear-gradient(180deg, #2E75B6, #3d8fd4); }
+
+  .gap-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+  .gap-type-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+  }
+
+  .gap-type-badge.highest { background: var(--high-bg); color: var(--high); }
+  .gap-type-badge.high { background: var(--medium-bg); color: var(--medium); }
+  .gap-type-badge.medium { background: var(--blue-pale); color: var(--blue); }
+
+  .gap-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+
+  .gap-desc {
+    font-size: 13px;
+    color: var(--text-light);
+    line-height: 1.6;
+    margin-bottom: 12px;
+  }
+
+  .gap-action {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    font-size: 12.5px;
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  .gap-action-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    color: var(--blue);
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  /* ─── WATCH LIST ─── */
+  .watchlist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  .watch-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    transition: var(--transition);
+    border-top: 3px solid var(--high);
+  }
+
+  .watch-card:hover { box-shadow: var(--shadow-md); }
+
+  .watch-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: var(--high-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .watch-body { flex: 1; }
+
+  .watch-company {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 5px;
+  }
+
+  .watch-reason {
+    font-size: 13px;
+    color: var(--text);
+    margin-bottom: 8px;
+    line-height: 1.5;
+  }
+
+  .watch-for-label {
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    color: var(--high);
+    margin-bottom: 4px;
+  }
+
+  .watch-for-text {
+    font-size: 12.5px;
+    color: var(--text-light);
+    line-height: 1.5;
+  }
+
+  /* ─── EXPORT BUTTON ─── */
+  .export-section {
+    display: flex;
+    justify-content: center;
+    padding: 8px 0 24px;
+  }
+
+  .export-btn {
+    background: var(--navy);
+    color: var(--white);
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 13px 28px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: var(--transition);
+    letter-spacing: 0.3px;
+    font-family: inherit;
+  }
+
+  .export-btn:hover {
+    background: var(--blue);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(46,117,182,0.35);
+  }
+
+  .export-btn:active { transform: translateY(0); }
+
+  /* ─── EMPTY STATE ─── */
+  .no-results {
+    display: none;
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--gray-500);
+    font-size: 14px;
+    grid-column: 1 / -1;
+  }
+
+  .no-results.show { display: block; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 768px) {
+    .main { padding: 20px 16px 48px; }
+    .header-inner { padding: 18px 16px 14px; }
+    .header h1 { font-size: 20px; }
+    .stat-card { min-width: 100px; padding: 10px 14px; }
+    .stat-number { font-size: 20px; }
+    .filter-bar { padding: 12px 14px; }
+    .subject-card { padding: 20px; }
+    .comparison-header { padding: 16px; }
+  }
+
+  /* ─── SCROLLBAR ─── */
+  .table-wrapper::-webkit-scrollbar { height: 6px; }
+  .table-wrapper::-webkit-scrollbar-track { background: var(--gray-100); }
+  .table-wrapper::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 3px; }
+
+  /* ─── FOOTER ─── */
+  .footer {
+    text-align: center;
+    font-size: 12px;
+    color: var(--gray-500);
+    padding: 16px 0 0;
+    border-top: 1px solid var(--gray-200);
+  }
+
+  /* ─── HIGHLIGHT ─── */
+  mark {
+    background: #fff3cd;
+    color: var(--text);
+    padding: 0 2px;
+    border-radius: 2px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ─────────────────────────────────────────────────────
+     HEADER
+───────────────────────────────────────────────────── -->
+<header class="header">
+  <div class="header-inner">
+    <div class="header-title-block">
+      <div class="header-eyebrow">Competitive Intelligence Report</div>
+      <h1>Competitive Intelligence Dashboard</h1>
+      <div class="header-subtitle">Trusting Social &nbsp;·&nbsp; South Africa Market Entry &nbsp;·&nbsp; March 2026</div>
+    </div>
+    <div class="header-stats">
+      <div class="stat-card">
+        <div class="stat-number total">10</div>
+        <div class="stat-label">Competitors Analyzed</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number high">3</div>
+        <div class="stat-label">HIGH Threats</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number medium">5</div>
+        <div class="stat-label">MEDIUM Threats</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number low">2</div>
+        <div class="stat-label">LOW Threats</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ─────────────────────────────────────────────────────
+     MAIN
+───────────────────────────────────────────────────── -->
+<main class="main">
+
+  <!-- ─── FILTER BAR ─── -->
+  <div class="filter-bar">
+    <span class="filter-label">Area</span>
+    <div class="filter-group" id="area-filters">
+      <button class="filter-btn active" data-area="all">All</button>
+      <button class="filter-btn" data-area="Credit Scoring">Credit Scoring</button>
+      <button class="filter-btn" data-area="eKYC / Identity">eKYC-Identity</button>
+      <button class="filter-btn" data-area="AI Agents">AI Agents</button>
+    </div>
+    <div class="filter-divider"></div>
+    <span class="filter-label">Threat</span>
+    <div class="filter-group" id="threat-filters">
+      <button class="filter-btn active" data-threat="all">All</button>
+      <button class="filter-btn" data-threat="HIGH">HIGH</button>
+      <button class="filter-btn" data-threat="MEDIUM">MEDIUM</button>
+      <button class="filter-btn" data-threat="LOW">LOW</button>
+    </div>
+    <div class="filter-divider"></div>
+    <div class="search-wrapper">
+      <span class="search-icon">⌕</span>
+      <input type="text" class="search-input" id="search-input" placeholder="Search companies…">
+    </div>
+  </div>
+
+  <!-- ─── SUBJECT COMPANY ─── -->
+  <div class="section-header">
+    <div class="section-title">Subject Company</div>
+    <span class="section-badge">Profile</span>
+  </div>
+
+  <div class="subject-card">
+    <div class="subject-header">
+      <div class="subject-name-block">
+        <div class="subject-tag">Subject Company</div>
+        <div class="subject-name">
+          <a href="https://trustingsocial.com" target="_blank" rel="noopener">Trusting Social</a>
+        </div>
+        <div class="subject-meta">
+          <span>📍 Singapore</span>
+          <span>📅 Founded 2013</span>
+          <span>💰 ~$84M raised</span>
+          <span>👥 ~286 people (20+ PhDs)</span>
+        </div>
+      </div>
+      <div class="sa-badge">🚀 New Market Entry</div>
+    </div>
+
+    <div class="subject-products">
+      <div class="product-card">
+        <div class="product-name"><span class="product-dot"></span>Trust Scores</div>
+        <div class="product-desc">AI credit scoring via telco CDRs, device data, behavioral signals. 1B+ consumers scored. 130–170+ FI customers. 120B records/week.</div>
+      </div>
+      <div class="product-card">
+        <div class="product-name"><span class="product-dot"></span>Trust Vision (eKYC)</div>
+        <div class="product-desc">Facial recognition, liveness detection, ID cross-validation. 8M monthly onboardings in India, ~1M in Vietnam.</div>
+      </div>
+      <div class="product-card">
+        <div class="product-name"><span class="product-dot"></span>Agent Foundry</div>
+        <div class="product-desc">GenAI enterprise agents: ALICE (sales/CX, 42% satisfaction lift), ANANSI (analytics), ALAN (dev). Built on Microsoft Azure.</div>
+      </div>
+    </div>
+
+    <div class="subject-differentiators">
+      <div class="diff-title">Key Differentiators</div>
+      <ul class="diff-list">
+        <li>Telco-first data moat — scores mobile-only populations with zero credit history</li>
+        <li>Localized AI trained per-country (faces, language, behavioral patterns)</li>
+        <li>Full-stack single vendor: credit scoring + eKYC + AI agents</li>
+        <li>Microsoft Azure 5-year MOU (AKS, OpenAI, Databricks)</li>
+        <li>ISO/IEC 27001, GDPR-compliant, RBI sandbox participant (India)</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ─── COMPETITOR CARDS ─── -->
+  <div class="section-header">
+    <div class="section-title">Competitor Landscape</div>
+    <span class="section-badge" id="results-count">10 Companies</span>
+  </div>
+
+  <div class="competitor-grid" id="competitor-grid">
+    <!-- Cards injected by JS -->
+    <div class="no-results" id="no-results">No competitors match your current filters.</div>
+  </div>
+
+  <!-- ─── COMPARISON MATRIX ─── -->
+  <div class="section-header">
+    <div class="section-title">Comparison Matrix</div>
+    <span class="section-badge">All Competitors</span>
+  </div>
+
+  <div class="comparison-section">
+    <div class="comparison-header">
+      <div>
+        <div class="section-title" style="font-size:15px;">Capability &amp; Threat Overview</div>
+        <div style="font-size:12.5px;color:var(--text-light);margin-top:2px;">Side-by-side comparison across all 10 analyzed competitors</div>
+      </div>
+    </div>
+    <div class="table-wrapper">
+      <table id="comparison-table">
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Company</th>
+            <th>Credit Scoring</th>
+            <th>eKYC</th>
+            <th>AI Agents</th>
+            <th>Threat</th>
+            <th>Funding</th>
+            <th>Key Edge</th>
+          </tr>
+        </thead>
+        <tbody id="table-body">
+          <!-- Rows injected by JS -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ─── GAPS & OPPORTUNITIES ─── -->
+  <div class="section-header">
+    <div class="section-title">Gaps &amp; Opportunities for Trusting Social</div>
+    <span class="section-badge">SA Market Entry</span>
+  </div>
+
+  <div class="gaps-grid" id="gaps-grid">
+    <!-- Injected by JS -->
+  </div>
+
+  <!-- ─── STRATEGIC WATCH LIST ─── -->
+  <div class="section-header">
+    <div class="section-title">Strategic Watch List</div>
+    <span class="section-badge">Monitor Closely</span>
+  </div>
+
+  <div class="watchlist-grid" id="watchlist-grid">
+    <!-- Injected by JS -->
+  </div>
+
+  <!-- ─── EXPORT ─── -->
+  <div class="export-section">
+    <button class="export-btn" id="export-btn">
+      <span>⬇</span> Export JSON
+    </button>
+  </div>
+
+  <div class="footer">
+    Generated: March 26, 2026 &nbsp;·&nbsp; Trusting Social Competitive Intelligence &nbsp;·&nbsp; South Africa Market Entry Analysis
+  </div>
+
+</main>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════════════
+const CI_DATA = {
+  metadata: {
+    generated_at: "2026-03-26",
+    geography: "South Africa",
+    subject_company: "Trusting Social",
+    total_competitors: 10
+  },
+  subject_company: {
+    name: "Trusting Social",
+    website: "https://trustingsocial.com",
+    founded: 2013,
+    hq: "Singapore",
+    team: "~286 people (20+ PhDs)",
+    funding: "~$84M (Series C $65M Masan Group, Apr 2022)",
+    sa_status: "NEW MARKET ENTRY",
+    products: [
+      { name: "Trust Scores", description: "AI credit scoring via telco CDRs, device data, behavioral signals. 1B+ consumers scored. 130-170+ FI customers. 120B records/week." },
+      { name: "Trust Vision (eKYC)", description: "Facial recognition, liveness detection, ID cross-validation. 8M monthly onboardings in India, ~1M in Vietnam." },
+      { name: "Agent Foundry", description: "GenAI enterprise agents: ALICE (sales/CX, 42% satisfaction lift), ANANSI (analytics), ALAN (dev). Built on Microsoft Azure." }
+    ],
+    differentiators: [
+      "Telco-first data moat — scores mobile-only populations with zero credit history",
+      "Localized AI trained per-country (faces, language, behavioral patterns)",
+      "Full-stack single vendor: credit scoring + eKYC + AI agents",
+      "Microsoft Azure 5-year MOU (AKS, OpenAI, Databricks)",
+      "ISO/IEC 27001, GDPR-compliant, RBI sandbox participant (India)"
+    ]
+  },
+  competitors: [
+    {
+      rank: 1, name: "TransUnion Africa", website: "https://transunion.co.za",
+      area: "Credit Scoring", threat: "HIGH",
+      founded: null, funding: "NYSE-listed (TRU)", hq: "South Africa",
+      product_summary: "South Africa's largest credit bureau. In June 2025, launched the CreditVision Telco Data Score — CDR-based, built with MTN and Chenosis, targeting 1.4M+ credit-invisible South Africans. 36M+ consumer records.",
+      strengths: ["Dominant incumbent — all major SA banks already use TransUnion", "First SA telco-data score (MTN CDRs, 25-35% predictive lift, Jun 2025)", "NYSE-listed parent provides unlimited capital and R&D"],
+      weaknesses: ["CDR covers MTN only — Vodacom's ~35% market share is uncovered (Trusting Social opportunity)", "No product in eKYC or AI agents — TS's unified platform wins on breadth", "Consumer UX complaints; bureau brand limits alternative data narrative"],
+      signals: "June 2025: Telco Data Score launched with MTN + Chenosis. June 2025: Minority investment in Omnisient (privacy-safe data collaboration). Active FinTech Awards 2025 sponsorship.",
+      capCredit: true, capEkyc: false, capAI: false,
+      keyEdge: "Incumbent SA credit bureau, MTN CDR telco score"
+    },
+    {
+      rank: 2, name: "iiDENTIFii", website: "https://iidentifii.com",
+      area: "eKYC / Identity", threat: "HIGH",
+      founded: 2018, funding: "$15M Series A", hq: "Cape Town, SA",
+      product_summary: "Enterprise biometric identity platform. Patented 4D Liveness (light-reflection detection of deepfakes). 50M+ African face matches. Used by Standard Bank, ABSA, Investec, Old Mutual.",
+      strengths: ["Deepest SA Tier 1 bank penetration (Standard Bank, ABSA, Investec, Old Mutual)", "Patented 4D Liveness — harder to spoof than gesture methods, iProov FIDO certified Nov 2024", "50M+ African face operations; ISO 27001:2022; FATF greylisting reversal narrative"],
+      weaknesses: ["Narrow scope: biometric auth only — no AML, KYB, or credit intelligence", "Enterprise-only pricing (no self-serve) — mid-market and fintechs underserved", "Trusting Social's Trust Vision + Trust Scores is structurally superior"],
+      signals: "Standard Bank OneHub integration (Dec 2024). iProov FIDO Remote Identity Verification certification — first globally (Nov 2024). Zambia expansion via Zanaco (Oct 2023).",
+      capCredit: false, capEkyc: true, capAI: false,
+      keyEdge: "Patented 4D Liveness, Big 4 SA bank penetration"
+    },
+    {
+      rank: 3, name: "Principa", website: "https://principa.co.za",
+      area: "Credit Scoring", threat: "HIGH",
+      founded: 1999, funding: "Acquired by Hyperclear (2022)", hq: "Milnerton, WC, SA",
+      product_summary: "25-year SA credit analytics firm. ADMiT psychometric scoring is NCR-endorsed — the only SA regulatory-endorsed alternative credit product. Full lifecycle suite: DecisionSmart, BridgeSmart, CollectSmart, AppSmart. 150+ clients in 30 countries.",
+      strengths: ["Only NCR-endorsed alternative scoring in SA — reduces lender compliance risk dramatically", "25-year SA lender relationships — deepest institutional trust of any competitor", "Full credit lifecycle: origination, decisioning, collections, recovery"],
+      weaknesses: ["Psychometric assessments are gameable — a known academic criticism vs. passive behavioral data", "No AI agents product — direct whitespace for Trusting Social's Agent Foundry", "Ownership/leadership transition (Hyperclear 2022, new CEO 2024) creates strategic uncertainty"],
+      signals: "New CEO Clifford Warburton appointed (2024) with explicit agentic AI mandate. Cloud-native rebuild of SmartSuite underway. RCS/BNP Paribas as named client; Visa CEMEA Gulf project.",
+      capCredit: true, capEkyc: false, capAI: false,
+      keyEdge: "Only NCR-endorsed alt score, 25yr SA lender trust"
+    },
+    {
+      rank: 4, name: "Smile ID", website: "https://usesmileid.com",
+      area: "eKYC / Identity", threat: "MEDIUM",
+      founded: 2017, funding: "$31.1M + Mastercard equity", hq: "Lagos, Nigeria",
+      product_summary: "Pan-African IDV leader. 300M+ identities verified. Mastercard exclusive Africa IDV partner and minority equity investment (Sep 2025). Broadest product suite: SmartSelfie (ISO 30107-3 Level 2, 0% penetration), AML (1100+ watchlists), KYB (7M+ companies), fraud prevention.",
+      strengths: ["Mastercard exclusive Africa IDV deal + equity — unprecedented distribution for 50+ countries", "Broadest product suite in Africa (KYC + AML + KYB + fraud + phone/address/bank verification)", "ISO 30107-3:2023 Level 2 certification (0% penetration rate in standardized testing)"],
+      weaknesses: ["Nigeria HQ perception risk in SA Tier 1 bank enterprise procurement", "SA references primarily fintechs (iKhokha, Luno) — no Big Four SA bank clients yet", "No alternative credit scoring layer — Trusting Social's combined credit+identity offering is superior"],
+      signals: "Mastercard exclusive Africa partnership + minority equity (Sep 2025). 2026 Fraud Report: 87% of failed biometric verifications in Southern Africa are AI-driven. 700% increase in biometric authentication requests in 2024.",
+      capCredit: false, capEkyc: true, capAI: false,
+      keyEdge: "Mastercard-backed, 300M+ verifications, broadest African IDV"
+    },
+    {
+      rank: 5, name: "JUMO", website: "https://jumo.world",
+      area: "Credit Scoring", threat: "MEDIUM",
+      founded: null, funding: "$304M raised", hq: "Cape Town, SA",
+      product_summary: "Banking-as-a-Service platform with embedded AI credit engine (Unify). Live in SA: Qwikloan (MTN MoMo) and Fast Loan (Mukuru, Nov 2025). 35M+ global customers, $8.7B disbursed. B Corp certified. ~98% claimed scoring accuracy.",
+      strengths: ["10-year ML training flywheel on 35M+ customers across Africa", "Non-competitive 'we power banks' positioning — banks are customers not rivals", "B Corp + Cerise+SPTF 92.2% customer protection score; Goldman Sachs/Fidelity/Visa investors"],
+      weaknesses: ["Thin SA footprint — only 2 live SA products (Qwikloan, Fast Loan)", "Bundled BaaS model — no standalone scoring API for SA lenders who want just the score", "MNO concentration risk; $7.5M latest round is small vs. prior $120M Series D"],
+      signals: "Orange Money Group partnership (Jul 2025) — 100M+ customers across 16 African countries. Mukuru Fast Loan South Africa launch (Nov 2025). B Corp certification and 92.2% Cerise+SPTF score (highest ever).",
+      capCredit: true, capEkyc: false, capAI: false,
+      keyEdge: "$304M raised, BaaS AI credit engine, 35M+ customers"
+    },
+    {
+      rank: 6, name: "CredoLab", website: "https://credolab.com",
+      area: "Credit Scoring", threat: "MEDIUM",
+      founded: 2016, funding: "$10.1M Series A (2020)", hq: "Singapore",
+      product_summary: "Behavioral credit scoring from 50,000-80,000 smartphone metadata data points. 200+ clients in 52 countries. 3 SA clients (2 banks, 1 airtime provider). Transparent pricing: $299-$499/mo entry. Income Prediction Model launched Nov 2025.",
+      strengths: ["Most globally proven alternative scorer — 200+ clients, 52 countries, 500M+ footprints", "Transparent published pricing (rare in sector) — $299-$499/mo entry tiers", "1-week SDK integration; Mastercard/Visa/TransUnion tech partnerships; WEF Tech Pioneer 2021"],
+      weaknesses: ["Singapore HQ — Africa is secondary market; SA clients unnamed and unverifiable", "Last funding round 2020 ($10.1M) — 6 years without new capital", "Android 11 data restrictions reduced available data points; no NCR endorsement"],
+      signals: "Income Prediction Model launched Nov 2025 (estimates income from smartphone metadata). Provenir marketplace listing for lender/BNPL access. HES FinTech strategic partnership (Oct 2024).",
+      capCredit: true, capEkyc: false, capAI: false,
+      keyEdge: "200+ clients, 52 countries, transparent alt-score pricing"
+    },
+    {
+      rank: 7, name: "CLEVVA", website: "https://clevva.com",
+      area: "AI Agents", threat: "MEDIUM",
+      founded: 2011, funding: "Bootstrapped", hq: "Stellenbosch, SA",
+      product_summary: "Virtual Agents as a Service for regulated financial services. Governance-first GenAI with Conversational AI Trust Benchmark. Clients: Nedbank, Momentum, Telkom. Pay-per-conversation outcomes-based pricing (~22 people).",
+      strengths: ["SA-native 13-year track record in regulated financial services", "Nedbank, Momentum, Telkom as named SA clients; Blue Prism EMEA Partner of Year", "Governance-first AI narrative directly addresses regulated-sector risk concerns"],
+      weaknesses: ["Bootstrapped (~22 people) — severely limits scale of simultaneous enterprise deployments", "Pure CX automation only — no identity, credit intelligence, or data layer", "Trusting Social's Agent Foundry (Azure-backed, multi-modal) is orders of magnitude more capable"],
+      signals: "Thurrock Council UK deployment (Mar 2025) — first major UK public sector client. Top 10 AI Companies MEA (AI Magazine, Sep 2024). Active BPO sector campaign (2024-2025).",
+      capCredit: false, capEkyc: false, capAI: true,
+      keyEdge: "Only SA-native AI agent vendor with Tier 1 bank clients"
+    },
+    {
+      rank: 8, name: "Uqudo", website: "https://uqudo.com",
+      area: "eKYC / Identity", threat: "MEDIUM",
+      founded: 2019, funding: "~$200K seed + TECH5 strategic", hq: "UAE",
+      product_summary: "MEA-native KYC/AML/KYB platform. SA Smart ID + Home Affairs direct integration + NFC passport reading. In-country data hosting for POPIA/SARB compliance. 'Successful onboarding only' billing. $3.3M revenue (2024).",
+      strengths: ["MEA-native SA document coverage (Smart ID, green book, all provincial DLs, passports)", "Home Affairs (Department of Home Affairs) direct database integration — 1:N face search", "POPIA-compliant in-country data hosting; 'charged for successful onboarding only' billing"],
+      weaknesses: ["UAE primary market — South Africa is secondary with no named SA flagship clients", "Only $200K raised — severely undercapitalized vs. global KYC competitors", "16-week integration time is slow; no credit intelligence or AI agent layer"],
+      signals: "TECH5 Group strategic investment + biometric IP partnership (Dec 2022). Smart Africa Alliance member (Oct 2022). Visa Fintech Partner designation.",
+      capCredit: false, capEkyc: true, capAI: false,
+      keyEdge: "SA Home Affairs direct API, POPIA in-country hosting"
+    },
+    {
+      rank: 9, name: "Vizibiliti Insight", website: "https://vizibiliti-insight.com",
+      area: "Credit Scoring", threat: "LOW",
+      founded: 2016, funding: "~$10K seed", hq: "Johannesburg, SA",
+      product_summary: "SA behavioral credit scoring via Mobi-Scor SDK (mobile device metadata). 1.5M scored, ZAR 12B loan value analyzed. White-box explainable AI. Effectively stalled — 1-2 FTE, minimal recent activity.",
+      strengths: ["SA-native with lived-experience CEO; Old Mutual/Bayport-pedigree CRO", "White-box explainable AI — regulatorily friendly for NCR compliance", "100% hit rate regardless of credit history"],
+      weaknesses: ["Critically under-resourced: ~1-2 FTE, ~$10K total raised", "No named bank clients — primarily microlenders", "Minimal activity since 2020 — likely stalled or pivoting"],
+      signals: "Won Verizon Alternative Credit Scoring Award at VivaTech Paris 2018. Grindstone Accelerator Cohort 4 (2018). No new public announcements since 2020.",
+      capCredit: true, capEkyc: false, capAI: false,
+      keyEdge: "SA-native behavioral score, white-box explainability"
+    },
+    {
+      rank: 10, name: "Shufti Pro", website: "https://shuftipro.com",
+      area: "eKYC / Identity", threat: "LOW",
+      founded: 2017, funding: "$20M Series A (2022)", hq: "London, UK",
+      product_summary: "Global KYC/AML/IDV platform. 240+ countries, 10,000+ document types. SA FICA compliance report published. Named SA client: IFX Brokers (FSCA-regulated forex). AML refreshed every 15 minutes. 4.7/5 Trustpilot (2,700+ reviews).",
+      strengths: ["Largest public review base (2,700+ Trustpilot, 4.7/5) — buyer confidence", "Fastest AML data refresh in market (every 15 minutes)", "Transparent pricing ($0.75-$1.20/verification); named SA client; 240+ country coverage"],
+      weaknesses: ["Global-generic SA positioning — no SA-specific team, product, or regulatory advocacy", "No new funding since 2022 Series A — potential product investment constraint", "No AI agents or alternative credit scoring — incomparable to Trusting Social's full stack"],
+      signals: "IFX Brokers SA partnership (May 2023). 3,000+ five-star Trustpilot reviews milestone (2025). Rebranded from 'Shufti Pro' to 'Shufti'.",
+      capCredit: false, capEkyc: true, capAI: false,
+      keyEdge: "Global reach, 4.7/5 Trustpilot, $0.75/verification pricing"
+    }
+  ],
+  gaps: [
+    {
+      title: "Full-Stack Platform Gap",
+      type: "HIGHEST VALUE",
+      description: "No competitor in South Africa offers credit scoring + eKYC + AI agents in one platform. Banks using TransUnion for scoring buy iiDENTIFii for identity and have no AI agent vendor — three separate vendor relationships that Trusting Social can replace.",
+      action: "Position as the single-vendor solution for the entire AI financial services stack"
+    },
+    {
+      title: "AI Agents Whitespace",
+      type: "HIGH VALUE",
+      description: "CLEVVA is the only SA AI agent competitor — bootstrapped with 22 people. Trusting Social's Agent Foundry (Azure-backed, 42% satisfaction lift proven) is orders of magnitude more capable. Clear land-and-expand motion.",
+      action: "Lead SA market entry with ALICE agent for bank sales automation, then expand to credit + identity"
+    },
+    {
+      title: "Vodacom Telco Data Opportunity",
+      type: "HIGH VALUE",
+      description: "TransUnion's Telco Score covers only MTN CDRs. Vodacom has ~35% SA market share — an estimated 15M+ subscribers with no CDR-based alternative score available. A Trusting Social + Vodacom partnership fills this gap immediately.",
+      action: "Pursue Vodacom CDR data partnership as first SA market move"
+    },
+    {
+      title: "Mid-Market eKYC Gap",
+      type: "MEDIUM VALUE",
+      description: "iiDENTIFii is enterprise-only (Tier 1 banks). Smile ID targets fintechs. No player serves SA mid-market financial services — regional banks, credit retailers, insurers, NBFCs — with a combined credit intelligence + identity stack.",
+      action: "Build mid-market SA pricing tier combining Trust Vision + Trust Scores"
+    },
+    {
+      title: "Behavioral Data White Space",
+      type: "MEDIUM VALUE",
+      description: "Vizibiliti is stalled. CredoLab has 3 unnamed SA clients. No dominant behavioral metadata credit scorer exists in South Africa. Trusting Social's device behavioral data methodology can be adapted with a local SA data partner.",
+      action: "Adapt Asia behavioral scoring methodology for SA with local telco/bank data partnership"
+    }
+  ],
+  watch_list: [
+    {
+      company: "TransUnion Africa",
+      reason: "Dominant incumbent launching direct telco scoring. Vodacom CDR access would narrow Trusting Social's window.",
+      watch_for: "Expanding Telco Score to Vodacom CDRs; any full-stack credit+identity bundle; Omnisient pipeline additions"
+    },
+    {
+      company: "Smile ID",
+      reason: "Mastercard-backed with 300M+ verifications. A credit intelligence layer addition makes them Trusting Social's most dangerous full-stack competitor.",
+      watch_for: "SA Tier 1 bank client wins; any alternative credit scoring product launch; additional African telco partnerships"
+    },
+    {
+      company: "Principa",
+      reason: "25-year SA lender moat + new CEO with explicit agentic AI mandate. A credible AI agents product makes them a full-stack competitor.",
+      watch_for: "Agentic AI product launch; strategic tech partnership announcement; new CEO roadmap execution"
+    }
+  ]
+};
+
+// ═══════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════
+let activeArea = 'all';
+let activeThreat = 'all';
+let searchQuery = '';
+
+// ═══════════════════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════════════════
+function getAreaClass(area) {
+  if (area.includes('Credit')) return 'credit';
+  if (area.includes('eKYC') || area.includes('Identity')) return 'ekyc';
+  if (area.includes('AI')) return 'ai';
+  return 'credit';
+}
+
+function getThreatClass(threat) {
+  return threat; // HIGH / MEDIUM / LOW used as class names
+}
+
+function escHtml(str) {
+  const d = document.createElement('div');
+  d.appendChild(document.createTextNode(str || ''));
+  return d.innerHTML;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER COMPETITOR CARDS
+// ═══════════════════════════════════════════════════════════════
+function renderCards() {
+  const grid = document.getElementById('competitor-grid');
+  const noResults = document.getElementById('no-results');
+
+  // Remove existing cards (keep no-results div)
+  Array.from(grid.querySelectorAll('.comp-card')).forEach(c => c.remove());
+
+  let visible = 0;
+
+  CI_DATA.competitors.forEach(comp => {
+    const areaMatch = activeArea === 'all' || comp.area === activeArea;
+    const threatMatch = activeThreat === 'all' || comp.threat === activeThreat;
+    const searchMatch = !searchQuery || comp.name.toLowerCase().includes(searchQuery.toLowerCase());
+
+    const card = document.createElement('div');
+    card.className = 'comp-card' + (areaMatch && threatMatch && searchMatch ? '' : ' hidden');
+    card.dataset.rank = comp.rank;
+
+    if (areaMatch && threatMatch && searchMatch) visible++;
+
+    const areaClass = getAreaClass(comp.area);
+
+    card.innerHTML = `
+      <div class="comp-card-top">
+        <div class="comp-card-header">
+          <div>
+            <div class="comp-name"><a href="${escHtml(comp.website)}" target="_blank" rel="noopener">${escHtml(comp.name)}</a></div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;">
+            <span class="threat-badge ${comp.threat}">${comp.threat}</span>
+            <span class="comp-rank">#${comp.rank}</span>
+          </div>
+        </div>
+        <div class="comp-card-tags">
+          <span class="area-tag ${areaClass}">${escHtml(comp.area)}</span>
+        </div>
+      </div>
+      <div class="comp-stats">
+        <div class="stat-item">
+          <div class="stat-item-label">Funding</div>
+          <div class="stat-item-value">${escHtml(comp.funding)}</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-item-label">Founded</div>
+          <div class="stat-item-value">${comp.founded ? comp.founded : '—'}</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-item-label">HQ</div>
+          <div class="stat-item-value">${escHtml(comp.hq)}</div>
+        </div>
+      </div>
+      <div class="comp-details-toggle" onclick="toggleDetails(this)">
+        <span class="details-toggle-label">Details</span>
+        <i class="toggle-icon">▼</i>
+      </div>
+      <div class="comp-details-body">
+        <div class="details-section">
+          <div class="details-label">Product Summary</div>
+          <div class="details-text">${escHtml(comp.product_summary)}</div>
+        </div>
+        <div class="details-section">
+          <div class="details-label">Strengths</div>
+          <ul class="details-list strengths">
+            ${comp.strengths.map(s => `<li>${escHtml(s)}</li>`).join('')}
+          </ul>
+        </div>
+        <div class="details-section">
+          <div class="details-label">Weaknesses / TS Advantages</div>
+          <ul class="details-list weaknesses">
+            ${comp.weaknesses.map(w => `<li>${escHtml(w)}</li>`).join('')}
+          </ul>
+        </div>
+        <div class="details-section">
+          <div class="details-label">Strategic Signals</div>
+          <div class="signal-box">${escHtml(comp.signals)}</div>
+        </div>
+      </div>
+    `;
+
+    grid.insertBefore(card, noResults);
+  });
+
+  // Update count badge
+  document.getElementById('results-count').textContent = visible + ' Compan' + (visible === 1 ? 'y' : 'ies');
+
+  // Show/hide no-results
+  noResults.classList.toggle('show', visible === 0);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TOGGLE DETAILS
+// ═══════════════════════════════════════════════════════════════
+function toggleDetails(toggleEl) {
+  const body = toggleEl.nextElementSibling;
+  const icon = toggleEl.querySelector('.toggle-icon');
+  const isOpen = body.classList.contains('open');
+
+  body.classList.toggle('open', !isOpen);
+  icon.classList.toggle('open', !isOpen);
+  toggleEl.querySelector('.details-toggle-label').textContent = isOpen ? 'Details' : 'Hide Details';
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER TABLE
+// ═══════════════════════════════════════════════════════════════
+function renderTable() {
+  const tbody = document.getElementById('table-body');
+  tbody.innerHTML = '';
+
+  CI_DATA.competitors.forEach(comp => {
+    const tr = document.createElement('tr');
+
+    const threatColors = {
+      HIGH: 'var(--high)',
+      MEDIUM: 'var(--medium)',
+      LOW: 'var(--low)'
+    };
+    const threatBg = {
+      HIGH: 'var(--high-bg)',
+      MEDIUM: 'var(--medium-bg)',
+      LOW: 'var(--low-bg)'
+    };
+
+    tr.innerHTML = `
+      <td class="rank-col">${comp.rank}</td>
+      <td class="company-col">${escHtml(comp.name)}</td>
+      <td style="text-align:center">${comp.capCredit ? '<span class="check">✓</span>' : '<span class="dash">—</span>'}</td>
+      <td style="text-align:center">${comp.capEkyc ? '<span class="check">✓</span>' : '<span class="dash">—</span>'}</td>
+      <td style="text-align:center">${comp.capAI ? '<span class="check">✓</span>' : '<span class="dash">—</span>'}</td>
+      <td class="threat-col">
+        <span style="background:${threatBg[comp.threat]};color:${threatColors[comp.threat]};border:1.5px solid;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;white-space:nowrap;">${comp.threat}</span>
+      </td>
+      <td class="funding-col">${escHtml(comp.funding)}</td>
+      <td class="edge-col">${escHtml(comp.keyEdge)}</td>
+    `;
+
+    tbody.appendChild(tr);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER GAPS
+// ═══════════════════════════════════════════════════════════════
+function renderGaps() {
+  const grid = document.getElementById('gaps-grid');
+
+  CI_DATA.gaps.forEach(gap => {
+    const typeClass = gap.type === 'HIGHEST VALUE' ? 'highest' : gap.type === 'HIGH VALUE' ? 'high' : 'medium';
+    const badgeClass = typeClass;
+
+    const card = document.createElement('div');
+    card.className = `gap-card ${typeClass}`;
+    card.innerHTML = `
+      <span class="gap-type-badge ${badgeClass}">${escHtml(gap.type)}</span>
+      <div class="gap-title">${escHtml(gap.title)}</div>
+      <div class="gap-desc">${escHtml(gap.description)}</div>
+      <div class="gap-action">
+        <span class="gap-action-label">Recommended Action</span>
+        ${escHtml(gap.action)}
+      </div>
+    `;
+
+    grid.appendChild(card);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER WATCH LIST
+// ═══════════════════════════════════════════════════════════════
+function renderWatchList() {
+  const grid = document.getElementById('watchlist-grid');
+
+  const icons = ['⚠', '👁', '🔔'];
+
+  CI_DATA.watch_list.forEach((item, idx) => {
+    const card = document.createElement('div');
+    card.className = 'watch-card';
+    card.innerHTML = `
+      <div class="watch-icon">${icons[idx]}</div>
+      <div class="watch-body">
+        <div class="watch-company">${escHtml(item.company)}</div>
+        <div class="watch-reason">${escHtml(item.reason)}</div>
+        <div class="watch-for-label">Watch For</div>
+        <div class="watch-for-text">${escHtml(item.watch_for)}</div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FILTERS
+// ═══════════════════════════════════════════════════════════════
+document.getElementById('area-filters').addEventListener('click', e => {
+  const btn = e.target.closest('.filter-btn');
+  if (!btn) return;
+
+  document.querySelectorAll('#area-filters .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  const areaMap = {
+    'Credit Scoring': 'Credit Scoring',
+    'eKYC-Identity': 'eKYC / Identity',
+    'AI Agents': 'AI Agents',
+    'all': 'all'
+  };
+  activeArea = areaMap[btn.dataset.area] || btn.dataset.area;
+  renderCards();
+});
+
+document.getElementById('threat-filters').addEventListener('click', e => {
+  const btn = e.target.closest('.filter-btn');
+  if (!btn) return;
+
+  document.querySelectorAll('#threat-filters .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  activeThreat = btn.dataset.threat;
+  renderCards();
+});
+
+document.getElementById('search-input').addEventListener('input', e => {
+  searchQuery = e.target.value.trim();
+  renderCards();
+});
+
+// ═══════════════════════════════════════════════════════════════
+// EXPORT
+// ═══════════════════════════════════════════════════════════════
+document.getElementById('export-btn').addEventListener('click', () => {
+  const json = JSON.stringify(CI_DATA, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'Trusting_Social_CI_Data_SA_2026.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+
+// ═══════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════
+renderCards();
+renderTable();
+renderGaps();
+renderWatchList();
+</script>
+</body>
+</html>

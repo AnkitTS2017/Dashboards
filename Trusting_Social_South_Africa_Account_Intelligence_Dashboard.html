@@ -1,0 +1,2711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Account Intelligence — Trusting Social SA</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#1B2A4A;--gold:#D4A843;--white:#fff;--bg:#F0F4FA;--border:#D8E2F0;--text:#1a2540;--muted:#6B7FA3;--p5:#1A8C4E;--p4:#2980B9;--p3:#D4A843;--p2:#E67E22;--p1:#C0392B;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:13px}
+header{background:var(--navy);color:var(--white);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,0.3)}
+header h1{font-size:17px;font-weight:700}
+header .meta{font-size:11px;opacity:0.65;margin-top:2px}
+.badge{background:var(--gold);color:#1a1a00;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700}
+.stat-bar{background:#253555;padding:10px 28px;display:flex;gap:22px;flex-wrap:wrap;border-bottom:1px solid #3a4f72}
+.stat{text-align:center;color:var(--white)}
+.stat .n{font-size:22px;font-weight:800;color:var(--gold)}
+.stat .l{font-size:10px;opacity:0.65;text-transform:uppercase;letter-spacing:0.5px}
+.controls{background:#fff;padding:10px 28px;border-bottom:1px solid var(--border);display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.controls input,.controls select{border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:12px;color:var(--text)}
+.controls input{width:200px}
+.controls select{min-width:150px}
+.controls label{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:0.4px}
+.btn{border:none;border-radius:6px;padding:7px 14px;cursor:pointer;font-size:12px;font-weight:600}
+.btn-reset{background:var(--navy);color:#fff}
+.btn-export{background:var(--gold);color:#111}
+.count-bar{padding:7px 28px;font-size:11px;color:var(--muted);background:#F7F9FD;border-bottom:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;min-width:1000px}
+thead th{background:var(--navy);color:#fff;padding:9px 12px;text-align:left;font-size:11px;font-weight:600;letter-spacing:0.3px;white-space:nowrap;position:sticky;top:0;z-index:50}
+tbody tr{cursor:pointer;border-bottom:1px solid var(--border);transition:background 0.1s}
+tbody tr:hover{background:#E8F0FC}
+tbody tr.selected{background:#D5E8FF;border-left:4px solid var(--p4)}
+td{padding:9px 12px;vertical-align:top;font-size:12px}
+.pri{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;color:#fff;font-weight:700;font-size:11px}
+.p5{background:var(--p5)}.p4{background:var(--p4)}.p3{background:var(--p3);color:#111}.p2{background:var(--p2)}.p1{background:var(--p1)}
+.chip{display:inline-block;padding:2px 7px;border-radius:9px;font-size:10px;font-weight:600;color:#fff;white-space:nowrap;margin:1px}
+.multi{background:#B8001F}.fpub{background:#2C3E50}.fd{background:#E67E22}.fc{background:#16A085}.fb{background:#8E44AD}.fa{background:#2980B9}.fo{background:#7F8C8D}
+.comp-chip{background:#E8F0FC;color:#1B2A4A;padding:2px 6px;border-radius:7px;font-size:9px;font-weight:600;margin:1px;display:inline-block}
+.lk-chip{background:#FFF3E0;color:#E65100;padding:2px 6px;border-radius:7px;font-size:9px;font-weight:600}
+a{color:var(--p4);text-decoration:none}a:hover{text-decoration:underline}
+.pain-prev{color:#C0392B;font-style:italic;font-size:11px;line-height:1.4}
+.detail-panel{width:500px;background:#fff;border-left:1px solid var(--border);position:fixed;right:-520px;top:0;height:100vh;overflow-y:auto;transition:right 0.3s ease;z-index:200;box-shadow:-4px 0 20px rgba(0,0,0,0.15)}
+.detail-panel.open{right:0}
+.ph{background:var(--navy);color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:flex-start}
+.ph h2{font-size:16px;font-weight:800;line-height:1.3}
+.ph-sub{font-size:11px;opacity:0.7;margin-top:3px}
+.ph-badges{margin-top:8px}
+.pc{background:none;border:none;color:#fff;font-size:20px;cursor:pointer;opacity:0.7}
+.pc:hover{opacity:1}
+.pbody{padding:18px 22px}
+.sec{margin-bottom:18px}
+.sec-t{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--muted);margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border)}
+.kv{display:flex;margin-bottom:5px;font-size:12px}
+.kv .k{color:var(--muted);min-width:110px;font-weight:600;flex-shrink:0}
+.kv .v{color:var(--text);flex:1;word-break:break-word}
+.ldr{background:var(--bg);border-radius:5px;padding:9px;margin-bottom:7px}
+.ldr-name{font-weight:700;font-size:13px;color:var(--navy)}
+.ldr-title{font-size:11px;color:var(--muted);margin-top:1px}
+.ldr-li{font-size:11px;margin-top:4px}
+.pain-item{background:#FFF5F5;border-left:3px solid #C0392B;padding:7px 9px;margin-bottom:5px;border-radius:0 4px 4px 0}
+.pain-text{color:#C0392B;font-weight:600;font-size:12px}
+.pain-src{font-size:10px;color:var(--muted);margin-top:2px}
+.sig{background:var(--bg);padding:5px 9px;border-radius:4px;margin-bottom:3px;font-size:12px}
+.sig::before{content:"-> ";color:var(--gold);font-weight:700}
+.tag{display:inline-block;padding:2px 7px;border-radius:3px;font-size:10px;background:var(--bg);color:var(--muted);border:1px solid var(--border);margin:2px}
+</style></head><body><header>
+  <div>
+    <div class="meta">Account Intelligence · 2026-03-26 · South Africa · 10 Competitors Mined</div>
+    <h1>Trusting Social — SA Account Intelligence</h1>
+  </div>
+  <span class="badge">35 Accounts</span>
+</header>
+<div class="stat-bar">
+  <div class="stat"><div class="n">35</div><div class="l">Total Accounts</div></div>
+  <div class="stat"><div class="n">156+</div><div class="l">Client Mentions</div></div>
+  <div class="stat"><div class="n">10</div><div class="l">Competitors Mined</div></div>
+  <div class="stat"><div class="n">10</div><div class="l">Lookalikes Added</div></div>
+  <div class="stat"><div class="n">6</div><div class="l">Multi-Competitor</div></div>
+  <div class="stat"><div class="n">24+</div><div class="l">C-Suite Mapped</div></div>
+</div>
+<div class="controls">
+  <label>Search</label>
+  <input type="text" id="q" placeholder="Company, CEO, pain point...">
+  <label>Industry</label>
+  <select id="fi">
+    <option value="">All Industries</option>
+    <option value="Banking">Banking</option>
+    <option value="Financial Technology">FinTech</option>
+    <option value="Financial Services">Financial Services</option>
+    <option value="Telecommunications">Telecommunications</option>
+    <option value="Retail">Retail</option>
+  </select>
+  <label>Priority</label>
+  <select id="fp">
+    <option value="">All</option>
+    <option value="5">5 — Immediate</option>
+    <option value="4">4 — Strong</option>
+    <option value="3">3 — Pipeline</option>
+  </select>
+  <label>Discovery</label>
+  <select id="fd">
+    <option value="">All</option>
+    <option value="website_scrape">Extracted</option>
+    <option value="lookalike_expansion">Lookalike</option>
+  </select>
+  <button class="btn btn-reset" onclick="reset()">Reset</button>
+  <button class="btn btn-export" onclick="exportJ()">Export JSON</button>
+</div>
+<div class="count-bar" id="cb">Showing all 35 accounts — click any row for full profile</div>
+<table>
+  <thead>
+    <tr>
+      <th>#</th><th>Pri</th><th>Company</th><th>HQ</th><th>Industry</th>
+      <th>Funding</th><th>Revenue</th><th>CEO</th><th>Top Pain Point</th>
+      <th>Competitors</th><th>Discovery</th>
+    </tr>
+  </thead>
+  <tbody id="tb"></tbody>
+</table>
+<div class="detail-panel" id="panel">
+  <div class="ph">
+    <div>
+      <h2 id="pn"></h2>
+      <div class="ph-sub" id="ps"></div>
+      <div class="ph-badges" id="pb"></div>
+    </div>
+    <button class="pc" onclick="closeP()">&#x2715;</button>
+  </div>
+  <div class="pbody" id="pbody"></div>
+</div><script>
+const D=[
+  {
+    "id": "absa-bank-sa",
+    "priority_score": 5,
+    "name": "Absa Bank",
+    "website": "https://www.absa.co.za",
+    "linkedin_url": "https://www.linkedin.com/company/absa-group/",
+    "industry": "Banking",
+    "sub_industry": "Retail & Commercial Banking",
+    "hq": "Johannesburg, South Africa",
+    "founded_year": 1991,
+    "headcount": "40,000+",
+    "funding_stage": "Public (JSE: ABG)",
+    "total_raised": "JSE listed",
+    "revenue_estimate": "ZAR 89B (FY2023)",
+    "revenue_source": "disclosed",
+    "key_investors": [
+      "Public shareholders",
+      "Former Barclays Africa"
+    ],
+    "ceo_name": "Kenny Fihla",
+    "ceo_linkedin": "https://www.linkedin.com/in/kenny-fihla-2b4a1329",
+    "cro_name": "Charles Russon (Chief Risk Officer)",
+    "cro_linkedin": "https://www.linkedin.com/in/charles-russon-83b8a815",
+    "cfo_name": "Deon Raju",
+    "cfo_linkedin": "https://www.linkedin.com/in/deon-raju-ca-sa-cfa-513b64187",
+    "cto_name": "Johnson Idesoh (CITO)",
+    "cto_linkedin": "https://www.linkedin.com/in/johnsonidesoh",
+    "vp_sales_name": "Nondumiso Maphisa (Head Retail)",
+    "vp_sales_linkedin": "https://www.linkedin.com/in/nondumiso-maphisa",
+    "product_summary": "Full-service retail & commercial bank: home loans, vehicle finance, credit cards, personal loans, transactional banking, business banking, wealth management. Africa's largest bank by African footprint.",
+    "pricing_model": "Regulated fee schedules; interest rate linked to SARB repo",
+    "key_pain_points": [
+      "FATF greylisting pressure \u2014 need stronger AML/KYC tooling",
+      "Credit default rates rising in post-Covid SA economy; need better alt-data scoring",
+      "Core banking modernisation in progress \u2014 partner ecosystem opportunity",
+      "Regulatory burden: POPIA, FICA, NCR compliance overhead"
+    ],
+    "pain_sources": [
+      "Annual report 2023",
+      "Reuters SA banking sector analysis"
+    ],
+    "known_customers": [],
+    "estimated_customer_count": "11M+ retail clients",
+    "icp_description": "LSM 5-10 SA consumers, SMEs, large corporates across 12 African markets",
+    "tech_stack": [
+      "AWS",
+      "Temenos T24 (core)",
+      "Salesforce",
+      "Microsoft Azure"
+    ],
+    "scale_metrics": [
+      "ZAR 1.8T total assets",
+      "11M+ customers",
+      "700+ branches",
+      "12 African markets"
+    ],
+    "strategic_signals": [
+      "Kenny Fihla became CEO June 2023 (ex Standard Bank retail head)",
+      "Partnered with Ripple for digital asset custody \u2014 first SA bank",
+      "33% through cloud migration programme",
+      "Acquired stake in Numeral (payments API)"
+    ],
+    "source_competitors": [
+      "TransUnion Africa",
+      "iiDENTIFii",
+      "JUMO"
+    ],
+    "discovery_method": "website_scrape",
+    "lookalike_of": null,
+    "sources": [
+      "https://www.absa.co.za/investor-relations/",
+      "https://www.linkedin.com/company/absa-group/"
+    ]
+  },
+  {
+    "id": "standard-bank-sa",
+    "priority_score": 5,
+    "name": "Standard Bank",
+    "website": "https://www.standardbank.com",
+    "linkedin_url": "https://www.linkedin.com/company/standard-bank-group/",
+    "industry": "Banking",
+    "sub_industry": "Retail & Commercial Banking",
+    "hq": "Johannesburg, South Africa",
+    "founded_year": 1862,
+    "headcount": "55,000+",
+    "funding_stage": "Public (JSE: SBK)",
+    "total_raised": "JSE listed",
+    "revenue_estimate": "ZAR 123B (FY2023)",
+    "revenue_source": "disclosed",
+    "key_investors": [
+      "ICBC China (19.4%)",
+      "Public shareholders"
+    ],
+    "ceo_name": "Sim Tshabalala",
+    "ceo_linkedin": "https://www.linkedin.com/in/sim-tshabalala-3b2ba6245",
+    "cro_name": "Thabani Ndwandwe (CRO)",
+    "cro_linkedin": "https://www.linkedin.com/in/thabani-ndwandwe-8409031",
+    "cfo_name": "Arno Daehnke",
+    "cfo_linkedin": "https://www.linkedin.com/in/arno-daehnke-6477613b",
+    "cto_name": "Tau Mashigo (Group CTO)",
+    "cto_linkedin": "https://www.linkedin.com/in/tau-mashigo",
+    "vp_sales_name": "Margaret Nienaber (COO)",
+    "vp_sales_linkedin": "https://www.linkedin.com/in/margaret-nienaber-3392a646",
+    "product_summary": "Africa's largest bank by assets (ZAR 3.2T). Retail, business, corporate, and investment banking across 20 African markets. CIB, transactional banking, wealth. ICBC strategic partnership for China corridor.",
+    "pricing_model": "SARB repo-linked; corporate fee schedules",
+    "key_pain_points": [
+      "Africa-wide KYC/AML fragmentation across 20 markets \u2014 single platform opportunity",
+      "Credit scoring gaps for thin-file and informal sector customers",
+      "Succession pressure: both CEO and CFO retiring by 2027",
+      "Competition from TymeBank and Capitec in retail"
+    ],
+    "pain_sources": [
+      "Standard Bank annual report 2023",
+      "Business Day SA"
+    ],
+    "known_customers": [],
+    "estimated_customer_count": "18M+ across Africa",
+    "icp_description": "Mass retail to HNW in SA; corporates and sovereigns across 20 African markets",
+    "tech_stack": [
+      "Microsoft Azure (primary)",
+      "SAP",
+      "Salesforce",
+      "Temenos"
+    ],
+    "scale_metrics": [
+      "ZAR 3.2T total assets",
+      "Africa's largest bank by assets",
+      "20 African markets",
+      "18M+ customers"
+    ],
+    "strategic_signals": [
+      "Launched Standard Bank AI Hub \u2014 300+ data scientists",
+      "AI-powered credit decisions deployed in 8 markets",
+      "Partnership with AWS for cloud-first core",
+      "Piloted biometric onboarding with iiDENTIFii"
+    ],
+    "source_competitors": [
+      "TransUnion Africa",
+      "iiDENTIFii"
+    ],
+    "discovery_method": "website_scrape",
+    "lookalike_of": null,
+    "sources": [
+      "https://www.standardbank.com/StandardBank/Standard-Bank-Group/Investor-Relations",
+      "https://www.linkedin.com/company/standard-bank-group/"
+    ]
+  },
+  {
+    "id": "fnb-firstrand-sa",
+    "priority_score": 5,
+    "name": "FNB / FirstRand",
+    "website": "https://www.fnb.co.za",
+    "linkedin_url": "https://www.linkedin.com/company/firstrand/",
+    "industry": "Banking",
+    "sub_industry": "Retail & Digital Banking",
+    "hq": "Sandton, South Africa",
+    "founded_year": 1838,
+    "headcount": "45,000+",
+    "funding_stage": "Public (JSE: FSR)",
+    "total_raised": "JSE listed",
+    "revenue_estimate": "ZAR 98B (FY2023, FirstRand group)",
+    "revenue_source": "disclosed",
+    "key_investors": [
+      "Public shareholders",
+      "Government Employees Pension Fund"
+    ],
+    "ceo_name": "Mary Vilakazi (FirstRand Group CEO)",
+    "ceo_linkedin": "https://www.linkedin.com/in/mary-vilakazi-a892541b",
+    "cro_name": "Jan Roux (CRO)",
+    "cro_linkedin": "https://www.linkedin.com/in/jan-roux-fnb",
+    "cfo_name": "Markos Davias (FirstRand CFO)",
+    "cfo_linkedin": "https://www.linkedin.com/in/markos-davias-ab079b93",
+    "cto_name": "La-Cell Mouton (FNB CIO)",
+    "cto_linkedin": "https://www.linkedin.com/in/la-cell-mouton",
+    "vp_sales_name": "Harry Kellan (FNB CEO)",
+    "vp_sales_linkedin": "https://www.linkedin.com/in/harry-kellan-9bb589a3",
+    "product_summary": "SA's most digitally advanced bank. FNB retail/SME banking, WesBank vehicle finance, RMB investment banking. 1.7B annual app logins. Pioneer of app-based loyalty (eBucks), instant credit decisioning, and open banking APIs.",
+    "pricing_model": "SARB repo-linked; tiered digital banking fee bundles",
+    "key_pain_points": [
+      "Migrating to Fiserv Finxact cloud-native core \u2014 integration risk",
+      "Alt-data credit scoring gaps for gig economy / informal workers",
+      "Digital onboarding fraud rising \u2014 need stronger biometric layer",
+      "Acquiring HSBC SA \u2014 integration complexity"
+    ],
+    "pain_sources": [
+      "FirstRand annual report 2024",
+      "Fintech Africa coverage"
+    ],
+    "known_customers": [],
+    "estimated_customer_count": "9M+ retail, 5.5M app users",
+    "icp_description": "LSM 6-10 SA consumers; SMEs; corporates via RMB",
+    "tech_stack": [
+      "Fiserv Finxact (migrating)",
+      "AWS",
+      "Microsoft Azure",
+      "Salesforce"
+    ],
+    "scale_metrics": [
+      "1.7B annual app logins",
+      "9M+ retail customers",
+      "ZAR 500B+ market cap",
+      "5.5M app users"
+    ],
+    "strategic_signals": [
+      "Migrating to Fiserv Finxact cloud-native core banking",
+      "Acquiring HSBC South Africa",
+      "eBucks loyalty programme \u2014 6M+ members",
+      "FNB Connect MVNO \u2014 1M+ subscribers (CDR data asset)"
+    ],
+    "source_competitors": [
+      "TransUnion Africa",
+      "JUMO",
+      "CredoLab"
+    ],
+    "discovery_method": "website_scrape",
+    "lookalike_of": null,
+    "sources": [
+      "https://www.firstrand.co.za/investor-relations/",
+      "https://www.linkedin.com/company/firstrand/"
+    ]
+  },
+  {
+    "id": "nedbank-sa",
+    "priority_score": 5,
+    "name": "Nedbank",
+    "website": "https://www.nedbank.co.za",
+    "linkedin_url": "https://www.linkedin.com/company/nedbank/",
+    "industry": "Banking",
+    "sub_industry": "Retail & Commercial Banking",
+    "hq": "Sandton, South Africa",
+    "founded_year": 1831,
+    "headcount": "30,000+",
+    "funding_stage": "Public (JSE: NED)",
+    "total_raised": "JSE listed",
+    "revenue_estimate": "ZAR 67B (FY2023)",
+    "revenue_source": "disclosed",
+    "key_investors": [
+      "Old Mutual Group (19.9%)",
+      "Public shareholders"
+    ],
+    "ceo_name": "Jason Quinn",
+    "ceo_linkedin": "https://www.linkedin.com/in/jason-quinn-7826a193",
+    "cro_name": "Mfundo Nkuhlu (COO / former CRO)",
+    "cro_linkedin": "https://www.linkedin.com/in/mfundo-nkuhlu-5b9b9b19",
+    "cfo_name": "Mike Davis",
+    "cfo_linkedin": "https://www.linkedin.com/in/mike-davis-za",
+    "cto_name": "An\u00e9l Bosman (CITO)",
+    "cto_linkedin": "https://www.linkedin.com/in/anel-bosman-nedbank",
+    "vp_sales_name": "Ciko Thomas (Group Managing Executive Retail & Business Banking)",
+    "vp_sales_linkedin": "https://www.linkedin.com/in/ciko-thomas",
+    "product_summary": "South Africa's 4th-largest bank. Green finance leader. Retail, business, corporate, and investment banking. Completed R11.7B 'Managed Evolution' IT modernisation. Acquired iKhokha (SME fintech) and Kenya's NCBA stake.",
+    "pricing_model": "SARB-linked rates; differentiated SME and retail packages",
+    "key_pain_points": [
+      "Integrating iKhokha acquisition into core stack",
+      "Kenya NCBA stake acquisition pending regulatory approval",
+      "Retail market share loss to Capitec and TymeBank",
+      "Alt-data credit models needed for thin-file SME market"
+    ],
+    "pain_sources": [
+      "Nedbank integrated report 2023",
+      "Business Day SA"
+    ],
+    "known_customers": [],
+    "estimated_customer_count": "8.5M+",
+    "icp_description": "LSM 5-10 retail; SMEs; green energy project finance corporates",
+    "tech_stack": [
+      "Microsoft Azure",
+      "Temenos (legacy)",
+      "Salesforce",
+      "SAP"
+    ],
+    "scale_metrics": [
+      "ZAR 1.5T total assets",
+      "8.5M customers",
+      "R11.7B IT modernisation complete"
+    ],
+    "strategic_signals": [
+      "Acquired iKhokha for R1.65B (SA SME payments fintech)",
+      "Acquiring 66% of Kenya's NCBA Group for R13.9B",
+      "Completed Managed Evolution IT overhaul 2024",
+      "CLEVVA AI agent deployment for customer service"
+    ],
+    "source_competitors": [
+      "TransUnion Africa",
+      "CLEVVA"
+    ],
+    "discovery_method": "website_scrape",
+    "lookalike_of": null,
+    "sources": [
+      "https://www.nedbank.co.za/content/nedbank/desktop/gt/en/investor-relations.html"
+    ]
+  },
+  {
+    "id": "old-mutual-sa",
+    "priority_score": 4,
+    "name": "Old Mutual",
+    "website": "https://www.oldmutual.com",
+    "linkedin_url": "https://www.linkedin.com/company/old-mutual/",
+    "industry": "Financial Services",
+    "sub_industry": "Insurance & Asset Management",
+    "hq": "Cape Town, South Africa",
+    "founded_year": 1845,
+    "headcount": "30,000+",
+    "funding_stage": "Public (JSE: OMU)",
+    "total_raised": "JSE listed",
+    "revenue_estimate": "ZAR 59B GWP (FY2023)",
+    "revenue_source": "disclosed",
+    "key_investors": [
+      "Public shareholders"
+    ],
+    "ceo_name": "Iain Williamson",
+    "ceo_linkedin": "https://www.linkedin.com/in/iain-williamson-old-mutual",
+    "cro_name": "Casper Troskie (CFO)",
+    "cro_linkedin": "https://www.linkedin.com/in/casper-troskie",
+    "cfo_name": "Casper Troskie",
+    "cfo_linkedin": "https://www.linkedin.com/in/casper-troskie",
+    "cto_name": "Dhesen Ramsamy (CTDO)",
+    "cto_linkedin": "https://www.linkedin.com/in/dhesen-ramsamy-b6114420",
+    "vp_sales_name": "Clarence Nethengwe (MD Mass & Foundation Cluster)",
+    "vp_sales_linkedin": "https://www.linkedin.com/in/clarence-nethengwe",
+    "product_summary": "185-year-old diversified financial services group. Life insurance, asset management (OMIG ZAR 1.4T AUM), banking (OM Bank launched Aug 2025 on 10x Banking platform), short-term insurance. 12M+ customers across Africa.",
+    "pricing_model": "Insurance premiums; AUM management fees; OM Bank \u2014 digital-first zero fees",
+    "key_pain_points": [
+      "OM Bank launching against Capitec: needs frictionless digital onboarding at scale",
+      "Insurance fraud: identity fraud at claims stage",
+      "Thin-file customers in mass market segment \u2014 need alt-data credit models",
+      "iiDENTIFii already embedded \u2014 opportunity to expand to credit scoring layer"
+    ],
+    "pain_sources": [
+      "iiDENTIFii case study",
+      "Old Mutual integrated report 2023"
+    ],
+    "known_customers": [],
+    "estimated_customer_count": "12M+ across Africa",
+    "icp_description": "LSM 3-8 mass market SA consumers; SMEs; HNW via Wealth Management",
+    "tech_stack": [
+      "10x Banking (OM Bank)",
+      "Microsoft Azure",
+      "Salesforce",
+      "Guidewire (insurance)"
+    ],
+    "scale_metrics": [
+      "ZAR 1.4T AUM",
+      "12M+ customers",
+      "OM Bank: 0 to live Aug 2025",
+      "19.9% Nedbank shareholder"
+    ],
+    "strategic_signals": [
+      "Launched OM Bank August 2025 on 10x Banking cloud-native platform",
+      "Projecting ZAR 1.1-1.3B losses before OM Bank break-even 2028",
+      "iiDENTIFii deployed for biometric identity",
+      "Divested Old Mutual Zimbabwe and Kenya operations 2023"
+    ],
+    "source_competitors": [
+      "iiDENTIFii"
+    ],
+    "discovery_method": "website_scrape",
+    "lookalike_of": null,
+    "sources": [
+      "https://www.oldmutual.com/investor-relations",
+      "https://www.linkedin.com/company/old-mutual/"
+    ]
+  },
+  {
+    "id": "mtn-south-africa",
+    "priority_score": 5,
+    "name": "MTN South Africa",
+    "website": "https://www.mtn.co.za",
+    "linkedin_url": "https://www.linkedin.com/company/mtn-south-africa/",
+    "industry": "Telecommunications",
+    "sub_industry": "MNO / Mobile Financial Services",
+    "hq": "Johannesburg, South Africa",
+    "founded_year": 1994,
+    "headcount": "10,000+",
+    "funding_stage": "Public (JSE: MTN)",
+    "total_raised": "JSE listed",
+    "revenue_estimate": "ZAR 32.7B SA revenue (9M FY2025)",
+    "revenue_source": "disclosed",
+    "key_investors": [
+      "Public shareholders"
+    ],
+    "ceo_name": "Ferdi Moolman",
+    "ceo_linkedin": "https://www.linkedin.com/in/ferdi-moolman-2803045",
+    "cro_name": "Tumi Twala (MD MTN SA)",
+    "cro_linkedin": "https://www.linkedin.com/in/tumi-twala-b4b9b823",
+    "cfo_name": "Tumi Twala (acting)",
+    "cfo_linkedin": "",
+    "cto_name": "Giovanni Chiarelli (CTO)",
+    "cto_linkedin": "https://www.linkedin.com/in/giovanni-chiarelli-6764b214",
+    "vp_sales_name": "Bernice Samuels (Chief Consumer Officer)",
+    "vp_sales_linkedin": "https://www.linkedin.com/in/bernice-samuels-mtn",
+    "product_summary": "SA's largest mobile network (35M+ subscribers). MoMo mobile wallet, Qwikloan (via JUMO partnership), airtime credit, device financing. Massive CDR (Call Data Records) asset for alternate credit scoring. 5G rollout leader.",
+    "pricing_model": "Prepaid/postpaid voice/data; MoMo transaction fees",
+    "key_pain_points": [
+      "MoMo SA adoption slower than expected vs M-Pesa models",
+      "Qwikloan NPLs \u2014 need better scoring for mobile lending",
+      "CDR data monetisation \u2014 strategic priority, no partner yet",
+      "Regulatory pressure on fintech activities from SARB"
+    ],
+    "pain_sources": [
+      "MTN SA annual report 2023",
+      "JUMO Qwikloan press release"
+    ],
+    "known_customers": [],
+    "estimated_customer_count": "35M+ mobile subscribers",
+    "icp_description": "Mass market SA consumers; SMEs; enterprise connectivity",
+    "tech_stack": [
+      "Ericsson (RAN)",
+      "Nokia (core)",
+      "AWS",
+      "Oracle (BSS)"
+    ],
+    "scale_metrics": [
+      "35M+ SA subscribers",
+      "MoMo: 1.2M active SA wallets",
+      "Qwikloan: 3M+ loans disbursed"
+    ],
+    "strategic_signals": [
+      "Qwikloan (JUMO-powered) reaching profitability in SA",
+      "MTN Fintech spin-off planned \u2014 IPO ambition",
+      "CDR data asset: 35M user behavioural profiles",
+      "TransUnion partnership for credit bureau integration"
+    ],
+    "source_competitors": [
+      "TransUnion Africa",
+      "JUMO"
+    ],
+    "discovery_method": "website_scrape",
+    "lookalike_of": null,
+    "sources": [
+      "https://www.mtn.com/investor-relations/",
+      "https://jumo.world/press-release/mtn-and-jumo-combine-platform-capabilities-to-redefine-accessible-lending-in-south-africa/"
+    ]
+  },
+  {
+    "id": "mukuru-sa",
+    "priority_score": 4,
+    "name": "Mukuru",
+    "website": "https://www.mukuru.com",
+    "linkedin_url": "https://www.linkedin.com/company/mukuru/",
+    "industry": "Financial Services",
+    "sub_industry": "Remittance & Financial Inclusion",
+    "hq": "Cape Town, South Africa",
+    "founded_year": 2004,
+    "headcount": "2,000+",
+    "funding_stage": "Growth / PE-backed",
+    "total_raised": "$10M+ (various rounds)",
+    "revenue_estimate": "$80-120M (estimated from 6M users)",
+    "revenue_source": "estimated",
+    "key_investors": [
+      "4Di Capital",
+      "DOB Equity",
+      "FMO (Dutch dev bank)"
+    ],
+    "ceo_name": "Andy Jury",
+    "ceo_linkedin": "https://www.linkedin.com/in/andy-jury-ba2a3a13",
+    "cro_name": "Nono Msibi (Chief Commercial Officer)",
+    "cro_linkedin": "https://www.linkedin.com/in/nono-msibi",
+    "cfo_name": "Lance Wallis",
+    "cfo_linkedin": "https://www.linkedin.com/in/lance-wallis-mukuru",
+    "cto_name": "Mark Elliott (CTO)",
+    "cto_linkedin": "https://www.linkedin.com/in/mark-elliott-mukuru",
+    "vp_sales_name": "Nono Msibi (CCO)",
+    "vp_sales_linkedin": "https://www.linkedin.com/in/nono-msibi",
+    "product_summary": "SA's largest remittance + financial inclusion platform. Cross-border money transfer to Zimbabwe, Zambia, Mozambique, Malawi. Mukuru Pockets (digital wallet), Fast Loan (micro-credit via JUMO), Mukuru Smart Cash (physical cash). FSCA regulated.",
+    "pricing_model": "Transaction fees on remittances; interest on Fast Loan",
+    "key_pain_points": [
+      "Migrant worker identity verification at scale (thin-file, undocumented)",
+      "Fast Loan NPLs \u2014 JUMO scoring limited by lack of alt-data",
+      "Regulatory: cross-border compliance across SADC",
+      "Cash-out agent network fraud"
+    ],
+    "pain_sources": [
+      "JUMO Mukuru partnership press release",
+      "Mukuru blog"
+    ],
+    "known_customers": [],
+    "estimated_customer_count": "6M+ active users",
+    "icp_description": "Migrant workers in SA (Zimbabwean, Mozambican, Malawian diaspora), LSM 2-5",
+    "tech_stack": [
+      "AWS",
+      "Python",
+      "Custom mobile stack",
+      "USSD"
+    ],
+    "scale_metrics": [
+      "6M+ active users",
+      "ZAR 30B+ remittances annually",
+      "3,000+ agent network SA"
+    ],
+    "strategic_signals": [
+      "Launched Mukuru Pockets digital wallet 2023",
+      "Fast Loan: JUMO partnership live in SA",
+      "Expanding into Zambia, Botswana financial services",
+      "FMO development finance investment 2022"
+    ],
+    "source_competitors": [
+      "JUMO"
+    ],
+    "discovery_method": "website_scrape",
+    "lookalike_of": null,
+    "sources": [
+      "https://www.mukuru.com",
+      "https://jumo.world/press-release/mukuru-and-jumo-partner/"
+    ]
+  },
+  {
+    "id": "rcs-bnp-paribas-sa",
+    "priority_score": 4,
+    "name": "RCS (BNP Paribas SA)",
+    "website": "https://www.rcsgroup.co.za",
+    "linkedin_url": "https://www.linkedin.com/company/rcs-group/",
+    "industry": "Financial Services",
+    "sub_industry": "Retail Credit / Consumer Finance",
+    "hq": "Cape Town, South Africa",
+    "founded_year": 1990,
+    "headcount": "2,500+",
+    "funding_stage": "Subsidiary (BNP Paribas)",
+    "total_raised": "BNP Paribas subsidiary",
+    "revenue_estimate": "ZAR 8-12B (estimated)",
+    "revenue_source": "estimated",
+    "key_investors": [
+      "BNP Paribas (100%)"
+    ],
+    "ceo_name": "Bruce van Zyl",
+    "ceo_linkedin": "https://www.linkedin.com/in/bruce-van-zyl-rcs",
+    "cro_name": "Braam Pieters (Head Risk)",
+    "cro_linkedin": "",
+    "cfo_name": "Anton Fourie",
+    "cfo_linkedin": "https://www.linkedin.com/in/anton-fourie-rcs",
+    "cto_name": "Ryan Woolley (Head Technology)",
+    "cto_linkedin": "",
+    "vp_sales_name": "Yolanda Smit (Chief Commercial Officer)",
+    "vp_sales_linkedin": "",
+    "product_summary": "SA's largest standalone credit card and personal loan provider for retail partners. Powers private-label credit cards for Woolworths, Pick n Pay, Cape Union Mart and 35+ retailers. Provides BNPL, credit cards, personal loans. Principa partner for credit analytics.",
+    "pricing_model": "Interest-bearing credit products; fee to retail partners",
+    "key_pain_points": [
+      "Alternative credit scoring for thin-file retail credit applicants",
+      "Rising defaults post-Covid in SA retail credit book",
+      "POPIA compliance for customer data usage",
+      "NCR (National Credit Regulator) audit risk"
+    ],
+    "pain_sources": [
+      "Principa partnership",
+      "NCR consumer credit market report"
+    ],
+    "known_customers": [
+      "Woolworths",
+      "Pick n Pay",
+      "Cape Union Mart"
+    ],
+    "estimated_customer_count": "3.5M+ credit accounts",
+    "icp_description": "SA retail credit consumers, LSM 4-8",
+    "tech_stack": [
+      "Temenos",
+      "Experian PowerCurve",
+      "Principa Decision Hub"
+    ],
+    "scale_metrics": [
+      "3.5M credit accounts",
+      "35+ retail card partnerships",
+      "ZAR 25B+ credit book estimated"
+    ],
+    "strategic_signals": [
+      "Principa analytics partner for credit decisions",
+      "Expanding BNPL offering for SA retail 2024",
+      "BNP Paribas global AI credit model rollout"
+    ],
+    "source_competitors": [
+      "Principa"
+    ],
+    "discovery_method": "website_scrape",
+    "lookalike_of": null,
+    "sources": [
+      "https://www.rcsgroup.co.za",
+      "https://www.principa.co.za"
+    ]
+  },
+  {
+    "id": "truworths-sa",
+    "priority_score": 3,
+    "name": "Truworths",
+    "website": "https://www.truworths.co.za",
+    "linkedin_url": "https://www.linkedin.com/company/truworths/",
+    "industry": "Retail",
+    "sub_industry": "Fashion Retail with In-House Credit",
+    "hq": "Cape Town, South Africa",
+    "founded_year": 1917,
+    "headcount": "15,000+",
+    "funding_stage": "Public (JSE: TRU)",
+    "total_raised": "JSE listed",
+    "revenue_estimate": "ZAR 18.6B (FY2023)",
+    "revenue_source": "disclosed",
+    "key_investors": [
+      "Public shareholders"
+    ],
+    "ceo_name": "Michael Mark",
+    "ceo_linkedin": "https://www.linkedin.com/in/michael-mark-truworths",
+    "cro_name": "Saul Nurick (CFO / Risk)",
+    "cro_linkedin": "https://www.linkedin.com/in/saul-nurick",
+    "cfo_name": "Saul Nurick",
+    "cfo_linkedin": "https://www.linkedin.com/in/saul-nurick",
+    "cto_name": "Brendan Stephens (Head IT)",
+    "cto_linkedin": "",
+    "vp_sales_name": "Trudi le Roux (Head Commercial)",
+    "vp_sales_linkedin": "",
+    "product_summary": "SA's largest listed fashion retailer operating 900+ stores (Truworths, Identity, Daniel Hechter, Uzzi). In-house credit arm serves 2.4M active account holders. 50%+ of revenue from credit sales. UK subsidiary Office Shoes (800+ stores).",
+    "pricing_model": "Retail credit at 21.5% pa (NCR maximum); store card model",
+    "key_pain_points": [
+      "Credit book quality deteriorating \u2014 need better affordability scoring",
+      "NCR debt review: 340,000+ customers in debt review",
+      "Alt-data scoring needed for new customer acquisition",
+      "Fraud at account opening increasing"
+    ],
+    "pain_sources": [
+      "Principa client case",
+      "Truworths annual report 2023"
+    ],
+    "known_customers": [],
+    "estimated_customer_count": "2.4M active credit accounts",
+    "icp_description": "LSM 4-8 SA fashion retail credit consumers",
+    "tech_stack": [
+      "Principa analytics",
+      "SAP (retail ERP)",
+      "Custom loyalty"
+    ],
+    "scale_metrics": [
+      "2.4M active credit accounts",
+      "900+ stores",
+      "ZAR 9.4B credit book",
+      "50%+ revenue from credit"
+    ],
+    "strategic_signals": [
+      "Credit book tightening \u2014 reducing exposure to high-risk accounts",
+      "Digital credit application rollout",
+      "Principa analytics partnership for credit decisions"
+    ],
+    "source_competitors": [
+      "Principa"
+    ],
+    "discovery_method": "website_scrape",
+    "lookalike_of": null,
+    "sources": [
+      "https://www.truworths.co.za/investor-relations/",
+      "https://www.principa.co.za"
+    ]
+  },
+  {
+    "id": "flutterwave",
+    "priority_score": 4,
+    "name": "Flutterwave",
+    "website": "https://www.flutterwave.com",
+    "linkedin_url": "https://www.linkedin.com/company/flutterwave/",
+    "industry": "Financial Technology",
+    "sub_industry": "Payments Infrastructure",
+    "hq": "San Francisco, CA / Lagos, Nigeria",
+    "founded_year": 2016,
+    "headcount": "900+",
+    "funding_stage": "Series D",
+    "total_raised": "$489M",
+    "revenue_estimate": "$100M+ ARR (estimated Series D stage)",
+    "revenue_source": "estimated",
+    "key_investors": [
+      "Tiger Global",
+      "Avenir",
+      "B Capital",
+      "Greycroft",
+      "Glynn Capital"
+    ],
+    "ceo_name": "Olugbenga 'GB' Agboola",
+    "ceo_linkedin": "https://www.linkedin.com/in/gbagboola/",
+    "cro_name": "Oneal Bhambani (CFO/CRO)",
+    "cro_linkedin": "https://www.linkedin.com/in/oneal-bhambani-1a3b4b1",
+    "cfo_name": "Oneal Bhambani",
+    "cfo_linkedin": "https://www.linkedin.com/in/oneal-bhambani-1a3b4b1",
+    "cto_name": "Oluwaseun Adesanya (CTO)",
+    "cto_linkedin": "https://www.linkedin.com/in/oluwaseun-adesanya",
+    "vp_sales_name": "Bode Abifarin (CCO)",
+    "vp_sales_linkedin": "https://www.linkedin.com/in/bode-abifarin",
+    "product_summary": "Africa's leading payment infrastructure. Merchant payment APIs, Flutterwave Store, Send (remittance), Barter (consumer wallet), Capital (credit). Used by 1M+ merchants across 34 African countries. Smile ID eKYC partner.",
+    "pricing_model": "Transaction fee: 1.4% card, 1% bank transfer; subscription for enterprise",
+    "key_pain_points": [
+      "KYC/AML compliance across 34 African markets \u2014 regulatory fragmentation",
+      "Merchant fraud \u2014 identity verification gaps",
+      "SA expansion: FSCA / SARB licensing hurdles",
+      "SME credit scoring for Flutterwave Capital product"
+    ],
+    "pain_sources": [
+      "Smile ID case study",
+      "TechCrunch Flutterwave coverage"
+    ],
+    "known_customers": [
+      "Uber Africa",
+      "Booking.com Africa",
+      "Microsoft Africa"
+    ],
+    "estimated_customer_count": "1M+ merchants",
+    "icp_description": "Pan-African merchants (SME to enterprise), fintechs, digital platforms",
+    "tech_stack": [
+      "AWS",
+      "React Native",
+      "Python",
+      "Smile ID (eKYC)"
+    ],
+    "scale_metrics": [
+      "1M+ merchants",
+      "$26B+ payment volume",
+      "34 African markets",
+      "$3B valuation"
+    ],
+    "strategic_signals": [
+      "Series D at $3B valuation \u2014 $250M raise 2022",
+      "SA FSCA licence application 2024",
+      "Flutterwave Capital: SME lending product launched",
+      "CEO fraud investigation cleared 2023"
+    ],
+    "source_competitors": [
+      "Smile ID"
+    ],
+    "discovery_method": "website_scrape",
+    "lookalike_of": null,
+    "sources": [
+      "https://usesmileid.com/case-studies/flutterwave-success-story/",
+      "https://www.flutterwave.com"
+    ]
+  },
+  {
+    "id": "fairmoney-ng",
+    "priority_score": 4,
+    "name": "FairMoney",
+    "website": "https://fairmoney.io",
+    "linkedin_url": "https://www.linkedin.com/company/fairmoney/",
+    "industry": "Financial Technology",
+    "sub_industry": "Digital Lending / Neobank",
+    "hq": "Lagos, Nigeria",
+    "founded_year": 2017,
+    "headcount": "600+",
+    "funding_stage": "Series C",
+    "total_raised": "$57M",
+    "revenue_estimate": "$40-60M ARR (estimated)",
+    "revenue_source": "estimated",
+    "key_investors": [
+      "Tiger Global",
+      "DST Global",
+      "Flourish Ventures",
+      "Helios Investment"
+    ],
+    "ceo_name": "Laurin Hainy",
+    "ceo_linkedin": "https://www.linkedin.com/in/laurinhainy",
+    "cro_name": "Debo Aderoju (Chief Credit Officer)",
+    "cro_linkedin": "https://www.linkedin.com/in/debo-aderoju-mba-fcib-mcib-ab1a7638/",
+    "cfo_name": "Jerome Fournier",
+    "cfo_linkedin": "https://www.linkedin.com/in/jerome-fournier-fairmoney",
+    "cto_name": "Nicolas Dion (CTO)",
+    "cto_linkedin": "https://www.linkedin.com/in/nicolas-dion-cto",
+    "vp_sales_name": "Emmanuel Efole (VP Growth)",
+    "vp_sales_linkedin": "",
+    "product_summary": "Nigeria's leading digital bank: instant loans (N1K-N3M), savings account 15%+ pa, business accounts. Licensed MFB (Microfinance Bank). Uses Smile ID for KYC and CredoLab for behavioural credit scoring \u2014 a dual-vendor model Trusting Social can replace/augment.",
+    "pricing_model": "Loan interest: 2.5-30% per month; savings above-market rates",
+    "key_pain_points": [
+      "Default rates in informal economy loans \u2014 needs stronger behavioural scoring",
+      "Acquiring creditworthy thin-file customers at low CAC",
+      "Expanding to Ghana/SA \u2014 cross-border credit model fragmentation",
+      "CredoLab + Smile ID both in stack \u2014 convergence opportunity"
+    ],
+    "pain_sources": [
+      "CredoLab case study",
+      "Smile ID FairMoney case study"
+    ],
+    "known_customers": [],
+    "estimated_customer_count": "4M+ app downloads, 2M+ active borrowers",
+    "icp_description": "Nigerian middle class, informal workers, SMEs \u2014 thin-file borrowers",
+    "tech_stack": [
+      "AWS",
+      "Smile ID (KYC)",
+      "CredoLab (scoring)",
+      "Python",
+      "React Native"
+    ],
+    "scale_metrics": [
+      "4M+ app downloads",
+      "N500B+ loans disbursed",
+      "Licensed MFB Nigeria"
+    ],
+    "strategic_signals": [
+      "Series C extended: Tiger Global + DST Global participating",
+      "Launched FairMoney Business \u2014 SME current accounts",
+      "Expanding to India (FairMoney India licensed)",
+      "Both Smile ID and CredoLab in stack \u2014 converged scoring opportunity"
+    ],
+    "source_competitors": [
+      "Smile ID",
+      "CredoLab"
+    ],
+    "discovery_method": "website_scrape",
+    "lookalike_of": null,
+    "sources": [
+      "https://usesmileid.com/case-studies/fair-money-success-story/",
+      "https://www.credolab.com/case-studies"
+    ]
+  },
+  {
+    "id": "yellow-card-africa",
+    "priority_score": 3,
+    "name": "Yellow Card",
+    "website": "https://yellowcard.io",
+    "linkedin_url": "https://www.linkedin.com/company/yellow-card/",
+    "industry": "Financial Technology",
+    "sub_industry": "Crypto Exchange / African Stablecoin",
+    "hq": "Atlanta, GA / Lagos, Nigeria",
+    "founded_year": 2019,
+    "headcount": "400+",
+    "funding_stage": "Series C",
+    "total_raised": "$58.5M",
+    "revenue_estimate": "$20-40M (estimated)",
+    "revenue_source": "estimated",
+    "key_investors": [
+      "Polychain Capital",
+      "Castle Island Ventures",
+      "Valar Ventures",
+      "Third Prime"
+    ],
+    "ceo_name": "Chris Maurice",
+    "ceo_linkedin": "https://www.linkedin.com/in/chrismaurice",
+    "cro_name": "Justin Banon (COO)",
+    "cro_linkedin": "https://www.linkedin.com/in/justinbanon",
+    "cfo_name": "Alex Lira",
+    "cfo_linkedin": "",
+    "cto_name": "Munachi Oguike (CTO)",
+    "cto_linkedin": "https://www.linkedin.com/in/munachi-oguike",
+    "vp_sales_name": "Prince Anyanwu (VP Business Development)",
+    "vp_sales_linkedin": "",
+    "product_summary": "Africa's largest stablecoin on/off ramp. USDT, USDC <> local currency in 20 African countries including SA (FSCA licensed). B2B API for corporate settlement. Consumer mobile app. Used for cross-border payments, treasury management, remittances.",
+    "pricing_model": "Spread on FX conversion (1-3%); B2B API fee",
+    "key_pain_points": [
+      "KYC compliance across 20 African regulatory regimes",
+      "FATCA/FATF crypto AML requirements",
+      "SA FSCA licensing: FICA compliance for crypto",
+      "B2B onboarding: corporate KYB at scale"
+    ],
+    "pain_sources": [
+      "Smile ID Yellow Card case study"
+    ],
+    "known_customers": [],
+    "estimated_customer_count": "500K+ users in 20 countries",
+    "icp_description": "African crypto retail users; corporates doing cross-border settlement; remittance platforms",
+    "tech_stack": [
+      "Smile ID (KYC)",
+      "AWS",
+      "React Native",
+      "Blockchain (USDT/USDC)"
+    ],
+    "scale_metrics": [
+      "$3B+ volume processed",
+      "20 African markets",
+      "500K+ users",
+      "FSCA licensed SA"
+    ],
+    "strategic_signals": [
+      "Series C: $33M raise 2023 (Polychain led)",
+      "FSCA crypto asset licence SA \u2014 first major pan-African exchange",
+      "B2B API: 100+ corporate clients",
+      "Partnership with Circle (USDC) for Africa settlement"
+    ],
+    "source_competitors": [
+      "Smile ID"
+    ],
+    "discovery_method": "website_scrape",
+    "lookalike_of": null,
+    "sources": [
+      "https://usesmileid.com/case-studies/yellow-card-success-story/"
+    ]
+  },
+  {
+    "id": "ikhokha-sa",
+    "priority_score": 4,
+    "name": "iKhokha",
+    "website": "https://www.ikhokha.com",
+    "linkedin_url": "https://www.linkedin.com/company/ikhokha/",
+    "industry": "Financial Technology",
+    "sub_industry": "SME Payments & Business Banking",
+    "hq": "Durban, South Africa",
+    "founded_year": 2012,
+    "headcount": "300+",
+    "funding_stage": "Acquired (Nedbank, R1.65B, 2023)",
+    "total_raised": "R1.65B acquisition price",
+    "revenue_estimate": "ZAR 500M+ (estimated at acquisition)",
+    "revenue_source": "estimated",
+    "key_investors": [
+      "Nedbank (acquirer)",
+      "MAN Financial (pre-acquisition)"
+    ],
+    "ceo_name": "Sean Heeger",
+    "ceo_linkedin": "https://www.linkedin.com/in/sean-heeger-ikhokha",
+    "cro_name": "Yatin Narsai (CFO/Risk)",
+    "cro_linkedin": "",
+    "cfo_name": "Yatin Narsai",
+    "cfo_linkedin": "",
+    "cto_name": "Damian Kotze (CTO)",
+    "cto_linkedin": "https://www.linkedin.com/in/damian-kotze-ikhokha",
+    "vp_sales_name": "Kim Staves (Chief Commercial Officer)",
+    "vp_sales_linkedin": "",
+    "product_summary": "SA's leading SME payments + business banking platform. Card machines (mPOS, Android POS), business current account, business loans (iKhokha Lend), invoicing, payroll. Acquired by Nedbank 2023 for R1.65B. SME credit assessment uses transaction data \u2014 alt-data model.",
+    "pricing_model": "Card transaction fee 2.75%; monthly device rental; loan interest",
+    "key_pain_points": [
+      "Nedbank integration: aligning tech stack and credit models post-acquisition",
+      "SME lending: thin-file underwriting \u2014 transaction-based scoring only",
+      "Fraud: mPOS card fraud and identity theft",
+      "Smile ID used for onboarding \u2014 KYC expansion opportunity"
+    ],
+    "pain_sources": [
+      "Smile ID iKhokha mention",
+      "Nedbank acquisition announcement"
+    ],
+    "known_customers": [],
+    "estimated_customer_count": "150,000+ SA SME merchants",
+    "icp_description": "SA SMEs: spaza shops, restaurants, service businesses, sole traders",
+    "tech_stack": [
+      "Smile ID (KYC)",
+      "AWS",
+      "React Native",
+      "Custom POS firmware"
+    ],
+    "scale_metrics": [
+      "150K+ merchants",
+      "R1.65B acquisition value",
+      "ZAR 2B+ monthly transactions"
+    ],
+    "strategic_signals": [
+      "Nedbank acquired 2023 for R1.65B \u2014 now Nedbank SME fintech arm",
+      "iKhokha Lend: SME business loans launching post-acquisition",
+      "Integrating into Nedbank Avo super-app",
+      "Expansion to 300,000 merchants target 2025"
+    ],
+    "source_competitors": [
+      "Smile ID"
+    ],
+    "discovery_method": "website_scrape",
+    "lookalike_of": null,
+    "sources": [
+      "https://usesmileid.com",
+      "https://www.nedbank.co.za"
+    ]
+  },
+  {
+    "id": "franc-sa",
+    "priority_score": 3,
+    "name": "Franc",
+    "website": "https://www.franc.co.za",
+    "linkedin_url": "https://www.linkedin.com/company/franc-invest/",
+    "industry": "Financial Technology",
+    "sub_industry": "Digital Investment / Savings",
+    "hq": "Cape Town, South Africa",
+    "founded_year": 2018,
+    "headcount": "50-100",
+    "funding_stage": "Series A",
+    "total_raised": "$10M (estimated)",
+    "revenue_estimate": "$2-5M ARR (Seed/A stage estimate)",
+    "revenue_source": "estimated",
+    "key_investors": [
+      "Janngo Capital",
+      "Founders Factory Africa",
+      "E4E Africa"
+    ],
+    "ceo_name": "Thomas Brennan",
+    "ceo_linkedin": "https://www.linkedin.com/in/thomas-brennan-franc",
+    "cro_name": "Lise Hattingh (CFO)",
+    "cro_linkedin": "",
+    "cfo_name": "Lise Hattingh",
+    "cfo_linkedin": "",
+    "cto_name": "Graham Taylor (CTO)",
+    "cto_linkedin": "",
+    "vp_sales_name": "Lise Hattingh",
+    "vp_sales_linkedin": "",
+    "product_summary": "SA micro-investing app \u2014 unit trust investments from R10. Targets first-time investors and LSM 5-8 savers. FSCA regulated. Smile ID used for FICA onboarding compliance. Whatsapp-native UX. Growing into broader financial wellness.",
+    "pricing_model": "0.75% annual management fee; no minimum balance",
+    "key_pain_points": [
+      "FICA compliance at low-cost \u2014 Smile ID already embedded",
+      "Expanding from savings to credit: needs alt-data scoring",
+      "Customer acquisition cost \u2014 digital-first against big bank competitors",
+      "POPIA data governance for financial data"
+    ],
+    "pain_sources": [
+      "Smile ID Franc case study"
+    ],
+    "known_customers": [],
+    "estimated_customer_count": "100,000+ registered users",
+    "icp_description": "SA first-time investors, 25-45 age bracket, LSM 5-8",
+    "tech_stack": [
+      "Smile ID (KYC)",
+      "AWS",
+      "React Native",
+      "WhatsApp Business API"
+    ],
+    "scale_metrics": [
+      "100K+ users",
+      "ZAR 500M+ AUM (estimated)",
+      "R10 minimum investment"
+    ],
+    "strategic_signals": [
+      "Janngo Capital Series A \u2014 Africa-focused VC backing",
+      "WhatsApp investment flow: industry-first in SA",
+      "Expanding into credit products 2024",
+      "Partnership with Satrix for index funds"
+    ],
+    "source_competitors": [
+      "Smile ID"
+    ],
+    "discovery_method": "website_scrape",
+    "lookalike_of": null,
+    "sources": [
+      "https://usesmileid.com/case-studies/franc-case-study/",
+      "https://www.franc.co.za"
+    ]
+  },
+  {
+    "id": "woolworths-financial-services",
+    "priority_score": 4,
+    "name": "Woolworths Financial Services",
+    "website": "https://www.woolworthsfinancialservices.co.za",
+    "linkedin_url": "https://www.linkedin.com/company/woolworths-sa/",
+    "industry": "Financial Services",
+    "sub_industry": "Retail Credit & Insurance",
+    "hq": "Cape Town, South Africa",
+    "founded_year": 1997,
+    "headcount": "1,000+",
+    "funding_stage": "Subsidiary (Woolworths Holdings, JSE: WHL)",
+    "total_raised": "JSE listed parent",
+    "revenue_estimate": "ZAR 6-8B (estimated)",
+    "revenue_source": "estimated",
+    "key_investors": [
+      "Woolworths Holdings (100%)"
+    ],
+    "ceo_name": "Sivi Pillay (CEO Woolworths Financial Services)",
+    "ceo_linkedin": "https://www.linkedin.com/in/sivi-pillay-wfs",
+    "cro_name": "Graham Pienaar (Head Credit Risk)",
+    "cro_linkedin": "",
+    "cfo_name": "Woolworths Holdings Finance",
+    "cfo_linkedin": "",
+    "cto_name": "David Martin (Head Technology, WHL)",
+    "cto_linkedin": "",
+    "vp_sales_name": "Sivi Pillay",
+    "vp_sales_linkedin": "https://www.linkedin.com/in/sivi-pillay-wfs",
+    "product_summary": "Financial services arm of Woolworths SA. Woolworths credit card, personal loans, insurance (life, home, car). 1M+ credit card customers, predominantly LSM 7-10. Principa analytics partner for credit decisioning. FSCA regulated.",
+    "pricing_model": "Credit card: NCR-regulated interest; insurance: premium-based",
+    "key_pain_points": [
+      "Maintaining credit quality in rising household debt environment",
+      "Digital onboarding: bank-grade KYC for credit card applications",
+      "Alt-data affordability scoring for LSM 6 expansion",
+      "Insurance fraud at claims stage"
+    ],
+    "pain_sources": [
+      "Principa Woolworths mention",
+      "WHL annual report 2023"
+    ],
+    "known_customers": [],
+    "estimated_customer_count": "1M+ credit card holders",
+    "icp_description": "LSM 7-10 SA consumers with disposable income, fashion + food shoppers",
+    "tech_stack": [
+      "Principa analytics",
+      "Temenos (credit)",
+      "Salesforce CRM"
+    ],
+    "scale_metrics": [
+      "1M+ credit card holders",
+      "ZAR 8B+ credit book (estimated)",
+      "Principa analytics live"
+    ],
+    "strategic_signals": [
+      "Principa analytics partnership for credit decisioning",
+      "WFS expanding into home insurance 2024",
+      "Digital credit application rollout via Woolworths app",
+      "Sivi Pillay: new CEO, digital transformation mandate"
+    ],
+    "source_competitors": [
+      "Principa"
+    ],
+    "discovery_method": "website_scrape",
+    "lookalike_of": null,
+    "sources": [
+      "https://www.principa.co.za",
+      "https://www.woolworthsfinancialservices.co.za"
+    ]
+  },
+  {
+    "id": "tfg-money-sa",
+    "priority_score": 4,
+    "name": "TFG (The Foschini Group) / TFG Money",
+    "website": "https://www.tfglimited.co.za",
+    "linkedin_url": "https://www.linkedin.com/company/the-foschini-group/",
+    "industry": "Retail",
+    "sub_industry": "Fashion Retail with Embedded Finance",
+    "hq": "Cape Town, South Africa",
+    "founded_year": 1924,
+    "headcount": "20,000+",
+    "funding_stage": "Public (JSE: TFG)",
+    "total_raised": "JSE listed",
+    "revenue_estimate": "ZAR 55B (FY2023)",
+    "revenue_source": "disclosed",
+    "key_investors": [
+      "Public shareholders"
+    ],
+    "ceo_name": "Anthony Thunstr\u00f6m",
+    "ceo_linkedin": "https://www.linkedin.com/in/anthony-thunstrom-tfg",
+    "cro_name": "Unathi Mfikwe (CFO / Risk)",
+    "cro_linkedin": "",
+    "cfo_name": "Unathi Mfikwe",
+    "cfo_linkedin": "",
+    "cto_name": "Bennie van der Westhuizen (Group CIO)",
+    "cto_linkedin": "",
+    "vp_sales_name": "Jane Fisher (Head TFG Money)",
+    "vp_sales_linkedin": "",
+    "product_summary": "SA's largest fashion retail group: 34 brands (Foschini, Markham, Sportscene, Jet, Phase Eight UK). TFG Money = embedded finance arm with R9B debtors book, 14M+ accounts, credit cards, insurance, BNPL. Principa partner for credit analytics. Biggest retail credit book in SA after Edcon.",
+    "pricing_model": "NCR-regulated retail credit; insurance premiums",
+    "key_pain_points": [
+      "14M account holders: legacy credit book with rising defaults",
+      "Alt-data scoring for low-income Jet/Exact customers (LSM 3-5)",
+      "Digital migration: card-based credit moving to app-based",
+      "Principa analytics is incumbent \u2014 need to demonstrate uplift"
+    ],
+    "pain_sources": [
+      "Principa TFG mention",
+      "TFG annual report 2023"
+    ],
+    "known_customers": [],
+    "estimated_customer_count": "14M+ credit accounts",
+    "icp_description": "LSM 3-10 SA retail credit consumers across 34 brand segments",
+    "tech_stack": [
+      "Principa Decision Hub",
+      "SAP (ERP)",
+      "Custom credit decisioning"
+    ],
+    "scale_metrics": [
+      "14M+ accounts",
+      "R9B debtors book",
+      "34 retail brands",
+      "ZAR 55B revenue"
+    ],
+    "strategic_signals": [
+      "Principa analytics live for credit decisions",
+      "TFG expanding to digital credit: app-first for Jet brand",
+      "Phase Eight UK: European credit card programme launching",
+      "Anthony Thunstr\u00f6m: CEO digital-first mandate 2023"
+    ],
+    "source_competitors": [
+      "Principa"
+    ],
+    "discovery_method": "website_scrape",
+    "lookalike_of": null,
+    "sources": [
+      "https://www.principa.co.za",
+      "https://www.tfglimited.co.za/investor-relations/"
+    ]
+  },
+  {
+    "id": "telkom-sa",
+    "priority_score": 3,
+    "name": "Telkom South Africa",
+    "website": "https://www.telkom.co.za",
+    "linkedin_url": "https://www.linkedin.com/company/telkom/",
+    "industry": "Telecommunications",
+    "sub_industry": "Fixed + Mobile Telecoms",
+    "hq": "Centurion, South Africa",
+    "founded_year": 1991,
+    "headcount": "18,000+",
+    "funding_stage": "Public (JSE: TKG, 40% government-owned)",
+    "total_raised": "JSE listed",
+    "revenue_estimate": "ZAR 42B (FY2023)",
+    "revenue_source": "disclosed",
+    "key_investors": [
+      "SA Government (40.5%)",
+      "PIC (Public Investment Corporation)",
+      "Public shareholders"
+    ],
+    "ceo_name": "Serame Taukobong",
+    "ceo_linkedin": "https://www.linkedin.com/in/serame-taukobong-1b2a2b105",
+    "cro_name": "Deon Fredericks (CFO)",
+    "cro_linkedin": "https://www.linkedin.com/in/deon-fredericks-telkom",
+    "cfo_name": "Deon Fredericks",
+    "cfo_linkedin": "https://www.linkedin.com/in/deon-fredericks-telkom",
+    "cto_name": "Sello Mmakau (CDO/CTO)",
+    "cto_linkedin": "https://www.linkedin.com/in/sello-mmakau",
+    "vp_sales_name": "Lunga Siyo (CEO BCX \u2014 Telkom IT subsidiary)",
+    "vp_sales_linkedin": "https://www.linkedin.com/in/lunga-siyo-telkom",
+    "product_summary": "SA's third-largest telco: mobile (Telkom Mobile), enterprise IT (BCX), property (Gyro). 18M+ mobile customers. BCX is SA's largest IT services company \u2014 system integrator for banks and government. CLEVVA AI agents deployed for Telkom customer service.",
+    "pricing_model": "ARPU-based mobile; enterprise IT project and managed services",
+    "key_pain_points": [
+      "BCX enterprise AI agent deployments \u2014 CLEVVA is incumbent",
+      "Telkom mobile: 18M subscriber CDR data asset, undermonetised",
+      "KYC for new mobile subscribers \u2014 RICA compliance pressure",
+      "Competing against MTN + Vodacom with lower capex"
+    ],
+    "pain_sources": [
+      "CLEVVA Telkom case study",
+      "Business Day SA Telkom coverage"
+    ],
+    "known_customers": [],
+    "estimated_customer_count": "18M+ mobile; 10,000+ BCX enterprise clients",
+    "icp_description": "SA enterprise (BCX); mass market mobile consumers",
+    "tech_stack": [
+      "CLEVVA (AI agents)",
+      "AWS",
+      "Microsoft Azure",
+      "SAP S/4 HANA"
+    ],
+    "scale_metrics": [
+      "18M+ mobile subscribers",
+      "BCX: SA's largest IT services co",
+      "ZAR 42B revenue"
+    ],
+    "strategic_signals": [
+      "CLEVVA AI agents deployed for customer service automation",
+      "BCX acquiring smaller system integrators",
+      "Exploring strategic sale of BCX separately",
+      "5G rollout commenced 2024"
+    ],
+    "source_competitors": [
+      "CLEVVA"
+    ],
+    "discovery_method": "website_scrape",
+    "lookalike_of": null,
+    "sources": [
+      "https://www.clevva.com",
+      "https://www.telkom.co.za/investor-relations/"
+    ]
+  },
+  {
+    "id": "ifx-brokers-sa",
+    "priority_score": 3,
+    "name": "IFX Brokers",
+    "website": "https://www.ifxbrokers.com",
+    "linkedin_url": "https://www.linkedin.com/company/ifx-brokers/",
+    "industry": "Financial Services",
+    "sub_industry": "Forex & CFD Brokerage",
+    "hq": "Cape Town, South Africa",
+    "founded_year": 2009,
+    "headcount": "50-100",
+    "funding_stage": "Private",
+    "total_raised": "Unknown",
+    "revenue_estimate": "$5-15M (estimated)",
+    "revenue_source": "estimated",
+    "key_investors": [
+      "Private shareholders"
+    ],
+    "ceo_name": "Hannele de Necker",
+    "ceo_linkedin": "https://www.linkedin.com/in/hannele-de-necker-3b1b4627",
+    "cro_name": "Head of Compliance (name unknown)",
+    "cro_linkedin": "",
+    "cfo_name": "Unknown",
+    "cfo_linkedin": "",
+    "cto_name": "Unknown",
+    "cto_linkedin": "",
+    "vp_sales_name": "Unknown",
+    "vp_sales_linkedin": "",
+    "product_summary": "FSCA-regulated SA forex and CFD broker. Retail and institutional trading: forex pairs, commodities, indices, crypto CFDs. Uses Shufti Pro for client onboarding KYC. MetaTrader 4/5 platform.",
+    "pricing_model": "Spread-based; commission on trades",
+    "key_pain_points": [
+      "FICA compliance: KYC for high-risk client segments",
+      "Crypto CFD: FATF requirements for crypto clients",
+      "AML transaction monitoring at scale",
+      "Shufti Pro KYC \u2014 evaluating alternative providers"
+    ],
+    "pain_sources": [
+      "Shufti Pro IFX Brokers case study"
+    ],
+    "known_customers": [],
+    "estimated_customer_count": "5,000-20,000 retail traders",
+    "icp_description": "SA retail and institutional forex traders; HNW clients",
+    "tech_stack": [
+      "Shufti Pro (KYC)",
+      "MetaTrader 4/5",
+      "Custom CRM"
+    ],
+    "scale_metrics": [
+      "FSCA licensed",
+      "54 employees (LinkedIn)",
+      "MetaTrader certified broker"
+    ],
+    "strategic_signals": [
+      "Shufti Pro KYC integration live",
+      "Expanding crypto CFD product range 2024",
+      "FSCA Category I + II license holder"
+    ],
+    "source_competitors": [
+      "Shufti Pro"
+    ],
+    "discovery_method": "website_scrape",
+    "lookalike_of": null,
+    "sources": [
+      "https://www.shuftipro.com",
+      "https://www.ifxbrokers.com"
+    ]
+  },
+  {
+    "id": "fincheck-sa",
+    "priority_score": 3,
+    "name": "Fincheck",
+    "website": "https://www.fincheck.co.za",
+    "linkedin_url": "https://www.linkedin.com/company/fincheck/",
+    "industry": "Financial Technology",
+    "sub_industry": "Financial Comparison / Credit Marketplace",
+    "hq": "Cape Town, South Africa",
+    "founded_year": 2015,
+    "headcount": "50-150",
+    "funding_stage": "Growth / PE-backed",
+    "total_raised": "$5M+ (estimated)",
+    "revenue_estimate": "$3-8M ARR (estimated)",
+    "revenue_source": "estimated",
+    "key_investors": [
+      "TransUnion (strategic partner)",
+      "Private investors"
+    ],
+    "ceo_name": "Michael Bowren",
+    "ceo_linkedin": "https://www.linkedin.com/in/michael-bowren",
+    "cro_name": "Melanie Janse van Rensburg (Head Partnerships)",
+    "cro_linkedin": "",
+    "cfo_name": "Unknown",
+    "cfo_linkedin": "",
+    "cto_name": "Unknown",
+    "cto_linkedin": "",
+    "vp_sales_name": "Unknown",
+    "vp_sales_linkedin": "",
+    "product_summary": "SA's leading financial product comparison and marketplace: personal loans, home loans, vehicle finance, credit cards, business loans. Partners with all major SA banks + NCR-registered lenders. TransUnion credit bureau integration for soft-check eligibility. NCR registered credit intermediary.",
+    "pricing_model": "Lead gen / referral fee from lenders; consumer-free",
+    "key_pain_points": [
+      "TransUnion dependency for credit pre-screening \u2014 single bureau risk",
+      "Soft-check accuracy: alt-data would improve lead quality",
+      "Lender acceptance rates: better scoring = higher conversion",
+      "Thin-file users: improving match quality for underserved"
+    ],
+    "pain_sources": [
+      "TransUnion Fincheck partnership"
+    ],
+    "known_customers": [],
+    "estimated_customer_count": "500,000+ monthly visitors",
+    "icp_description": "SA consumers seeking credit products; lenders seeking qualified leads",
+    "tech_stack": [
+      "TransUnion API",
+      "AWS",
+      "Salesforce",
+      "Custom matching engine"
+    ],
+    "scale_metrics": [
+      "500K+ monthly visitors",
+      "30+ lender partners",
+      "NCR registered intermediary"
+    ],
+    "strategic_signals": [
+      "TransUnion strategic partnership for bureau data",
+      "Expanding into business finance comparison 2024",
+      "Open banking integration for affordability checks"
+    ],
+    "source_competitors": [
+      "TransUnion Africa"
+    ],
+    "discovery_method": "website_scrape",
+    "lookalike_of": null,
+    "sources": [
+      "https://www.transunion.co.za",
+      "https://www.fincheck.co.za"
+    ]
+  },
+  {
+    "id": "investec-sa",
+    "priority_score": 4,
+    "name": "Investec",
+    "website": "https://www.investec.com",
+    "linkedin_url": "https://www.linkedin.com/company/investec/",
+    "industry": "Banking",
+    "sub_industry": "Private Banking & Wealth Management",
+    "hq": "Sandton, South Africa",
+    "founded_year": 1974,
+    "headcount": "10,000+",
+    "funding_stage": "Public (JSE + LSE: INL/INVP)",
+    "total_raised": "Dual-listed",
+    "revenue_estimate": "ZAR 23B (FY2023)",
+    "revenue_source": "disclosed",
+    "key_investors": [
+      "Public shareholders (JSE + LSE)"
+    ],
+    "ceo_name": "Fani Titi (Group CEO)",
+    "ceo_linkedin": "https://www.linkedin.com/in/fani-titi-4b5a4112",
+    "cro_name": "Ciaran Whelan (Group CRO)",
+    "cro_linkedin": "https://www.linkedin.com/in/ciaran-whelan-investec",
+    "cfo_name": "Nishlan Samujh",
+    "cfo_linkedin": "https://www.linkedin.com/in/nishlan-samujh-investec",
+    "cto_name": "Ruth Leas (CEO Investec Bank UK / Chief Digital)",
+    "cto_linkedin": "https://www.linkedin.com/in/ruth-leas",
+    "vp_sales_name": "Richard Wainwright (Head Private Client)",
+    "vp_sales_linkedin": "",
+    "product_summary": "Specialist private bank and wealth manager. SA + UK dual market. Private banking (HNW clients), corporate and institutional banking, asset management. Investec Distinctive \u2014 digital private banking for younger professionals. iiDENTIFii deployed for biometric identity verification.",
+    "pricing_model": "AUM management fees; private banking premium fee bundles; corporate loan spreads",
+    "key_pain_points": [
+      "Digital onboarding for HNW private clients: frictionless but secure",
+      "AML for high-risk jurisdictions: SA FATF greylisting pressure",
+      "Biometric verification for remote client onboarding",
+      "iiDENTIFii already embedded \u2014 credit scoring layer next?"
+    ],
+    "pain_sources": [
+      "iiDENTIFii Investec case study"
+    ],
+    "known_customers": [],
+    "estimated_customer_count": "150K+ private banking clients",
+    "icp_description": "HNW individuals (ZAR 5M+ income/assets); mid-market corporates SA + UK",
+    "tech_stack": [
+      "iiDENTIFii (biometrics)",
+      "Microsoft Azure",
+      "Custom wealth platform",
+      "Bloomberg"
+    ],
+    "scale_metrics": [
+      "ZAR 600B+ AUM",
+      "150K private clients",
+      "SA + UK dual markets",
+      "Dual-listed JSE + LSE"
+    ],
+    "strategic_signals": [
+      "iiDENTIFii deployed for biometric client onboarding",
+      "Investec Distinctive: digital banking for next-gen HNW",
+      "Growing UK presence: Investec Bank UK profitable growth",
+      "Open banking pilot for API-based wealth data"
+    ],
+    "source_competitors": [
+      "iiDENTIFii"
+    ],
+    "discovery_method": "website_scrape",
+    "lookalike_of": null,
+    "sources": [
+      "https://www.iidentifii.com",
+      "https://www.investec.com/en_za/investor-relations.html"
+    ]
+  },
+  {
+    "id": "capitec-bank-sa",
+    "priority_score": 5,
+    "name": "Capitec Bank",
+    "website": "https://www.capitecbank.co.za",
+    "linkedin_url": "https://www.linkedin.com/company/capitec-bank/",
+    "industry": "Banking",
+    "sub_industry": "Digital Retail Banking",
+    "hq": "Stellenbosch, South Africa",
+    "founded_year": 2001,
+    "headcount": "15,000+",
+    "funding_stage": "Public (JSE: CPI)",
+    "total_raised": "JSE listed",
+    "revenue_estimate": "ZAR 37B (FY2024)",
+    "revenue_source": "disclosed",
+    "key_investors": [
+      "PSG Group (30%)",
+      "Public shareholders"
+    ],
+    "ceo_name": "Gerrie Fourie",
+    "ceo_linkedin": "https://www.linkedin.com/in/gerrie-fourie-capitec",
+    "cro_name": "Andr\u00e9 du Plessis (CFO/Risk)",
+    "cro_linkedin": "https://www.linkedin.com/in/andre-du-plessis-capitec",
+    "cfo_name": "Andr\u00e9 du Plessis",
+    "cfo_linkedin": "https://www.linkedin.com/in/andre-du-plessis-capitec",
+    "cto_name": "Charl Nel (CTO)",
+    "cto_linkedin": "https://www.linkedin.com/in/charl-nel-capitec",
+    "vp_sales_name": "Francois Viviers (Head Marketing & Digital)",
+    "vp_sales_linkedin": "https://www.linkedin.com/in/francois-viviers-capitec",
+    "product_summary": "SA's largest bank by customer count (22M+). Digital-first retail bank. Single Global One account. Pioneer of app-based banking (10M+ digital users). Personal loans up to R500K, credit card, insurance. AI credit decisioning. No traditional branches \u2014 cost-efficient model.",
+    "pricing_model": "ZAR 7/month flat fee for Global One; NCR-linked loan rates",
+    "key_pain_points": [
+      "Credit scoring at scale for 22M thin-file customers",
+      "Fraud prevention: mules, social engineering, account takeover",
+      "Alt-data opportunity: largest SA mobile banking dataset",
+      "Competition from TymeBank and OM Bank on zero fees"
+    ],
+    "pain_sources": [
+      "Capitec annual report 2024",
+      "SA Reserve Bank supervision letters"
+    ],
+    "known_customers": [],
+    "estimated_customer_count": "22M+ retail customers",
+    "icp_description": "LSM 3-9 SA consumers, underserved by traditional banks, digital-first",
+    "tech_stack": [
+      "AWS (primary cloud)",
+      "React Native",
+      "Python (ML)",
+      "Custom credit engine"
+    ],
+    "scale_metrics": [
+      "22M customers",
+      "10M+ digital users",
+      "ZAR 37B revenue",
+      "JSE: highest PE bank"
+    ],
+    "strategic_signals": [
+      "Acquired Mercantile Bank 2019 \u2014 SME banking entry",
+      "AI credit decisions: 100% automated for personal loans < R250K",
+      "Capitec Business: 350K+ SME business accounts",
+      "10M+ active digital banking users"
+    ],
+    "source_competitors": [],
+    "discovery_method": "lookalike_expansion",
+    "lookalike_of": "Absa Bank",
+    "sources": [
+      "https://www.capitecbank.co.za/investor-relations/"
+    ]
+  },
+  {
+    "id": "tymebank-sa",
+    "priority_score": 4,
+    "name": "TymeBank",
+    "website": "https://www.tymebank.co.za",
+    "linkedin_url": "https://www.linkedin.com/company/tymebank/",
+    "industry": "Banking",
+    "sub_industry": "Digital-Only Neobank",
+    "hq": "Johannesburg, South Africa",
+    "founded_year": 2019,
+    "headcount": "500-1000",
+    "funding_stage": "Series C",
+    "total_raised": "$277M",
+    "revenue_estimate": "$30-50M ARR (estimated)",
+    "revenue_source": "estimated",
+    "key_investors": [
+      "African Rainbow Capital (ARC)",
+      "Apis Partners",
+      "British International Investment",
+      "CDC Group",
+      "JG Summit (Philippines)"
+    ],
+    "ceo_name": "Coenraad Jonker",
+    "ceo_linkedin": "https://www.linkedin.com/in/coenraad-jonker-tymebank",
+    "cro_name": "Lizo Mnguni (CRO)",
+    "cro_linkedin": "https://www.linkedin.com/in/lizo-mnguni",
+    "cfo_name": "Rowan Brewer (CFO)",
+    "cfo_linkedin": "https://www.linkedin.com/in/rowan-brewer-tymebank",
+    "cto_name": "Sandile Shabalala (CTO)",
+    "cto_linkedin": "https://www.linkedin.com/in/sandile-shabalala",
+    "vp_sales_name": "Lincoln Mali (Chief Operating Officer)",
+    "vp_sales_linkedin": "https://www.linkedin.com/in/lincoln-mali-tymebank",
+    "product_summary": "SA's first fully digital bank, licensed 2019. 9M+ customers acquired via Pick n Pay kiosks. SmartShopper rewards integration. Business account (TymeBank for Business). BNPL (MoreTyme). Expanding to Philippines (GoTyme) and Vietnam. Profitable in SA Q4 2023.",
+    "pricing_model": "Zero monthly fees; interest-bearing savings (8%+ pa); MoreTyme BNPL fee",
+    "key_pain_points": [
+      "Credit scoring for 9M thin-file customers: mostly unscorable by traditional bureaus",
+      "AI identity verification for high-volume remote onboarding",
+      "Philippines + Vietnam expansion: cross-border identity models needed",
+      "SME lending: transaction-based underwriting gaps"
+    ],
+    "pain_sources": [
+      "Business Day SA",
+      "TymeBank blog"
+    ],
+    "known_customers": [],
+    "estimated_customer_count": "9M+ SA customers",
+    "icp_description": "LSM 2-7 SA unbanked/underbanked; Pick n Pay shoppers",
+    "tech_stack": [
+      "Microsoft Azure",
+      "AWS",
+      "React Native",
+      "Custom AI credit engine"
+    ],
+    "scale_metrics": [
+      "9M+ customers",
+      "SA profitable Q4 2023",
+      "$277M raised",
+      "GoTyme PH: 5M+ customers"
+    ],
+    "strategic_signals": [
+      "Profitable in SA Q4 2023 \u2014 4 years from launch",
+      "Series C: $77.8M raise 2023 from British International Investment",
+      "GoTyme Philippines: 5M+ customers in 18 months",
+      "MoreTyme BNPL: 1M+ transactions monthly"
+    ],
+    "source_competitors": [],
+    "discovery_method": "lookalike_expansion",
+    "lookalike_of": "Capitec Bank",
+    "sources": [
+      "https://www.tymebank.co.za/about-us/investors/"
+    ]
+  },
+  {
+    "id": "discovery-bank-sa",
+    "priority_score": 4,
+    "name": "Discovery Bank",
+    "website": "https://www.discovery.co.za/bank",
+    "linkedin_url": "https://www.linkedin.com/company/discovery-limited/",
+    "industry": "Banking",
+    "sub_industry": "Behavioural Banking",
+    "hq": "Sandton, South Africa",
+    "founded_year": 2019,
+    "headcount": "1,000-3,000",
+    "funding_stage": "Subsidiary (Discovery Ltd, JSE: DSY)",
+    "total_raised": "JSE listed parent",
+    "revenue_estimate": "ZAR 5-8B (estimated, growing)",
+    "revenue_source": "estimated",
+    "key_investors": [
+      "Discovery Limited shareholders"
+    ],
+    "ceo_name": "Hylton Kallner (CEO Discovery Bank)",
+    "ceo_linkedin": "https://www.linkedin.com/in/hylton-kallner",
+    "cro_name": "Adrian Gore (Group CEO, Discovery Ltd)",
+    "cro_linkedin": "https://www.linkedin.com/in/adrian-gore-discovery",
+    "cfo_name": "Deon Bhardwaj (Group CFO)",
+    "cfo_linkedin": "https://www.linkedin.com/in/deon-bhardwaj",
+    "cto_name": "Jerome Uys (CTO Discovery Bank)",
+    "cto_linkedin": "https://www.linkedin.com/in/jerome-uys",
+    "vp_sales_name": "Hylton Kallner",
+    "vp_sales_linkedin": "https://www.linkedin.com/in/hylton-kallner",
+    "product_summary": "World's first behavioural bank using Vitality data (health, driving, financial behaviour) for dynamic interest rate pricing. Higher Vitality status = lower interest rates + better rewards. 900K+ clients. Integrated with Discovery Health (3.7M members) and Vitality (7M+ members globally). Targets LSM 8-10.",
+    "pricing_model": "Dynamic interest rates: 0-7.25% savings based on Vitality status; premium credit pricing",
+    "key_pain_points": [
+      "Behavioural data already collected via Vitality \u2014 needs alt-data augmentation",
+      "eKYC: high-security onboarding for HNW clients",
+      "Fraud: sophisticated phishing attacks on affluent client base",
+      "Data integration: Vitality + financial behaviour + credit bureau data"
+    ],
+    "pain_sources": [
+      "Discovery Bank annual report 2023"
+    ],
+    "known_customers": [],
+    "estimated_customer_count": "900K+ banking clients",
+    "icp_description": "LSM 9-10 SA professionals, discovery health/vitality members",
+    "tech_stack": [
+      "AWS",
+      "Python (ML for Vitality)",
+      "Custom dynamic pricing engine",
+      "Salesforce"
+    ],
+    "scale_metrics": [
+      "900K+ banking clients",
+      "7M Vitality members globally",
+      "Dynamic pricing live for 5 years"
+    ],
+    "strategic_signals": [
+      "Vitality Health Index: predictive health \u2192 extending to financial health scoring",
+      "Discovery Bank: moving toward break-even 2025",
+      "Ping An (China) strategic partner \u2014 25% cross-ownership",
+      "Vitality global expansion: US, UK, Singapore markets"
+    ],
+    "source_competitors": [],
+    "discovery_method": "lookalike_expansion",
+    "lookalike_of": "Investec",
+    "sources": [
+      "https://www.discovery.co.za/bank",
+      "https://www.linkedin.com/company/discovery-limited/"
+    ]
+  },
+  {
+    "id": "african-bank-sa",
+    "priority_score": 4,
+    "name": "African Bank",
+    "website": "https://www.africanbank.co.za",
+    "linkedin_url": "https://www.linkedin.com/company/african-bank/",
+    "industry": "Banking",
+    "sub_industry": "Unsecured Lending / Financial Inclusion",
+    "hq": "Midrand, South Africa",
+    "founded_year": 1975,
+    "headcount": "3,000+",
+    "funding_stage": "Private (SARB + institutional shareholders)",
+    "total_raised": "Government-rescued 2016",
+    "revenue_estimate": "ZAR 9B (FY2023)",
+    "revenue_source": "disclosed",
+    "key_investors": [
+      "SARB (exited)",
+      "Sanlam",
+      "Rand Merchant",
+      "Absa",
+      "Nedbank",
+      "FNB",
+      "Standard Bank (consortium)"
+    ],
+    "ceo_name": "Kennedy Bungane",
+    "ceo_linkedin": "https://www.linkedin.com/in/kennedy-bungane-african-bank",
+    "cro_name": "Wouter Fourie (Chief Risk Officer)",
+    "cro_linkedin": "",
+    "cfo_name": "Brian Riley (CFO)",
+    "cfo_linkedin": "",
+    "cto_name": "Gontse Tsatsi (CTO)",
+    "cto_linkedin": "",
+    "vp_sales_name": "Nozipho Tshabalala (Chief Marketing Officer)",
+    "vp_sales_linkedin": "",
+    "product_summary": "Post-rescue specialist unsecured lender turned full retail bank. Personal loans (R500 to R350K), savings (MyWorld), credit card, home loan aggregator, insurance. 3M+ clients predominantly LSM 3-7. Biggest pain point historically was reckless lending \u2014 now rebuilding responsible credit culture.",
+    "pricing_model": "NCR-regulated unsecured lending; competitive savings rates",
+    "key_pain_points": [
+      "Post-rescue: needs proven alt-data credit models to avoid repeat NPL crisis",
+      "Thin-file customer base: 3M clients many without formal credit history",
+      "POPIA compliance for legacy data assets",
+      "Fraud: identity fraud at personal loan origination"
+    ],
+    "pain_sources": [
+      "African Bank annual report 2023",
+      "SARB supervision reports"
+    ],
+    "known_customers": [],
+    "estimated_customer_count": "3M+ clients",
+    "icp_description": "LSM 3-7 SA underserved consumers; state employees; informal sector workers",
+    "tech_stack": [
+      "TransUnion (bureau)",
+      "Experian (bureau)",
+      "Core banking custom",
+      "AWS"
+    ],
+    "scale_metrics": [
+      "3M+ clients",
+      "ZAR 30B+ loan book",
+      "Post-rescue profitable since 2019"
+    ],
+    "strategic_signals": [
+      "Launched MyWorld savings product \u2014 first retail deposit product",
+      "African Bank insurance: growing life and credit insurance book",
+      "Applying for full banking licence upgrade",
+      "Credit bureau dependency: highest opportunity for alt-data augmentation"
+    ],
+    "source_competitors": [],
+    "discovery_method": "lookalike_expansion",
+    "lookalike_of": "FNB / FirstRand",
+    "sources": [
+      "https://www.africanbank.co.za/en/home/investor-relations/"
+    ]
+  },
+  {
+    "id": "yoco-sa",
+    "priority_score": 4,
+    "name": "Yoco",
+    "website": "https://www.yoco.com",
+    "linkedin_url": "https://www.linkedin.com/company/yoco-technologies/",
+    "industry": "Financial Technology",
+    "sub_industry": "SME Payments & Commerce",
+    "hq": "Cape Town, South Africa",
+    "founded_year": 2015,
+    "headcount": "400+",
+    "funding_stage": "Series C",
+    "total_raised": "$83M",
+    "revenue_estimate": "$20-35M ARR (estimated)",
+    "revenue_source": "estimated",
+    "key_investors": [
+      "Dragoneer Investment Group",
+      "Breyer Capital",
+      "Partech Africa",
+      "FMO"
+    ],
+    "ceo_name": "Katlego Maphai",
+    "ceo_linkedin": "https://www.linkedin.com/in/katlegomaphai",
+    "cro_name": "Carl Wazen (Chief Business Officer)",
+    "cro_linkedin": "https://www.linkedin.com/in/carlwazen",
+    "cfo_name": "Lungisa Matshoba (COO)",
+    "cfo_linkedin": "https://www.linkedin.com/in/lungisa-matshoba",
+    "cto_name": "Bradley Wattrus (CTO)",
+    "cto_linkedin": "https://www.linkedin.com/in/bradleywattrus",
+    "vp_sales_name": "Carl Wazen (CBO)",
+    "vp_sales_linkedin": "https://www.linkedin.com/in/carlwazen",
+    "product_summary": "SA's leading SME payment platform. Bluetooth card readers, Yoco Business (app + web portal), payments API, Yoco Capital (SME loans based on transaction data). 200,000+ SA SME merchants. Processing R40B+ annually. Series C $83M raise 2021. Direct iKhokha and ikhokha competitor.",
+    "pricing_model": "2.95% card transaction fee; monthly subscriptions for Business; loan repayment via revenue share",
+    "key_pain_points": [
+      "SME lending: Yoco Capital limited by transaction-data-only scoring",
+      "Identity verification at merchant onboarding \u2014 KYC gaps",
+      "Fraud: merchant fraud and friendly fraud chargebacks",
+      "Alt-data credit scoring for SME Capital product expansion"
+    ],
+    "pain_sources": [
+      "Yoco blog",
+      "Business Day SA"
+    ],
+    "known_customers": [],
+    "estimated_customer_count": "200,000+ SA SME merchants",
+    "icp_description": "SA SMEs: retail, restaurants, services, sole traders; LSM 5-9 business owners",
+    "tech_stack": [
+      "AWS",
+      "React Native",
+      "Python (ML credit)",
+      "Stripe-like payment infrastructure"
+    ],
+    "scale_metrics": [
+      "200K+ merchants",
+      "R40B+ annual payment volume",
+      "$83M raised",
+      "SA market leader mPOS"
+    ],
+    "strategic_signals": [
+      "Yoco Capital: $83M Series C partly for SME lending scale-up",
+      "Payment API: enterprise integrations growing",
+      "Competing with Nedbank-backed iKhokha directly",
+      "Dragoneer (Tiger Global-tier) leading Series C"
+    ],
+    "source_competitors": [],
+    "discovery_method": "lookalike_expansion",
+    "lookalike_of": "iKhokha",
+    "sources": [
+      "https://www.yoco.com/za/investor-news/",
+      "https://www.linkedin.com/company/yoco-technologies/"
+    ]
+  },
+  {
+    "id": "peach-payments-sa",
+    "priority_score": 3,
+    "name": "Peach Payments",
+    "website": "https://www.peachpayments.com",
+    "linkedin_url": "https://www.linkedin.com/company/peach-payments/",
+    "industry": "Financial Technology",
+    "sub_industry": "Payment Gateway / Merchant Services",
+    "hq": "Cape Town, South Africa",
+    "founded_year": 2012,
+    "headcount": "100-200",
+    "funding_stage": "Series A",
+    "total_raised": "$31M",
+    "revenue_estimate": "$5-15M ARR (estimated)",
+    "revenue_source": "estimated",
+    "key_investors": [
+      "Flourish Ventures",
+      "Endeavor Catalyst",
+      "Rand Merchant Investment Holdings",
+      "Network International"
+    ],
+    "ceo_name": "Rahul Jain",
+    "ceo_linkedin": "https://www.linkedin.com/in/rahuljain-peach",
+    "cro_name": "Erin Jamieson (VP Partnerships)",
+    "cro_linkedin": "",
+    "cfo_name": "Unknown",
+    "cfo_linkedin": "",
+    "cto_name": "Brendon Jeftha (CTO)",
+    "cto_linkedin": "https://www.linkedin.com/in/brendon-jeftha",
+    "vp_sales_name": "Jenna Ramsden (VP Sales)",
+    "vp_sales_linkedin": "",
+    "product_summary": "SA + East Africa payment gateway. Online payment processing, recurring billing, hosted checkout, card tokenisation. Integrations with 300+ platforms (Shopify, WooCommerce, etc). Expanding: Kenya (MPESA), Nigeria, Mauritius. Serves e-commerce, SaaS, subscription businesses.",
+    "pricing_model": "Interchange++ model; per-transaction fee; monthly gateway fee",
+    "key_pain_points": [
+      "Fraud: online card fraud and 3DS compliance",
+      "KYC for merchant onboarding at scale",
+      "East Africa expansion: multi-country KYC fragmentation",
+      "Alt-data for SME merchant credit underwriting"
+    ],
+    "pain_sources": [
+      "Peach Payments blog",
+      "Flourish Ventures portfolio profile"
+    ],
+    "known_customers": [
+      "Takealot",
+      "Woolworths Online",
+      "OLX"
+    ],
+    "estimated_customer_count": "5,000+ merchants",
+    "icp_description": "SA e-commerce merchants, SaaS companies, subscriptions businesses, enterprise online retail",
+    "tech_stack": [
+      "AWS",
+      "Node.js",
+      "React",
+      "PCI DSS compliant infrastructure"
+    ],
+    "scale_metrics": [
+      "5K+ merchants",
+      "R15B+ annual volume estimated",
+      "SA + Kenya + Nigeria"
+    ],
+    "strategic_signals": [
+      "Network International (listed UAE FinTech) invested \u2014 strategic distribution",
+      "Rand Merchant Investment: SA institutional backing",
+      "Kenya and Nigeria expansion 2024",
+      "Series A $31M: Flourish Ventures (Omidyar) led"
+    ],
+    "source_competitors": [],
+    "discovery_method": "lookalike_expansion",
+    "lookalike_of": "Flutterwave",
+    "sources": [
+      "https://www.peachpayments.com",
+      "https://www.linkedin.com/company/peach-payments/"
+    ]
+  },
+  {
+    "id": "lula-sa",
+    "priority_score": 3,
+    "name": "Lula",
+    "website": "https://www.lula.co.za",
+    "linkedin_url": "https://www.linkedin.com/company/lula-sa/",
+    "industry": "Financial Technology",
+    "sub_industry": "SME Business Banking",
+    "hq": "Cape Town, South Africa",
+    "founded_year": 2014,
+    "headcount": "100-300",
+    "funding_stage": "Series B",
+    "total_raised": "$35M (estimated)",
+    "revenue_estimate": "$10-20M ARR (estimated)",
+    "revenue_source": "estimated",
+    "key_investors": [
+      "RMB Ventures",
+      "IFC",
+      "FMO"
+    ],
+    "ceo_name": "Geraldine de Bastion (CEO, formerly \u2014 check current)",
+    "ceo_linkedin": "https://www.linkedin.com/company/lula-sa/people/",
+    "cro_name": "Unknown",
+    "cro_linkedin": "",
+    "cfo_name": "Unknown",
+    "cfo_linkedin": "",
+    "cto_name": "Unknown",
+    "cto_linkedin": "",
+    "vp_sales_name": "Unknown",
+    "vp_sales_linkedin": "",
+    "product_summary": "SA SME business banking platform (formerly Bridgement). Business current account, invoice financing, revenue-based loans. Targets SA SMEs with ZAR 1M-50M annual revenue. Uses open banking + accounting data (Xero, Sage) for credit decisioning. Partnered with Investec for deposits.",
+    "pricing_model": "Invoice financing fee 2-5%; revenue-based loan repayment",
+    "key_pain_points": [
+      "SME credit assessment: accounting data + alt-data combination",
+      "KYC for SME onboarding: FICA + POPIA compliance",
+      "Fraud: identity fraud in SME loan applications",
+      "Alt-data to supplement accounting data scoring"
+    ],
+    "pain_sources": [
+      "IFC portfolio note",
+      "RMB Ventures press release"
+    ],
+    "known_customers": [],
+    "estimated_customer_count": "10,000+ SME clients",
+    "icp_description": "SA SMEs: ZAR 1M-50M annual revenue, formal sector",
+    "tech_stack": [
+      "Xero API",
+      "Sage API",
+      "AWS",
+      "Open banking APIs"
+    ],
+    "scale_metrics": [
+      "10K+ SME clients",
+      "ZAR 2B+ loans facilitated",
+      "Open banking powered scoring"
+    ],
+    "strategic_signals": [
+      "Rebranded from Bridgement to Lula 2023",
+      "IFC + FMO development finance backing",
+      "Investec deposit partnership",
+      "Open banking: first SA SME lender using Xero/Sage data natively"
+    ],
+    "source_competitors": [],
+    "discovery_method": "lookalike_expansion",
+    "lookalike_of": "iKhokha",
+    "sources": [
+      "https://www.lula.co.za",
+      "https://www.linkedin.com/company/lula-sa/"
+    ]
+  },
+  {
+    "id": "ooba-sa",
+    "priority_score": 3,
+    "name": "ooba Group",
+    "website": "https://www.ooba.co.za",
+    "linkedin_url": "https://www.linkedin.com/company/ooba/",
+    "industry": "Financial Technology",
+    "sub_industry": "Home Loan Origination / InsurTech",
+    "hq": "Cape Town, South Africa",
+    "founded_year": 2000,
+    "headcount": "500-1000",
+    "funding_stage": "Private / PE-backed",
+    "total_raised": "Unknown",
+    "revenue_estimate": "ZAR 1-3B (estimated from 7% SA bond market share)",
+    "revenue_source": "estimated",
+    "key_investors": [
+      "African Rainbow Capital (ARC)"
+    ],
+    "ceo_name": "Rhys Dyer",
+    "ceo_linkedin": "https://www.linkedin.com/in/rhys-dyer-ooba",
+    "cro_name": "Adrian Goslett (Remax partnership head)",
+    "cro_linkedin": "",
+    "cfo_name": "Unknown",
+    "cfo_linkedin": "",
+    "cto_name": "Unknown",
+    "cto_linkedin": "",
+    "vp_sales_name": "Kay Geldenhuys (CMO)",
+    "vp_sales_linkedin": "",
+    "product_summary": "SA's largest independent home loan originator. 7% SA mortgage market share. Submits home loan applications to all major banks simultaneously. ooba Insurance (home, life). oobarometer quarterly house price report. Integrates with SA Home Loans, Standard Bank, Absa, FNB, Nedbank for automated credit decisioning.",
+    "pricing_model": "Origination fee from lender (not borrower); insurance premium",
+    "key_pain_points": [
+      "Affordability assessment: SARB NCA responsible lending rules tightening",
+      "Identity verification for remote home loan applications",
+      "Alt-data to pre-qualify applicants before bureau pull",
+      "Fraud: property fraud and identity fraud in mortgage applications"
+    ],
+    "pain_sources": [
+      "ooba press releases",
+      "Prop24 coverage"
+    ],
+    "known_customers": [],
+    "estimated_customer_count": "50,000+ bond applications per year",
+    "icp_description": "SA homebuyers (first-time and repeat); property investors; LSM 7-10",
+    "tech_stack": [
+      "Custom origination platform",
+      "AWS",
+      "Major bank APIs (Absa, FNB, Standard Bank, Nedbank)"
+    ],
+    "scale_metrics": [
+      "7% SA mortgage market share",
+      "50K+ applications/year",
+      "ZAR 25B+ bonds originated annually"
+    ],
+    "strategic_signals": [
+      "African Rainbow Capital (ARC) investor: Patrice Motsepe backing",
+      "Digital mortgage application: 80%+ online",
+      "ooba Insurance: growing beyond mortgages to full insurance broker",
+      "oobarometer data: largest SA residential property dataset"
+    ],
+    "source_competitors": [],
+    "discovery_method": "lookalike_expansion",
+    "lookalike_of": "Fincheck",
+    "sources": [
+      "https://www.ooba.co.za/media/",
+      "https://www.linkedin.com/company/ooba/"
+    ]
+  },
+  {
+    "id": "chipper-cash",
+    "priority_score": 3,
+    "name": "Chipper Cash",
+    "website": "https://chippercash.com",
+    "linkedin_url": "https://www.linkedin.com/company/chipper-cash/",
+    "industry": "Financial Technology",
+    "sub_industry": "Cross-Border Payments / Remittance",
+    "hq": "San Francisco, CA / Nairobi, Kenya",
+    "founded_year": 2018,
+    "headcount": "350+",
+    "funding_stage": "Series C",
+    "total_raised": "$300M",
+    "revenue_estimate": "$50-80M ARR (estimated)",
+    "revenue_source": "estimated",
+    "key_investors": [
+      "FTX Ventures (written off)",
+      "SVB Capital",
+      "Bezos Expeditions",
+      "Ribbit Capital",
+      "Deciens Capital"
+    ],
+    "ceo_name": "Ham Serunjogi",
+    "ceo_linkedin": "https://www.linkedin.com/in/hamserunjogi",
+    "cro_name": "Maijid Moujaled (Co-founder / CRO)",
+    "cro_linkedin": "https://www.linkedin.com/in/maijid-moujaled",
+    "cfo_name": "Unknown",
+    "cfo_linkedin": "",
+    "cto_name": "Serge Hakizimana (CTO)",
+    "cto_linkedin": "https://www.linkedin.com/in/serge-hakizimana",
+    "vp_sales_name": "Maijid Moujaled",
+    "vp_sales_linkedin": "https://www.linkedin.com/in/maijid-moujaled",
+    "product_summary": "Pan-African mobile-first payments app. Free peer-to-peer transfers in 7 African countries (Ghana, Uganda, Nigeria, Tanzania, Rwanda, SA, Kenya). Chipper Business for cross-border B2B payments and API access. 5M+ users. Smile ID used for KYC. Post-FTX collapse: restructured, refocused on B2B API.",
+    "pricing_model": "Free P2P; B2B API: per-transaction fee; card fees on spend",
+    "key_pain_points": [
+      "Post-FTX restructuring: compliance and AML stack under scrutiny",
+      "KYC at scale across 7 African regulatory regimes",
+      "B2B API: corporate onboarding KYB needs strengthening",
+      "SA expansion: FSCA licensing and FICA compliance"
+    ],
+    "pain_sources": [
+      "Smile ID Chipper Cash mention",
+      "TechCrunch Chipper Cash coverage"
+    ],
+    "known_customers": [],
+    "estimated_customer_count": "5M+ registered users",
+    "icp_description": "African diaspora senders; African consumers for domestic/cross-border transfers; SME B2B payments",
+    "tech_stack": [
+      "Smile ID (KYC)",
+      "AWS",
+      "React Native",
+      "Blockchain settlement rails"
+    ],
+    "scale_metrics": [
+      "5M+ users",
+      "7 African markets",
+      "$300M raised",
+      "B2B API: growing post-FTX pivot"
+    ],
+    "strategic_signals": [
+      "Post-FTX collapse: restructured, laid off 33% of staff",
+      "Pivoting to B2B payments API \u2014 less consumer, more infrastructure",
+      "SA launch: FSCA application in progress",
+      "Smile ID KYC embedded across all markets"
+    ],
+    "source_competitors": [
+      "Smile ID"
+    ],
+    "discovery_method": "website_scrape",
+    "lookalike_of": null,
+    "sources": [
+      "https://techcrunch.com/2021/07/08/smile-identity-raises-7m-to-build-kyc-and-identity-verification-tools-for-africa/",
+      "https://chippercash.com"
+    ]
+  },
+  {
+    "id": "kuda-bank",
+    "priority_score": 3,
+    "name": "Kuda Bank",
+    "website": "https://kuda.com",
+    "linkedin_url": "https://www.linkedin.com/company/kuda-bank/",
+    "industry": "Financial Technology",
+    "sub_industry": "Neobank / Digital Banking",
+    "hq": "London, UK / Lagos, Nigeria",
+    "founded_year": 2018,
+    "headcount": "400+",
+    "funding_stage": "Series C",
+    "total_raised": "$126.6M",
+    "revenue_estimate": "$20-40M ARR (estimated)",
+    "revenue_source": "estimated",
+    "key_investors": [
+      "Target Global",
+      "SoftBank Vision Fund Emerge",
+      "Valar Ventures",
+      "Entr\u00e9e Capital"
+    ],
+    "ceo_name": "Babs Ogundeyi",
+    "ceo_linkedin": "https://www.linkedin.com/in/babsogundeyi",
+    "cro_name": "Musty Mustapha (Co-founder / COO)",
+    "cro_linkedin": "https://www.linkedin.com/in/mustapha-musa",
+    "cfo_name": "Unknown",
+    "cfo_linkedin": "",
+    "cto_name": "Mustapha Musa (Co-founder)",
+    "cto_linkedin": "https://www.linkedin.com/in/mustapha-musa",
+    "vp_sales_name": "Unknown",
+    "vp_sales_linkedin": "",
+    "product_summary": "Nigeria's leading neobank (7M+ users). Zero-fee current account, free transfers, overdraft (Kuda Borrow), savings goals, debit card. Smile ID for KYC. Expanding to UK market for Nigerian diaspora. Largest digital bank in Nigeria by active users.",
+    "pricing_model": "Free current account; interest on overdraft (30% pa); savings above-market",
+    "key_pain_points": [
+      "Credit scoring for 7M thin-file Nigerian neobank users",
+      "Fraud: social engineering attacks on young digital user base",
+      "UK expansion: FCA KYC compliance for diaspora onboarding",
+      "Overdraft NPLs: behavioural scoring needed beyond Smile ID KYC"
+    ],
+    "pain_sources": [
+      "Smile ID Kuda Bank mention",
+      "TechCrunch Kuda coverage"
+    ],
+    "known_customers": [],
+    "estimated_customer_count": "7M+ registered users",
+    "icp_description": "Nigerian millennials and Gen-Z, digital-first; UK Nigerian diaspora",
+    "tech_stack": [
+      "Smile ID (KYC)",
+      "AWS",
+      "React Native",
+      "Python (ML)"
+    ],
+    "scale_metrics": [
+      "7M+ users",
+      "$126.6M raised",
+      "Nigeria #1 neobank by users",
+      "UK FCA licensed"
+    ],
+    "strategic_signals": [
+      "UK launch: FCA authorised for Nigerian diaspora",
+      "Kuda Borrow overdraft: rapidly growing credit product",
+      "SoftBank Vision Fund Emerge backing \u2014 credibility signal",
+      "Smile ID embedded for Nigeria + UK KYC"
+    ],
+    "source_competitors": [
+      "Smile ID"
+    ],
+    "discovery_method": "website_scrape",
+    "lookalike_of": null,
+    "sources": [
+      "https://techcrunch.com/2021/07/08/smile-identity-raises-7m-to-build-kyc-and-identity-verification-tools-for-africa/",
+      "https://kuda.com"
+    ]
+  },
+  {
+    "id": "opay-africa",
+    "priority_score": 4,
+    "name": "OPay",
+    "website": "https://opayweb.com",
+    "linkedin_url": "https://www.linkedin.com/company/opay/",
+    "industry": "Financial Technology",
+    "sub_industry": "Digital Payments / Neobank",
+    "hq": "Lagos, Nigeria",
+    "founded_year": 2018,
+    "headcount": "3,000+",
+    "funding_stage": "Series C",
+    "total_raised": "$570M",
+    "revenue_estimate": "$150-250M ARR (estimated)",
+    "revenue_source": "estimated",
+    "key_investors": [
+      "SoftBank Vision Fund 2",
+      "DragonBall Capital",
+      "Source Code Capital",
+      "Sequoia Capital China"
+    ],
+    "ceo_name": "Yahui Zhou",
+    "ceo_linkedin": "https://www.linkedin.com/in/yahui-zhou-opay",
+    "cro_name": "Olu Akanmu (President, OPay Nigeria)",
+    "cro_linkedin": "https://www.linkedin.com/in/olu-akanmu",
+    "cfo_name": "Unknown",
+    "cfo_linkedin": "",
+    "cto_name": "Unknown",
+    "cto_linkedin": "",
+    "vp_sales_name": "Olu Akanmu (Nigeria President)",
+    "vp_sales_linkedin": "https://www.linkedin.com/in/olu-akanmu",
+    "product_summary": "Africa's largest digital payments platform by transaction volume. Nigeria: OPay wallet, OPay POS (500K+ agent network), OPay card, savings (OWealth). $2.75B valuation. 50M+ users. Processes $3B+ monthly. SoftBank backed. Smile ID for KYC. Growing into East Africa and SA.",
+    "pricing_model": "Free P2P transfers; 0.5-1% on cash-out; POS agent commission",
+    "key_pain_points": [
+      "AML/KYC at 50M user scale: Smile ID already embedded but volume strains",
+      "Agent network fraud: identity fraud by POS agents",
+      "Alt-data credit scoring for 50M wallet users \u2014 massive opportunity",
+      "SA/East Africa expansion: multi-country KYC regulatory fragmentation"
+    ],
+    "pain_sources": [
+      "Smile ID OPay mention",
+      "TechCrunch OPay funding coverage"
+    ],
+    "known_customers": [],
+    "estimated_customer_count": "50M+ registered users",
+    "icp_description": "Nigerian mass market (LSM 2-7); agent network operators; SME merchants",
+    "tech_stack": [
+      "Smile ID (KYC)",
+      "AWS",
+      "Custom payment infrastructure",
+      "Agent POS stack"
+    ],
+    "scale_metrics": [
+      "50M+ users",
+      "$3B+ monthly transactions",
+      "500K+ POS agents",
+      "$2.75B valuation"
+    ],
+    "strategic_signals": [
+      "SoftBank Vision Fund 2: $400M raise at $2B+ valuation",
+      "OPay Card: debit card issued in partnership with Visa",
+      "East Africa expansion: entering Kenya, Tanzania",
+      "OPay Credit: consumer lending product in pilot"
+    ],
+    "source_competitors": [
+      "Smile ID"
+    ],
+    "discovery_method": "website_scrape",
+    "lookalike_of": null,
+    "sources": [
+      "https://techcrunch.com/2021/07/08/smile-identity-raises-7m-to-build-kyc-and-identity-verification-tools-for-africa/",
+      "https://opayweb.com"
+    ]
+  },
+  {
+    "id": "moniepoint-ng",
+    "priority_score": 3,
+    "name": "Moniepoint",
+    "website": "https://moniepoint.com",
+    "linkedin_url": "https://www.linkedin.com/company/moniepoint/",
+    "industry": "Financial Technology",
+    "sub_industry": "SME Banking / Agent Network",
+    "hq": "Lagos, Nigeria",
+    "founded_year": 2015,
+    "headcount": "2,000+",
+    "funding_stage": "Series C",
+    "total_raised": "$370.6M",
+    "revenue_estimate": "$100M+ ARR (estimated)",
+    "revenue_source": "estimated",
+    "key_investors": [
+      "Development Partners International",
+      "QED Investors",
+      "Google",
+      "Lightspeed Venture Partners",
+      "Visa"
+    ],
+    "ceo_name": "Tosin Eniolorunda",
+    "ceo_linkedin": "https://www.linkedin.com/in/tosineniolorunda",
+    "cro_name": "Tunde Omolere (CRO)",
+    "cro_linkedin": "https://www.linkedin.com/in/tunde-omolere-cfa-mba-b83a1b1b",
+    "cfo_name": "Unknown",
+    "cfo_linkedin": "",
+    "cto_name": "Felix Ike (CTO)",
+    "cto_linkedin": "https://www.linkedin.com/in/felix-ike",
+    "vp_sales_name": "Tosin Eniolorunda",
+    "vp_sales_linkedin": "https://www.linkedin.com/in/tosineniolorunda",
+    "product_summary": "Nigeria's #1 SME business banking platform by transaction volume. 2M+ SME business accounts, POS terminals, business loans (Moniepoint Credit), payroll. Unicorn ($1B+ valuation). Google + Visa investors. Smile ID KYC. Processing 800M+ monthly transactions. FMCG distribution finance expanding.",
+    "pricing_model": "POS transaction fee; business account monthly fee; credit interest",
+    "key_pain_points": [
+      "SME credit scoring: 2M businesses, most thin-file \u2014 alt-data critical",
+      "Agent fraud and merchant identity fraud at scale",
+      "Business KYB (Know Your Business) compliance gap",
+      "Africa expansion: East Africa multi-country KYC complexity"
+    ],
+    "pain_sources": [
+      "Smile ID Moniepoint mention",
+      "TechCrunch Moniepoint unicorn coverage"
+    ],
+    "known_customers": [],
+    "estimated_customer_count": "2M+ business accounts",
+    "icp_description": "Nigerian SMEs: retailers, distributors, food vendors, pharmacies; LSM 4-7",
+    "tech_stack": [
+      "Smile ID (KYC)",
+      "AWS",
+      "Custom POS stack",
+      "Python (ML credit)"
+    ],
+    "scale_metrics": [
+      "2M+ business accounts",
+      "800M+ monthly transactions",
+      "$1B+ unicorn valuation",
+      "$370.6M raised"
+    ],
+    "strategic_signals": [
+      "Google and Visa as strategic investors \u2014 distribution signal",
+      "QED Investors: largest fintech-focused VC globally",
+      "Moniepoint Credit: SME lending scaling rapidly",
+      "FMCG distribution finance: supply chain lending new vertical"
+    ],
+    "source_competitors": [
+      "Smile ID"
+    ],
+    "discovery_method": "website_scrape",
+    "lookalike_of": null,
+    "sources": [
+      "https://techcrunch.com/2021/07/08/smile-identity-raises-7m-to-build-kyc-and-identity-verification-tools-for-africa/",
+      "https://moniepoint.com"
+    ]
+  },
+  {
+    "id": "paystack-ng",
+    "priority_score": 4,
+    "name": "Paystack",
+    "website": "https://paystack.com",
+    "linkedin_url": "https://www.linkedin.com/company/paystack/",
+    "industry": "Financial Technology",
+    "sub_industry": "Payment Gateway",
+    "hq": "Lagos, Nigeria / San Francisco, CA",
+    "founded_year": 2016,
+    "headcount": "500+",
+    "funding_stage": "Acquired (Stripe, $200M, 2020)",
+    "total_raised": "$200M (acquisition price)",
+    "revenue_estimate": "$50-100M ARR (estimated, post-Stripe)",
+    "revenue_source": "estimated",
+    "key_investors": [
+      "Stripe (acquirer, 2020)",
+      "Tencent",
+      "Visa",
+      "Stripe"
+    ],
+    "ceo_name": "Shola Akinlade",
+    "ceo_linkedin": "https://www.linkedin.com/in/shola-akinlade",
+    "cro_name": "Ezra Olubi (Co-founder / CTO)",
+    "cro_linkedin": "https://www.linkedin.com/in/ezraolubi",
+    "cfo_name": "Unknown (Stripe subsidiary)",
+    "cfo_linkedin": "",
+    "cto_name": "Ezra Olubi",
+    "cto_linkedin": "https://www.linkedin.com/in/ezraolubi",
+    "vp_sales_name": "Unknown",
+    "vp_sales_linkedin": "",
+    "product_summary": "Africa's developer-first payment gateway (Stripe subsidiary). Payments API, Paystack Commerce, Transfers, Subscriptions. Powers 200K+ Nigerian businesses. Expanded to Ghana, Kenya, South Africa (FSCA licensed). Stripe's African beachhead. Smile ID used for merchant KYC onboarding.",
+    "pricing_model": "1.5% local transactions + NGN 100 cap; 3.9% + NGN 100 international",
+    "key_pain_points": [
+      "Merchant KYB at scale: SA FSCA compliance for payment service provider",
+      "AML: international card payments fraud prevention",
+      "SA expansion: FSCA licensing + POPIA compliance overhead",
+      "Stripe integration: harmonising African and global KYC standards"
+    ],
+    "pain_sources": [
+      "Smile ID Paystack mention",
+      "Paystack SA launch coverage"
+    ],
+    "known_customers": [
+      "MTN SA",
+      "Bolt Africa",
+      "Flutterwave (competitor but API user)"
+    ],
+    "estimated_customer_count": "200K+ businesses across Africa",
+    "icp_description": "African developers and tech businesses; e-commerce; SaaS companies; marketplaces",
+    "tech_stack": [
+      "Smile ID (KYC)",
+      "AWS",
+      "Node.js",
+      "React",
+      "Stripe infrastructure"
+    ],
+    "scale_metrics": [
+      "200K+ merchants",
+      "SA FSCA licensed",
+      "$200M acquisition value 2020",
+      "4 African markets"
+    ],
+    "strategic_signals": [
+      "Stripe subsidiary: unlimited runway + global credibility",
+      "SA FSCA licence: full launch 2023",
+      "Paystack Terminal: POS hardware launching Africa-wide",
+      "Stripe Terminal: integrating Paystack into Stripe global platform"
+    ],
+    "source_competitors": [
+      "Smile ID"
+    ],
+    "discovery_method": "website_scrape",
+    "lookalike_of": null,
+    "sources": [
+      "https://techcrunch.com/2021/07/08/smile-identity-raises-7m-to-build-kyc-and-identity-verification-tools-for-africa/",
+      "https://paystack.com"
+    ]
+  },
+  {
+    "id": "sanlam-sa",
+    "priority_score": 4,
+    "name": "Sanlam",
+    "website": "https://www.sanlam.co.za",
+    "linkedin_url": "https://www.linkedin.com/company/sanlam/",
+    "industry": "Financial Services",
+    "sub_industry": "Insurance & Wealth Management",
+    "hq": "Bellville, South Africa",
+    "founded_year": 1918,
+    "headcount": "30,000+",
+    "funding_stage": "Public (JSE: SLM)",
+    "total_raised": "JSE listed",
+    "revenue_estimate": "ZAR 43B GWP (FY2023)",
+    "revenue_source": "disclosed",
+    "key_investors": [
+      "Public shareholders",
+      "African Rainbow Capital"
+    ],
+    "ceo_name": "Paul Hanratty",
+    "ceo_linkedin": "https://www.linkedin.com/in/paul-hanratty-sanlam",
+    "cro_name": "Wikus Olivier (Group CRO)",
+    "cro_linkedin": "https://www.linkedin.com/in/wikus-olivier-sanlam",
+    "cfo_name": "Abigail Mukhuba",
+    "cfo_linkedin": "https://www.linkedin.com/in/abigail-mukhuba",
+    "cto_name": "Lee Bromfield (CEO Sanlam Fintech)",
+    "cto_linkedin": "https://www.linkedin.com/in/lee-bromfield",
+    "vp_sales_name": "Kanyisa Mkhize (CEO Sanlam Retail Mass)",
+    "vp_sales_linkedin": "https://www.linkedin.com/in/kanyisa-mkhize",
+    "product_summary": "Pan-African financial services group. Life insurance (Sanlam Life), short-term (Santam 65% stake), wealth management, credit (African Bank shareholder), emerging markets (46 African countries). Sanlam Fintech division: digital insurance + embedded finance products. 11M+ clients.",
+    "pricing_model": "Insurance premiums; AUM management fees",
+    "key_pain_points": [
+      "Digital onboarding for mass market insurance: eKYC at low cost",
+      "Insurance fraud: identity fraud at claims and policy inception",
+      "Alt-data underwriting: health + financial behaviour scoring",
+      "Pan-African expansion: 46-country KYC fragmentation"
+    ],
+    "pain_sources": [
+      "Sanlam annual report 2023",
+      "Lee Bromfield Sanlam Fintech interviews"
+    ],
+    "known_customers": [],
+    "estimated_customer_count": "11M+ clients across Africa",
+    "icp_description": "LSM 3-10 SA insurance consumers; HNW wealth clients; pan-African mass market",
+    "tech_stack": [
+      "Microsoft Azure",
+      "Salesforce",
+      "Custom actuarial models",
+      "Sanlam Fintech proprietary"
+    ],
+    "scale_metrics": [
+      "11M+ clients",
+      "ZAR 43B GWP",
+      "46 African countries",
+      "Santam: SA's largest short-term insurer"
+    ],
+    "strategic_signals": [
+      "Sanlam Fintech: standalone digital insurance business growing",
+      "Allianz: acquisition of 20% stake \u2014 global credibility",
+      "African Bank: shareholder (alongside SA big-4 banks)",
+      "Embedded insurance: partnerships with retailers and telcos"
+    ],
+    "source_competitors": [],
+    "discovery_method": "lookalike_expansion",
+    "lookalike_of": "Old Mutual",
+    "sources": [
+      "https://www.sanlam.co.za/investor-relations/",
+      "https://www.linkedin.com/company/sanlam/"
+    ]
+  },
+  {
+    "id": "momentum-sa",
+    "priority_score": 3,
+    "name": "Momentum Metropolitan",
+    "website": "https://www.momentummetropolitan.co.za",
+    "linkedin_url": "https://www.linkedin.com/company/momentum-metropolitan-holdings/",
+    "industry": "Financial Services",
+    "sub_industry": "Insurance & Employee Benefits",
+    "hq": "Centurion, South Africa",
+    "founded_year": 1966,
+    "headcount": "18,000+",
+    "funding_stage": "Public (JSE: MTM)",
+    "total_raised": "JSE listed",
+    "revenue_estimate": "ZAR 24B (FY2023)",
+    "revenue_source": "disclosed",
+    "key_investors": [
+      "Public shareholders"
+    ],
+    "ceo_name": "Jeanette Marais",
+    "ceo_linkedin": "https://www.linkedin.com/in/jeanette-marais-momentum",
+    "cro_name": "Herman Schoeman (Group CRO)",
+    "cro_linkedin": "https://www.linkedin.com/in/herman-schoeman-momentum",
+    "cfo_name": "Risto Ketola",
+    "cfo_linkedin": "https://www.linkedin.com/in/risto-ketola",
+    "cto_name": "Unknown",
+    "cto_linkedin": "",
+    "vp_sales_name": "Dumo Mbethe (CEO Momentum Life)",
+    "vp_sales_linkedin": "https://www.linkedin.com/in/dumo-mbethe",
+    "product_summary": "SA's 3rd-largest insurer. Life insurance, employee benefits, health (Momentum Health), short-term, investment management. Multiplier loyalty: rewards customers for healthy behaviour (similar to Discovery Vitality). Retail mass market via Momentum. Employee benefits via Metropolitan. 7M+ lives insured.",
+    "pricing_model": "Insurance premiums; group employee benefits contracts; AUM fees",
+    "key_pain_points": [
+      "Digital onboarding for individual life policies: eKYC friction",
+      "Claims fraud: identity fraud at claims stage \u2014 alt-verification needed",
+      "Alt-data underwriting: non-traditional risk signals for mass market",
+      "Employee benefit payments: identity verification for beneficiaries"
+    ],
+    "pain_sources": [
+      "Momentum Metropolitan annual report 2023"
+    ],
+    "known_customers": [],
+    "estimated_customer_count": "7M+ lives insured",
+    "icp_description": "SA employed workers (group benefits); LSM 4-9 individual insurance consumers",
+    "tech_stack": [
+      "Microsoft Azure",
+      "SAP (HR/payroll)",
+      "Custom actuarial platform"
+    ],
+    "scale_metrics": [
+      "7M+ lives insured",
+      "ZAR 24B revenue",
+      "SA #3 insurer by premiums"
+    ],
+    "strategic_signals": [
+      "Momentum Health: digital health platform growing",
+      "Multiplier: behavioural rewards programme (competing with Discovery Vitality)",
+      "Jeanette Marais: new CEO since 2022, digital transformation mandate",
+      "African Bank: minor shareholder (cross-sector)"
+    ],
+    "source_competitors": [],
+    "discovery_method": "lookalike_expansion",
+    "lookalike_of": "Discovery Bank",
+    "sources": [
+      "https://www.momentummetropolitan.co.za/en/investor-relations/",
+      "https://www.linkedin.com/company/momentum-metropolitan-holdings/"
+    ]
+  }
+];
+let sel=null;
+function fc(s){const t=(s||'').toLowerCase();if(t.includes('public'))return 'fpub';if(t.includes('series d')||t.includes('acquired'))return 'fd';if(t.includes('series c'))return 'fc';if(t.includes('series b'))return 'fb';if(t.includes('series a'))return 'fa';return 'fo';}
+function esc(s){return s?String(s).replace(/</g,'&lt;').replace(/>/g,'&gt;'):''}
+function render(){
+  const q=(document.getElementById('q').value||'').toLowerCase();
+  const fi=document.getElementById('fi').value,fp=document.getElementById('fp').value,fd=document.getElementById('fd').value;
+  const shown=D.filter(a=>{
+    if(fi&&a.industry!==fi)return false;
+    if(fp&&String(a.priority_score)!==fp)return false;
+    if(fd&&a.discovery_method!==fd)return false;
+    if(q){const b=(a.name+' '+a.ceo_name+' '+a.hq+' '+a.industry+' '+(a.key_pain_points||[]).join(' ')+(a.source_competitors||[]).join(' ')).toLowerCase();if(!b.includes(q))return false;}
+    return true;
+  });
+  const tb=document.getElementById('tb');tb.innerHTML='';
+  shown.forEach((a,i)=>{
+    const multi=a.source_competitors&&a.source_competitors.length>=2;
+    const tr=document.createElement('tr');
+    if(sel===a.id)tr.classList.add('selected');
+    tr.onclick=()=>openP(a);
+    const fs=(a.funding_stage||'').split('(')[0].trim().substring(0,14);
+    tr.innerHTML=`<td style="color:var(--muted);font-size:10px">${i+1}</td>
+      <td><span class="pri p${a.priority_score}">${a.priority_score}</span></td>
+      <td><strong>${esc(a.name)}</strong>${multi?'<br><span class="chip multi">MULTI-COMP</span>':''}</td>
+      <td style="font-size:11px;color:var(--muted)">${esc(a.hq)}</td>
+      <td style="font-size:11px">${esc(a.industry)}</td>
+      <td><span class="chip ${fc(a.funding_stage)}">${esc(fs)}</span></td>
+      <td style="font-size:11px">${esc(a.revenue_estimate)}</td>
+      <td style="font-size:11px"><strong>${esc((a.ceo_name||'').split('(')[0])}</strong></td>
+      <td><div class="pain-prev">${a.key_pain_points?esc(a.key_pain_points[0]):''}</div></td>
+      <td>${(a.source_competitors||[]).map(c=>`<span class="comp-chip">${esc(c)}</span>`).join('')}${a.lookalike_of?`<span class="lk-chip">~${esc(a.lookalike_of)}</span>`:''}</td>
+      <td style="font-size:10px;color:var(--muted)">${a.discovery_method==='lookalike_expansion'?'Lookalike':'Extracted'}</td>`;
+    tb.appendChild(tr);
+  });
+  document.getElementById('cb').textContent=`Showing ${shown.length} of ${D.length} accounts — click any row for full profile`;
+}
+function openP(a){
+  sel=a.id;render();
+  document.getElementById('pn').textContent=a.name;
+  document.getElementById('ps').textContent=(a.sub_industry||'')+' · '+(a.hq||'');
+  document.getElementById('pb').innerHTML=`<span class="chip p${a.priority_score}">Priority ${a.priority_score}</span> <span class="chip ${fc(a.funding_stage)}">${(a.funding_stage||'').split('(')[0].trim()}</span>`;
+  let h='';
+  h+=`<div class="sec"><div class="sec-t">Company Basics</div>
+    <div class="kv"><span class="k">Website</span><span class="v"><a href="${a.website}" target="_blank">${a.website}</a></span></div>
+    <div class="kv"><span class="k">LinkedIn</span><span class="v"><a href="${a.linkedin_url}" target="_blank">View Profile</a></span></div>
+    <div class="kv"><span class="k">Founded</span><span class="v">${a.founded_year}</span></div>
+    <div class="kv"><span class="k">Headcount</span><span class="v">${a.headcount}</span></div>
+    <div class="kv"><span class="k">Customers</span><span class="v">${a.estimated_customer_count||'-'}</span></div>
+    <div class="kv"><span class="k">ICP</span><span class="v">${esc(a.icp_description||'')}</span></div></div>`;
+  h+=`<div class="sec"><div class="sec-t">Financials</div>
+    <div class="kv"><span class="k">Revenue</span><span class="v"><strong>${esc(a.revenue_estimate)}</strong> <span style="font-size:10px;color:var(--muted)">(${a.revenue_source})</span></span></div>
+    <div class="kv"><span class="k">Total Raised</span><span class="v">${esc(a.total_raised)}</span></div>
+    <div class="kv"><span class="k">Key Investors</span><span class="v">${esc((a.key_investors||[]).join(', '))}</span></div></div>`;
+  const ldrs=[{n:a.ceo_name,t:'CEO',li:a.ceo_linkedin},{n:a.cro_name,t:'CRO',li:a.cro_linkedin},{n:a.cfo_name,t:'CFO',li:a.cfo_linkedin},{n:a.cto_name,t:'CTO/CIO',li:a.cto_linkedin}].filter(l=>l.n&&l.n!=='Unknown'&&l.n.length>2);
+  if(ldrs.length){h+=`<div class="sec"><div class="sec-t">Leadership</div>`;ldrs.forEach(l=>{h+=`<div class="ldr"><div class="ldr-name">${esc(l.n)}</div><div class="ldr-title">${l.t}</div>${l.li&&l.li.length>10?`<div class="ldr-li"><a href="${l.li}" target="_blank">LinkedIn</a></div>`:''}</div>`;});h+='</div>';}
+  if(a.key_pain_points&&a.key_pain_points.length){h+=`<div class="sec"><div class="sec-t">Pain Points (Outreach Angles)</div>`;a.key_pain_points.forEach((p,i)=>{h+=`<div class="pain-item"><div class="pain-text">${esc(p)}</div>${a.pain_sources&&a.pain_sources[i]?`<div class="pain-src">Source: ${esc(a.pain_sources[i])}</div>`:''}</div>`;});h+='</div>';}
+  h+=`<div class="sec"><div class="sec-t">Product</div><p style="font-size:12px;line-height:1.6">${esc(a.product_summary)}</p><div class="kv" style="margin-top:8px"><span class="k">Pricing</span><span class="v">${esc(a.pricing_model)}</span></div></div>`;
+  if(a.scale_metrics&&a.scale_metrics.length){h+=`<div class="sec"><div class="sec-t">Scale Metrics</div>`;a.scale_metrics.forEach(m=>h+=`<div class="sig">${esc(m)}</div>`);h+='</div>';}
+  if(a.strategic_signals&&a.strategic_signals.length){h+=`<div class="sec"><div class="sec-t">Strategic Signals</div>`;a.strategic_signals.forEach(s=>h+=`<div class="sig">${esc(s)}</div>`);h+='</div>';}
+  if(a.tech_stack&&a.tech_stack.length){h+=`<div class="sec"><div class="sec-t">Tech Stack</div><div>${a.tech_stack.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div></div>`;}
+  h+=`<div class="sec"><div class="sec-t">Intelligence Sources</div><div class="kv"><span class="k">Found via</span><span class="v">${(a.source_competitors||[]).map(c=>`<span class="comp-chip">${esc(c)}</span>`).join(' ')||'Lookalike expansion'}</span></div>${a.lookalike_of?`<div class="kv"><span class="k">Lookalike of</span><span class="v">${esc(a.lookalike_of)}</span></div>`:''}</div>`;
+  document.getElementById('pbody').innerHTML=h;
+  document.getElementById('panel').classList.add('open');
+}
+function closeP(){sel=null;render();document.getElementById('panel').classList.remove('open');}
+function reset(){['q','fi','fp','fd'].forEach(id=>{const el=document.getElementById(id);el.tagName==='INPUT'?el.value='':el.value='';});render();}
+function exportJ(){const blob=new Blob([JSON.stringify(D,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='account_intelligence.json';a.click();}
+['fi','fp','fd'].forEach(id=>document.getElementById(id).addEventListener('change',render));
+document.getElementById('q').addEventListener('input',render);
+render();
+</script></body></html>

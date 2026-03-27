@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trusting Social — Kenya Account Intelligence</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f7fa; color: #1a1a2e; }
+
+.header {
+    position: sticky; top: 0; z-index: 100;
+    background: linear-gradient(135deg, #183763 0%, #0a1f3d 100%);
+    color: white; padding: 16px 32px;
+    display: flex; justify-content: space-between; align-items: center;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
+.header h1 { font-size: 22px; font-weight: 700; }
+.header .meta { font-size: 13px; opacity: 0.85; }
+
+.stat-cards {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+    padding: 20px 32px; max-width: 1400px; margin: 0 auto;
+}
+.stat-card {
+    background: white; border-radius: 10px; padding: 20px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.08); text-align: center;
+}
+.stat-card .number { font-size: 32px; font-weight: 800; color: #0276f1; }
+.stat-card .label { font-size: 13px; color: #666; margin-top: 4px; }
+
+.filters {
+    padding: 12px 32px; max-width: 1400px; margin: 0 auto;
+    display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+}
+.filters select, .filters input {
+    padding: 8px 14px; border: 1px solid #ddd; border-radius: 6px;
+    font-size: 14px; background: white;
+}
+.filters input { width: 260px; }
+.filters button {
+    padding: 8px 18px; background: #0276f1; color: white; border: none;
+    border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600;
+}
+.filters button:hover { background: #0260c9; }
+
+.table-container {
+    padding: 0 32px 40px; max-width: 1400px; margin: 0 auto;
+}
+table {
+    width: 100%; border-collapse: collapse; background: white;
+    border-radius: 10px; overflow: hidden;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+}
+thead th {
+    background: #183763; color: white; padding: 12px 14px;
+    text-align: left; font-size: 13px; cursor: pointer;
+    position: relative; user-select: none;
+}
+thead th:hover { background: #1e4480; }
+thead th::after { content: ' \2195'; opacity: 0.5; }
+tbody td {
+    padding: 10px 14px; border-bottom: 1px solid #eee; font-size: 13px;
+    vertical-align: top;
+}
+tbody tr:hover { background: #f0f6ff; }
+tbody tr.expanded { background: #e8f0fe; }
+
+.priority-badge {
+    display: inline-block; width: 28px; height: 28px; border-radius: 50%;
+    text-align: center; line-height: 28px; font-weight: 800; font-size: 13px;
+    color: white;
+}
+.p5 { background: #006400; }
+.p4 { background: #228B22; }
+.p3 { background: #DAA520; color: #333; }
+.p2 { background: #FF8C00; }
+.p1 { background: #DC143C; }
+
+.detail-row { display: none; }
+.detail-row.show { display: table-row; }
+.detail-row td {
+    padding: 16px 24px; background: #fafbfd;
+    border-bottom: 2px solid #0276f1;
+}
+.detail-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+}
+.detail-section { margin-bottom: 12px; }
+.detail-section h4 { color: #183763; margin-bottom: 6px; font-size: 14px; }
+.detail-section p { font-size: 13px; line-height: 1.5; }
+.pain-highlight { color: #c0392b; font-weight: 600; }
+.vendor-gap { color: #e67e22; font-weight: 600; font-style: italic; }
+a { color: #0276f1; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.export-btn {
+    position: fixed; bottom: 24px; right: 24px;
+    background: #183763; color: white; border: none;
+    padding: 12px 24px; border-radius: 8px; cursor: pointer;
+    font-size: 14px; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    z-index: 50;
+}
+.export-btn:hover { background: #0276f1; }
+
+@media print {
+    .header { position: static; }
+    .filters, .export-btn { display: none; }
+    .detail-row.show { display: table-row; }
+    tbody tr { page-break-inside: avoid; }
+}
+@media (max-width: 768px) {
+    .stat-cards { grid-template-columns: repeat(2, 1fr); }
+    .detail-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+    <div>
+        <h1>Trusting Social &mdash; Kenya Account Intelligence</h1>
+        <div class="meta">20 accounts &bull; Run date: 2026-03-26 &bull; v1.0</div>
+    </div>
+</div>
+
+<div class="stat-cards">
+    <div class="stat-card"><div class="number">20</div><div class="label">Total Accounts</div></div>
+    <div class="stat-card"><div class="number">7</div><div class="label">Priority 4-5 (High Signal)</div></div>
+    <div class="stat-card"><div class="number">17</div><div class="label">C-Suite Mapped</div></div>
+    <div class="stat-card"><div class="number">$309K</div><div class="label">Avg Est. Deal Value</div></div>
+</div>
+
+<div class="filters">
+    <select id="filterIndustry" onchange="filterTable()">
+        <option value="">All Industries</option>
+        <option value="Banking">Banking</option>
+        <option value="Telecommunications">Telecommunications</option>
+        <option value="Payments">Payments / FinTech</option>
+        <option value="Agri">AgriTech / Retail-Tech</option>
+        <option value="Insurance">Insurance</option>
+        <option value="Microfinance">Microfinance</option>
+    </select>
+    <select id="filterPriority" onchange="filterTable()">
+        <option value="">All Priorities</option>
+        <option value="5">Priority 5</option>
+        <option value="4">Priority 4</option>
+        <option value="3">Priority 3</option>
+        <option value="2">Priority 2</option>
+        <option value="1">Priority 1</option>
+    </select>
+    <input type="text" id="searchBox" placeholder="Search company, pain point, vendor..." oninput="filterTable()">
+    <button onclick="exportJSON()">Export JSON</button>
+</div>
+
+<div class="table-container">
+<table id="accountTable">
+<thead>
+<tr>
+    <th onclick="sortTable(0)" data-type="num">P</th>
+    <th onclick="sortTable(1)">Company</th>
+    <th onclick="sortTable(2)">Industry</th>
+    <th onclick="sortTable(3)" data-type="num">Headcount</th>
+    <th onclick="sortTable(4)">Revenue</th>
+    <th onclick="sortTable(5)">Key Pain Point</th>
+    <th onclick="sortTable(6)">Est. Deal</th>
+</tr>
+</thead>
+<tbody id="tableBody">
+</tbody>
+</table>
+</div>
+
+<button class="export-btn" onclick="exportJSON()">Export JSON</button>
+
+<script>
+const accounts = [{"id": 1, "priority": 5, "company": "Safaricom PLC", "website": "safaricom.co.ke", "linkedin": "https://ke.linkedin.com/company/safaricom", "industry": "Telecommunications", "sub_industry": "Mobile Network Operator / Mobile Financial Services", "hq": "Nairobi, Kenya", "headcount": "7,100", "revenue": "KES 369B (~$2.8B)", "revenue_usd": 2800000000, "funding_stage": "Public (NSE: SCOM)", "ceo_name": "Dr. Peter Ndegwa", "ceo_linkedin": "https://ke.linkedin.com/in/peter-w-ndegwa", "cto_name": "James Maitai (CTIO)", "cto_linkedin": "https://www.linkedin.com/in/james-maitai/", "key_pain": "Escalating fraud (113 employees fired FY2024) + thin-file credit scoring for 37M M-Pesa users", "pain_points_detail": ["113 employees fired for fraud in FY2024 (242% increase); SIM-swap fraud persistent", "37M+ M-Pesa users lack formal credit histories; Patascore needs upgrading", "Cyber threats up 201% in Kenya Q1 2025 (2.5B+ threats detected)"], "current_vendors": "In-house Patascore + AWS GNN fraud + Indosat AI MOU (Mar 2026)", "outreach_angle": "Complement Patascore with telco-native AI scoring for M-Pesa's 37M thin-file users; position as upgrade to AWS fraud solution", "buying_signal": "Signed Indosat AI MOU (Mar 2026) - actively seeking AI partners; $309M annual capex cycle", "est_deal_value": "$500K-$2M ARR", "source_competitors": "AWS (fraud), Indosat (AI MOU), Pezesha (MSME credit)", "discovery_method": "direct_research"}, {"id": 2, "priority": 5, "company": "NCBA Group", "website": "ncbagroup.com", "linkedin": "https://www.linkedin.com/company/ncba-group", "industry": "Banking & Financial Services", "sub_industry": "Commercial Banking / Digital Lending", "hq": "Nairobi, Kenya", "headcount": "3,600", "revenue": "KES 57B (~$440M)", "revenue_usd": 440000000, "funding_stage": "Public (NSE: NCBA)", "ceo_name": "John Gachora", "ceo_linkedin": "https://www.linkedin.com/in/john-gachora/", "cto_name": "Isaac Owilla", "cto_linkedin": "https://www.linkedin.com/in/isaac-owilla-12243a50/", "key_pain": "M-Shwari declining 3.5%; KSh 5.5B loan write-offs; CredoLab not preventing defaults", "pain_points_detail": ["M-Shwari disbursements declining 3.5% while Fuliza grows", "KSh 5.5B in defaulted Fuliza/M-Shwari loans written off", "CredoLab client but defaults still high - needs better AI models"], "current_vendors": "CredoLab (alt credit scoring) + in-house M-Pesa transaction scoring", "outreach_angle": "Replace/complement CredoLab with deeper telco-AI scoring to reduce M-Shwari/Fuliza write-offs", "buying_signal": "Already buys alt credit scoring (CredoLab); KSh 5.5B write-off = urgent pain; Nedbank acquisition pending", "est_deal_value": "$300K-$1M ARR", "source_competitors": "CredoLab", "discovery_method": "competitor_extraction (CredoLab)"}, {"id": 3, "priority": 4, "company": "KCB Group", "website": "kcbgroup.com", "linkedin": "https://www.linkedin.com/company/kcb-group-plc", "industry": "Banking & Financial Services", "sub_industry": "Commercial Banking / Digital Lending", "hq": "Nairobi, Kenya", "headcount": "7,700", "revenue": "KES 134.5B (~$1.04B)", "revenue_usd": 1040000000, "funding_stage": "Public (NSE: KCB)", "ceo_name": "Paul Russo", "ceo_linkedin": "https://ke.linkedin.com/in/paulorusso", "cto_name": "Dennis Volemi", "cto_linkedin": "", "key_pain": "NPL ratio 16.9%; targeting 80% growth in digital lending (KSh 139B to 250B) - needs better credit scoring", "pain_points_detail": ["NPL ratio 16.9% (down from 19.2% but above comfort)", "FLME disbursing KSh 139B, targeting KSh 250B within 5 years", "Multi-country regulatory complexity across 7 countries"], "current_vendors": "In-house + M-Pesa data scoring (via Safaricom partnership)", "outreach_angle": "AI credit scoring to safely scale from KSh 139B to KSh 250B digital lending while reducing 16.9% NPL ratio", "buying_signal": "Targeting 80% digital lending growth; NPL ratio still elevated; KBA chair influence position", "est_deal_value": "$400K-$1.5M ARR", "source_competitors": "Safaricom (M-Pesa data partner)", "discovery_method": "direct_research"}, {"id": 4, "priority": 4, "company": "Equity Group", "website": "equitygroup.com", "linkedin": "https://ke.linkedin.com/company/equity-bank-limited", "industry": "Banking & Financial Services", "sub_industry": "Commercial Banking / Insurance / Payments", "hq": "Nairobi, Kenya", "headcount": "12,000", "revenue": "KES 156B (~$1.2B)", "revenue_usd": 1200000000, "funding_stage": "Public (NSE: EQTY)", "ceo_name": "Dr. James Mwangi", "ceo_linkedin": "", "cto_name": "N/A (not publicly listed)", "cto_linkedin": "", "key_pain": "50% profits from outside Kenya - needs scalable multi-market credit scoring for DRC, Uganda, Tanzania", "pain_points_detail": ["50% profits from outside Kenya - multi-market scoring complexity", "22.4M customers with varying credit file depth across 6+ countries", "Insurance arm growing 75% - needs fraud/risk tech"], "current_vendors": "In-house AI credit scoring (early adopter of alternative scoring)", "outreach_angle": "Multi-market telco-data scoring for DRC/Uganda expansion where credit bureaus are weak", "buying_signal": "Record 55% profit growth; DRC up 58%, Uganda up 500%; insurance GWP up 75%", "est_deal_value": "$500K-$2M ARR", "source_competitors": "In-house", "discovery_method": "direct_research"}, {"id": 5, "priority": 4, "company": "Absa Kenya", "website": "absabank.co.ke", "linkedin": "https://ke.linkedin.com/company/absa-bank-kenya", "industry": "Banking & Financial Services", "sub_industry": "Commercial Banking / International", "hq": "Nairobi, Kenya", "headcount": "2,000", "revenue": "KES 40B (~$310M)", "revenue_usd": 310000000, "funding_stage": "Public (NSE: ABSA)", "ceo_name": "Abdi Mohamed", "ceo_linkedin": "https://ke.linkedin.com/in/abdimmohamed", "cto_name": "Moses Okundi (CITO)", "cto_linkedin": "", "key_pain": "NII declined 6%; hired M-Pesa's Sitoyo for mobile-first pivot; already uses iiDENTIFii + JUMO", "pain_points_detail": ["NII declined 6% due to CBK rate cuts", "Already uses iiDENTIFii + JUMO but needs more sophisticated fraud prevention", "Hired M-Pesa's Sitoyo - major mobile-first banking push incoming"], "current_vendors": "iiDENTIFii (biometric eKYC) + JUMO (digital lending scoring)", "outreach_angle": "Complement iiDENTIFii/JUMO with deeper telco-AI scoring as Absa pivots to mobile-first under ex-M-Pesa leadership", "buying_signal": "Hired M-Pesa's Sitoyo Lopokoiyit (Apr 2026); proven third-party tech buyer; NII declining", "est_deal_value": "$200K-$800K ARR", "source_competitors": "iiDENTIFii, JUMO", "discovery_method": "competitor_extraction (iiDENTIFii, JUMO)"}, {"id": 6, "priority": 4, "company": "Airtel Kenya", "website": "airtel.co.ke", "linkedin": "https://ke.linkedin.com/company/airtel-kenya", "industry": "Telecommunications", "sub_industry": "Mobile Network Operator / Mobile Money", "hq": "Nairobi, Kenya", "headcount": "600", "revenue": "KES 58B (~$450M est.)", "revenue_usd": 450000000, "funding_stage": "Subsidiary of Airtel Africa PLC (LSE: AAF)", "ceo_name": "Ashish Malhotra", "ceo_linkedin": "https://www.linkedin.com/in/ashishmalhotra/", "cto_name": "N/A", "cto_linkedin": "", "key_pain": "Mobile money scaling (20M+ subscribers); JUMO client for KopaCash lending; needs AI credit scoring", "pain_points_detail": ["Mobile money scaling with 20M+ Kenya subscribers", "KopaCash lending via JUMO needs credit scoring upgrade", "Competing with M-Pesa requires differentiated financial products"], "current_vendors": "JUMO (KopaCash digital lending platform)", "outreach_angle": "Telco-native AI scoring to scale Airtel Money lending beyond JUMO; leverage telco data Airtel already has", "buying_signal": "JUMO client for KopaCash; Airtel Africa group investing heavily in mobile money ($145B transaction value)", "est_deal_value": "$200K-$800K ARR", "source_competitors": "JUMO", "discovery_method": "competitor_extraction (JUMO)"}, {"id": 7, "priority": 4, "company": "Twiga Foods", "website": "twiga.com", "linkedin": "https://www.linkedin.com/company/twiga-foods", "industry": "Agri-Supply Chain / B2B Commerce", "sub_industry": "AgriTech / Embedded Finance", "hq": "Nairobi, Kenya", "headcount": "1,000", "revenue": "$50M+ (est.)", "revenue_usd": 50000000, "funding_stage": "Series C ($50M, 2021)", "ceo_name": "Charles Ballard", "ceo_linkedin": "", "cto_name": "N/A", "cto_linkedin": "", "key_pain": "Merchant credit scoring for BNPL/trade credit with informal retailers lacking credit history", "pain_points_detail": ["Informal merchants lack formal credit history for BNPL underwriting", "Multi-market KYC across varying ID systems", "Fraud in digital payments and merchant financing"], "current_vendors": "Smile ID (biometric KYC) + Pezesha (embedded lending)", "outreach_angle": "Telco-based alt scoring for informal merchant BNPL underwriting - complement Smile ID/Pezesha stack", "buying_signal": "Smile ID + Pezesha client - proven buyer; $50M Series C; merchant financing is core", "est_deal_value": "$100K-$400K ARR", "source_competitors": "Smile ID, Pezesha", "discovery_method": "competitor_extraction (Smile ID, Pezesha)"}, {"id": 8, "priority": 3, "company": "Co-operative Bank", "website": "co-opbank.co.ke", "linkedin": "https://ke.linkedin.com/company/co-operative-bank-of-kenya", "industry": "Banking & Financial Services", "sub_industry": "Co-operative Banking / SACCO Services", "hq": "Nairobi, Kenya", "headcount": "4,800", "revenue": "KES 87B (~$670M)", "revenue_usd": 670000000, "funding_stage": "Public (NSE: COOP)", "ceo_name": "Dr. Gideon Muriuki", "ceo_linkedin": "https://ke.linkedin.com/in/dr-gideon-muriuki-cbs-mbs-7211b123a", "cto_name": "N/A", "cto_linkedin": "", "key_pain": "SACCO ecosystem needs scalable credit assessment for members with thin credit files; digital transformation lag", "pain_points_detail": ["SACCO members often lack formal credit histories", "SME lending up 12.7% increases credit risk exposure", "MCo-op Cash lags M-Pesa ecosystem in digital features"], "current_vendors": "CRB (traditional credit reference bureau) only", "outreach_angle": "Greenfield opportunity: introduce alt credit scoring to SACCO ecosystem serving millions with thin files", "buying_signal": "Record KSh 40.3B PBT; 12.7% loan growth; SACCO transformation underway", "est_deal_value": "$300K-$1M ARR", "source_competitors": "CRBs (Metropol, TransUnion)", "discovery_method": "direct_research"}, {"id": 9, "priority": 3, "company": "Standard Chartered Kenya", "website": "sc.com/ke", "linkedin": "https://www.linkedin.com/company/standard-chartered-bank-kenya", "industry": "Banking & Financial Services", "sub_industry": "International Banking / Wealth Management", "hq": "Nairobi, Kenya", "headcount": "1,200", "revenue": "KES 32B (~$250M)", "revenue_usd": 250000000, "funding_stage": "Public (NSE: SCBK)", "ceo_name": "Birju Sanghrajka (new, Apr 2026)", "ceo_linkedin": "https://www.linkedin.com/in/bsanghrajka/", "cto_name": "Jaine Mwai (CTOO)", "cto_linkedin": "", "key_pain": "Revenue down 16.5%, profit down 38%; new CEO = vendor evaluation window; Solv Kenya MSME lending needs scaling", "pain_points_detail": ["Revenue down 16.5%, profit down 38% in FY2025", "Solv Kenya/Branch partnership needs better MSME credit scoring", "CEO transition creates vendor evaluation window"], "current_vendors": "Branch (Solv Kenya credit scoring partnership)", "outreach_angle": "New CEO vendor evaluation window; AI scoring to scale Solv Kenya MSME lending to 100K SMEs target", "buying_signal": "New CEO from April 2026; 38% profit decline = urgency; Solv Kenya targeting 100K SMEs", "est_deal_value": "$200K-$600K ARR", "source_competitors": "Branch (Solv partnership)", "discovery_method": "direct_research"}, {"id": 10, "priority": 3, "company": "Flutterwave", "website": "flutterwave.com", "linkedin": "https://www.linkedin.com/company/flaboratory", "industry": "Payments / FinTech", "sub_industry": "Payment Infrastructure", "hq": "San Francisco (Kenya operations)", "headcount": "900", "revenue": "$250M+ (est.)", "revenue_usd": 250000000, "funding_stage": "Series D ($250M, 2022; $3B+ valuation)", "ceo_name": "Olugbenga Agboola", "ceo_linkedin": "https://www.linkedin.com/in/gbengaagboola/", "cto_name": "N/A", "cto_linkedin": "", "key_pain": "Pan-African merchant onboarding KYC at scale; transaction fraud detection; payments-to-lending expansion", "pain_points_detail": ["Pan-African merchant KYC onboarding at scale", "Transaction fraud detection across multiple markets", "Payments-to-lending expansion opportunity"], "current_vendors": "Smile ID (merchant KYC)", "outreach_angle": "AI fraud scoring for payment transactions + credit scoring if Flutterwave expands into merchant lending", "buying_signal": "Smile ID client; $3B+ valuation; expanding across Africa; payments-to-lending trend", "est_deal_value": "$200K-$800K ARR", "source_competitors": "Smile ID", "discovery_method": "competitor_extraction (Smile ID)"}, {"id": 11, "priority": 3, "company": "Umba", "website": "umba.com", "linkedin": "https://www.linkedin.com/company/umbamobile", "industry": "Banking / FinTech", "sub_industry": "Neobank / Digital Lending", "hq": "Nairobi, Kenya", "headcount": "140", "revenue": "$29M", "revenue_usd": 29000000, "funding_stage": "Series A ($15M) + $5M debt facility", "ceo_name": "Tiernan Kennedy", "ceo_linkedin": "https://www.linkedin.com/in/tiernank/", "cto_name": "Barry O'Mahony (CFO/Co-Founder)", "cto_linkedin": "https://www.linkedin.com/in/barryomahony/", "key_pain": "Explicitly seeking to refine AI credit scoring engine for thin-file borrowers ($5M debt facility for this purpose)", "pain_points_detail": ["Explicitly seeking AI credit scoring improvement ($5M earmarked)", "KYC compliance across Kenya and Nigeria", "Fraud detection in unsecured digital lending"], "current_vendors": "Smile ID (eKYC) + in-house AI credit scoring (seeking improvement)", "outreach_angle": "Direct fit: Umba explicitly stated $5M facility to refine AI credit scoring - Trusting Social is the solution", "buying_signal": "$5M debt facility specifically for AI credit scoring refinement; Smile ID client; FairMoney acquisition talk", "est_deal_value": "$100K-$300K ARR", "source_competitors": "Smile ID, in-house", "discovery_method": "competitor_extraction (Smile ID)"}, {"id": 12, "priority": 3, "company": "Kyosk Digital Services", "website": "kyosk.app", "linkedin": "https://www.linkedin.com/company/kyosk-app", "industry": "Retail-Tech / B2B Commerce", "sub_industry": "Digital Distribution / Embedded Finance", "hq": "Nairobi, Kenya", "headcount": "690", "revenue": "$155M", "revenue_usd": 155000000, "funding_stage": "Seed (Mitsui & Co. strategic investor)", "ceo_name": "Raphael Afaedor", "ceo_linkedin": "https://www.linkedin.com/in/raphaelafaedor/", "cto_name": "Leiyan Sankona", "cto_linkedin": "https://www.linkedin.com/in/leiyan-sankona/", "key_pain": "300K+ informal retail outlets need merchant credit scoring for BNPL/trade credit with no formal credit history", "pain_points_detail": ["Informal retailers lack formal credit history for trade credit", "300K+ outlets requiring KYC across 4 markets", "Fraud in merchant onboarding and order manipulation"], "current_vendors": "Pezesha (embedded lending/credit partner)", "outreach_angle": "Telco-based alt scoring for 300K informal merchant BNPL underwriting - complement Pezesha lending stack", "buying_signal": "Pezesha client; 300K merchants; Mitsui strategic backing; 4-market expansion", "est_deal_value": "$100K-$400K ARR", "source_competitors": "Pezesha", "discovery_method": "competitor_extraction (Pezesha)"}, {"id": 13, "priority": 2, "company": "I&M Group", "website": "imbankgroup.com", "linkedin": "https://www.linkedin.com/company/imbankke", "industry": "Banking & Financial Services", "sub_industry": "Commercial Banking", "hq": "Nairobi, Kenya", "headcount": "2,000", "revenue": "$341M", "revenue_usd": 341000000, "funding_stage": "Public (NSE: I&M)", "ceo_name": "Kihara Maina", "ceo_linkedin": "https://www.linkedin.com/in/kihara-maina-4121838/", "cto_name": "N/A", "cto_linkedin": "", "key_pain": "Recently launched unsecured lending - actively building credit scoring capabilities not previously available", "pain_points_detail": ["Credit scoring automation for unsecured lending scale-up", "Digital transformation across 5 regional markets", "SME and retail lending risk management"], "current_vendors": "In-house (newly built unsecured lending platform)", "outreach_angle": "Greenfield: I&M just launched unsecured lending and explicitly lacks credit scoring - ideal timing", "buying_signal": "Just launched unsecured lending; 22% PBT growth; regional expansion (5 markets)", "est_deal_value": "$200K-$600K ARR", "source_competitors": "None identified", "discovery_method": "lookalike_expansion"}, {"id": 14, "priority": 2, "company": "Family Bank", "website": "familybank.co.ke", "linkedin": "https://www.linkedin.com/company/family-bank-ltd", "industry": "Banking & Financial Services", "sub_industry": "SME / MSME Banking", "hq": "Nairobi, Kenya", "headcount": "1,700", "revenue": "$90M", "revenue_usd": 90000000, "funding_stage": "Public (NSE: FBANK)", "ceo_name": "Nancy Njau", "ceo_linkedin": "https://www.linkedin.com/in/nancy-njau-798278149/", "cto_name": "Carlpeter Ngunuh (CIO)", "cto_linkedin": "https://www.linkedin.com/in/carlpeter-ngunuh/", "key_pain": "$4M/month micro-loan disbursements at $100 avg ticket - high-volume thin-file scoring needed", "pain_points_detail": ["$4M monthly micro-loan disbursements at $100 avg - needs thin-file scoring", "High fraud exposure in low-ticket unsecured lending", "Competitive pressure from fintechs and tier-1 banks"], "current_vendors": "Modefin (digital lending platform) + CRBs (Metropol/TransUnion)", "outreach_angle": "Alt scoring for high-volume micro-lending ($4M/month at $100 avg) - exact Trusting Social use case", "buying_signal": "38.7% PAT growth; $4M monthly micro-loans; new CEO (Jan 2024); Modefin platform ready for scoring integration", "est_deal_value": "$150K-$500K ARR", "source_competitors": "Modefin, CRBs", "discovery_method": "lookalike_expansion"}, {"id": 15, "priority": 2, "company": "Jubilee Insurance", "website": "jubileeinsurance.com", "linkedin": "https://www.linkedin.com/company/jubileeinsurance", "industry": "Insurance", "sub_industry": "Composite Insurance / Asset Management", "hq": "Nairobi, Kenya", "headcount": "2,600", "revenue": "$144M", "revenue_usd": 144000000, "funding_stage": "Public (NSE: JUB)", "ceo_name": "Dr. Julius Kipngetich", "ceo_linkedin": "https://www.linkedin.com/in/julius-kipngetich-4136a1b4/", "cto_name": "Stanley Mwangi Chege (CIO)", "cto_linkedin": "https://www.linkedin.com/in/stanleychege/", "key_pain": "Fraud detection for claims + digital KYC across 5 East African markets; Disrupt EA 2030 strategy", "pain_points_detail": ["Fraud detection in insurance claims and onboarding", "Digital KYC across 5 East African markets (1.9M clients)", "Credit scoring for insurance premium financing products"], "current_vendors": "Building in-house via Digital/J-Hub innovation center", "outreach_angle": "AI fraud detection for insurance claims + multi-market eKYC for 1.9M clients across 5 countries", "buying_signal": "Hiring Chief Transformation Officer; Disrupt EA 2030 strategy; targeting 50% digital revenue", "est_deal_value": "$200K-$600K ARR", "source_competitors": "None identified (building in-house)", "discovery_method": "lookalike_expansion"}, {"id": 16, "priority": 2, "company": "Cellulant", "website": "cellulant.io", "linkedin": "https://www.linkedin.com/company/cellulant", "industry": "Payments / FinTech", "sub_industry": "Pan-African Payment Infrastructure", "hq": "Nairobi, Kenya", "headcount": "550", "revenue": "$112M", "revenue_usd": 112000000, "funding_stage": "Series C ($47.5M, led by The Rise Fund)", "ceo_name": "Peter O'Toole", "ceo_linkedin": "https://www.linkedin.com/in/peter-o-toole-66b8a215/", "cto_name": "Andy O'Sullivan", "cto_linkedin": "https://www.linkedin.com/in/andyosullivan/", "key_pain": "Merchant identity verification across 35+ African markets; 1M+ daily transaction fraud detection", "pain_points_detail": ["Merchant verification across 35+ African markets", "Transaction fraud detection at 1M+ daily volume", "Credit risk assessment for potential merchant lending"], "current_vendors": "In-house PCI-DSS v4.0 fraud prevention", "outreach_angle": "AI-driven merchant KYC/KYB at pan-African scale + credit scoring for payments-to-lending expansion", "buying_signal": "$160M+ total funding; 1M+ daily transactions; PCI-DSS certified; payments-to-lending trend", "est_deal_value": "$200K-$600K ARR", "source_competitors": "In-house", "discovery_method": "lookalike_expansion"}, {"id": 17, "priority": 2, "company": "Pesapal", "website": "pesapal.com", "linkedin": "https://www.linkedin.com/company/pesapal", "industry": "Payments / FinTech", "sub_industry": "Payment Gateway / PSP", "hq": "Nairobi, Kenya", "headcount": "350", "revenue": "$10.5M", "revenue_usd": 10500000, "funding_stage": "Private (KCB Group minority stake, Oct 2025)", "ceo_name": "Agosta Liko", "ceo_linkedin": "https://www.linkedin.com/in/agostaliko/", "cto_name": "Ong'ele Lazaro", "cto_linkedin": "https://www.linkedin.com/in/ongelelazaro/", "key_pain": "12M monthly transactions; KCB partnership signals SME lending expansion needing merchant credit scoring", "pain_points_detail": ["Merchant fraud prevention at 12M monthly transactions", "KYC/KYB for CBK PSP compliance", "Credit scoring for merchant lending with KCB backing"], "current_vendors": "In-house (60-person engineering team)", "outreach_angle": "Merchant credit scoring for payments-to-lending play with KCB backing; CEO has credit scoring background", "buying_signal": "KCB strategic investment (Oct 2025); CEO has credit scoring expertise; 12M monthly transactions", "est_deal_value": "$100K-$400K ARR", "source_competitors": "In-house", "discovery_method": "lookalike_expansion"}, {"id": 18, "priority": 1, "company": "MarketForce / Cloud9 Money", "website": "marketforce360.com", "linkedin": "https://www.linkedin.com/company/marketforcehq", "industry": "FinTech / B2B Commerce", "sub_industry": "Merchant SuperApp (wound down)", "hq": "Nairobi, Kenya", "headcount": "50 (reduced from 300)", "revenue": "$12.6M (peak era)", "revenue_usd": 12600000, "funding_stage": "Series A ($40M, 2022) - wound down Apr 2024; Cloud9 Money launched", "ceo_name": "Tesh Mbaabu", "ceo_linkedin": "https://www.linkedin.com/in/teshmbaabu/", "cto_name": "Mesongo Sibuti", "cto_linkedin": "https://www.linkedin.com/in/mesongo/", "key_pain": "Merchant credit scoring for BNPL with thin-file informal merchants (legacy pain, now Cloud9 pivot)", "pain_points_detail": ["Thin-file merchant BNPL underwriting (historical)", "Multi-market KYC across 5 African markets (historical)", "Fraud prevention in digital payments (historical)"], "current_vendors": "Smile ID (KYC) + Pezesha (credit) - historical", "outreach_angle": "Monitor Cloud9 Money launch - if they scale digital banking, thin-file scoring will be needed again", "buying_signal": "Founders launched Cloud9 Money neobank; Y Combinator backed; proven need for alt scoring", "est_deal_value": "$50K-$150K ARR (if Cloud9 scales)", "source_competitors": "Smile ID, Pezesha (historical)", "discovery_method": "competitor_extraction (Smile ID, Pezesha)"}, {"id": 19, "priority": 1, "company": "Musoni Microfinance", "website": "musoni.co.ke", "linkedin": "https://www.linkedin.com/company/musoni-kenya-ltd-", "industry": "Microfinance", "sub_industry": "Digital Microfinance", "hq": "Nairobi, Kenya", "headcount": "310", "revenue": "$5-15M (est.)", "revenue_usd": 10000000, "funding_stage": "Grant/Impact funded ($5.26M+)", "ceo_name": "Barbara Asumadu", "ceo_linkedin": "https://www.linkedin.com/in/barbara-asumadu/", "cto_name": "N/A", "cto_linkedin": "", "key_pain": "Credit scoring for unbanked micro-borrowers below CRB radar; pioneer cashless MFI since 2010", "pain_points_detail": ["Micro-borrowers have thin files below CRB radar", "Rural borrower KYC at scale across 25 branches", "Identity fraud in mobile money disbursements"], "current_vendors": "Metropol CRB + Musoni System (core banking)", "outreach_angle": "Telco-based scoring for micro-borrowers below CRB threshold - perfect MFI use case", "buying_signal": "Metropol client; recently appointed CRO; expanding into venture financing via Musoni Capital", "est_deal_value": "$50K-$150K ARR", "source_competitors": "Metropol CRB", "discovery_method": "competitor_extraction (Metropol)"}, {"id": 20, "priority": 1, "company": "Maisha MFB (now On It MFB)", "website": "maishabank.com", "linkedin": "https://www.linkedin.com/company/maisha-microfinance-bank-limited", "industry": "Microfinance", "sub_industry": "Microfinance Bank", "hq": "Nairobi, Kenya", "headcount": "17", "revenue": "$1-3M (est.)", "revenue_usd": 2000000, "funding_stage": "Acquired by Shara Inc. (May 2023)", "ceo_name": "Ireneus Gichana", "ceo_linkedin": "", "cto_name": "N/A (decisions by Shara parent)", "cto_linkedin": "", "key_pain": "Alternative credit scoring for SME borrowers in Shara's value chain financing; CredoLab client", "pain_points_detail": ["SME credit scoring for Shara's value chain financing", "Digital KYC transformation from manual processes", "Scaling from 17 employees to tech-driven digital bank"], "current_vendors": "CredoLab (device-based alternative scoring)", "outreach_angle": "Greenfield: Shara acquiring banking license to build tech-driven digital bank - embed scoring from ground up", "buying_signal": "CredoLab client; Shara (ex-Twiga founders) rebuilding as tech-driven MFB; greenfield tech stack", "est_deal_value": "$30K-$100K ARR", "source_competitors": "CredoLab", "discovery_method": "competitor_extraction (CredoLab)"}];
+let sortCol = -1, sortAsc = true;
+
+function renderTable(data) {
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = '';
+    data.forEach((a, idx) => {
+        const tr = document.createElement('tr');
+        tr.style.cursor = 'pointer';
+        tr.onclick = () => toggleDetail(a.id);
+        tr.innerHTML = `
+            <td><span class="priority-badge p${a.priority}">${a.priority}</span></td>
+            <td><strong>${a.company}</strong><br><small style="color:#888">${a.hq}</small></td>
+            <td>${a.industry}</td>
+            <td>${a.headcount}</td>
+            <td>${a.revenue}</td>
+            <td style="max-width:300px">${a.key_pain.substring(0,120)}...</td>
+            <td><strong>${a.est_deal_value}</strong></td>
+        `;
+        tbody.appendChild(tr);
+
+        const detailTr = document.createElement('tr');
+        detailTr.className = 'detail-row';
+        detailTr.id = 'detail-' + a.id;
+        detailTr.innerHTML = `<td colspan="7">
+            <div class="detail-grid">
+                <div>
+                    <div class="detail-section">
+                        <h4>Company Profile</h4>
+                        <p><strong>Website:</strong> <a href="https://${a.website}" target="_blank">${a.website}</a>
+                        &nbsp;|&nbsp; <strong>LinkedIn:</strong> <a href="${a.linkedin}" target="_blank">View</a></p>
+                        <p><strong>Sub-Industry:</strong> ${a.sub_industry}</p>
+                        <p><strong>Funding:</strong> ${a.funding_stage}</p>
+                        <p><strong>Discovery:</strong> ${a.discovery_method}</p>
+                    </div>
+                    <div class="detail-section">
+                        <h4>Leadership</h4>
+                        <p><strong>CEO:</strong> ${a.ceo_name} ${a.ceo_linkedin ? '<a href="'+a.ceo_linkedin+'" target="_blank">[LinkedIn]</a>' : ''}</p>
+                        <p><strong>CTO/CDO:</strong> ${a.cto_name} ${a.cto_linkedin ? '<a href="'+a.cto_linkedin+'" target="_blank">[LinkedIn]</a>' : ''}</p>
+                    </div>
+                    <div class="detail-section">
+                        <h4 class="pain-highlight">Pain Points</h4>
+                        <ul>${a.pain_points_detail.map(p => '<li class="pain-highlight">' + p + '</li>').join('')}</ul>
+                    </div>
+                </div>
+                <div>
+                    <div class="detail-section">
+                        <h4>Current Vendors <span class="vendor-gap">(Gaps = Opportunity)</span></h4>
+                        <p>${a.current_vendors}</p>
+                        <p><strong>Competitors:</strong> ${a.source_competitors}</p>
+                    </div>
+                    <div class="detail-section">
+                        <h4>Outreach Strategy</h4>
+                        <p style="color:#0276f1;font-weight:600">${a.outreach_angle}</p>
+                    </div>
+                    <div class="detail-section">
+                        <h4>Buying Signals</h4>
+                        <p style="color:#27ae60;font-weight:600">${a.buying_signal}</p>
+                    </div>
+                </div>
+            </div>
+        </td>`;
+        tbody.appendChild(detailTr);
+    });
+}
+
+function toggleDetail(id) {
+    const el = document.getElementById('detail-' + id);
+    el.classList.toggle('show');
+}
+
+function filterTable() {
+    const ind = document.getElementById('filterIndustry').value;
+    const pri = document.getElementById('filterPriority').value;
+    const search = document.getElementById('searchBox').value.toLowerCase();
+    let filtered = accounts.filter(a => {
+        if (ind && !a.industry.toLowerCase().includes(ind.toLowerCase())) return false;
+        if (pri && a.priority != parseInt(pri)) return false;
+        if (search) {
+            const hay = (a.company + a.key_pain + a.current_vendors + a.outreach_angle + a.industry + a.source_competitors).toLowerCase();
+            if (!hay.includes(search)) return false;
+        }
+        return true;
+    });
+    renderTable(filtered);
+}
+
+function sortTable(col) {
+    sortAsc = (sortCol === col) ? !sortAsc : true;
+    sortCol = col;
+    const keys = ['priority','company','industry','headcount','revenue','key_pain','est_deal_value'];
+    const key = keys[col];
+    const numCols = [0, 3];
+    accounts.sort((a, b) => {
+        let va = a[key], vb = b[key];
+        if (numCols.includes(col)) {
+            va = typeof va === 'string' ? parseInt(va.replace(/[^0-9]/g,'')) || 0 : va;
+            vb = typeof vb === 'string' ? parseInt(vb.replace(/[^0-9]/g,'')) || 0 : vb;
+        }
+        if (va < vb) return sortAsc ? -1 : 1;
+        if (va > vb) return sortAsc ? 1 : -1;
+        return 0;
+    });
+    filterTable();
+}
+
+function exportJSON() {
+    const blob = new Blob([JSON.stringify(accounts, null, 2)], {type: 'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'trusting_social_kenya_accounts.json';
+    a.click();
+}
+
+// Initial render sorted by priority desc
+accounts.sort((a, b) => b.priority - a.priority);
+renderTable(accounts);
+</script>
+</body>
+</html>

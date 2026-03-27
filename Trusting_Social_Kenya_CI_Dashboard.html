@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trusting Social — Kenya Competitive Intelligence</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--navy:#183763;--blue:#0276f1;--blue-light:#e8f2ff;--red:#e74c3c;--orange:#f39c12;--green:#27ae60;--gray:#f5f7fa;--gray-border:#e1e5eb;--text:#2c3e50;--text-light:#7f8c8d;--white:#fff;--shadow:0 2px 8px rgba(0,0,0,.08);--shadow-hover:0 6px 20px rgba(0,0,0,.12);--radius:10px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,sans-serif;background:var(--gray);color:var(--text);line-height:1.6}
+a{color:var(--blue);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* Sticky Header */
+.header{position:sticky;top:0;z-index:100;background:var(--navy);color:var(--white);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 10px rgba(0,0,0,.2)}
+.header h1{font-size:20px;font-weight:700;letter-spacing:-.3px}
+.header-meta{display:flex;gap:20px;font-size:13px;opacity:.85}
+.header-meta span{background:rgba(255,255,255,.15);padding:4px 12px;border-radius:20px}
+
+/* Filter Bar */
+.filter-bar{background:var(--white);padding:14px 32px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;border-bottom:1px solid var(--gray-border);position:sticky;top:56px;z-index:99}
+.filter-bar label{font-size:12px;font-weight:600;color:var(--text-light);text-transform:uppercase;letter-spacing:.5px}
+.filter-group{display:flex;flex-direction:column;gap:4px}
+.filter-bar select,.filter-bar input{padding:8px 12px;border:1px solid var(--gray-border);border-radius:6px;font-size:13px;background:var(--white);min-width:180px}
+.filter-bar input{min-width:240px}
+.filter-bar select:focus,.filter-bar input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(2,118,241,.12)}
+
+/* Container */
+.container{max-width:1400px;margin:0 auto;padding:24px 32px}
+.section-title{font-size:22px;font-weight:700;color:var(--navy);margin:32px 0 16px;padding-bottom:8px;border-bottom:2px solid var(--blue)}
+.section-title:first-child{margin-top:0}
+
+/* Subject Card */
+.subject-card{background:linear-gradient(135deg,var(--navy) 0%,#1e4a8a 100%);color:var(--white);border-radius:var(--radius);padding:28px 32px;margin-bottom:32px;box-shadow:var(--shadow)}
+.subject-card h2{font-size:24px;margin-bottom:6px}
+.subject-card .subtitle{opacity:.8;font-size:14px;margin-bottom:16px}
+.subject-stats{display:flex;gap:24px;flex-wrap:wrap;margin-bottom:16px}
+.subject-stat{background:rgba(255,255,255,.12);padding:12px 20px;border-radius:8px;text-align:center;min-width:140px}
+.subject-stat .num{font-size:22px;font-weight:700}
+.subject-stat .lbl{font-size:11px;opacity:.75;text-transform:uppercase;letter-spacing:.5px}
+.product-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.product-tag{background:rgba(255,255,255,.18);padding:5px 14px;border-radius:20px;font-size:12px;font-weight:500}
+.management-list{display:flex;gap:16px;flex-wrap:wrap;margin-top:16px}
+.mgmt-person{background:rgba(255,255,255,.1);padding:8px 14px;border-radius:8px;font-size:13px}
+.mgmt-person strong{display:block;font-size:14px}
+.mgmt-person span{opacity:.75;font-size:12px}
+
+/* Cards Grid */
+.cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:32px}
+@media(max-width:1100px){.cards-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){.cards-grid{grid-template-columns:1fr}}
+
+.comp-card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;transition:all .2s;cursor:pointer;border:1px solid var(--gray-border)}
+.comp-card:hover{box-shadow:var(--shadow-hover);transform:translateY(-2px)}
+.comp-card-header{padding:18px 20px 14px;border-bottom:1px solid var(--gray-border)}
+.comp-card-header h3{font-size:17px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.comp-card-header h3 a{color:var(--text);font-size:12px;font-weight:400}
+.badges{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.badge{padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+.badge-category{background:var(--blue-light);color:var(--blue)}
+.badge-high{background:#fde8e8;color:var(--red)}
+.badge-medium{background:#fef3e2;color:#d68910}
+.badge-low{background:#e8f8f0;color:var(--green)}
+.overlap-tags{display:flex;gap:5px;flex-wrap:wrap;margin:8px 0}
+.overlap-tag{background:var(--gray);padding:2px 8px;border-radius:4px;font-size:11px;color:var(--text-light)}
+.comp-card-body{padding:14px 20px}
+.comp-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+.comp-stat{font-size:12px;color:var(--text-light)}
+.comp-stat strong{color:var(--text);font-weight:600}
+.battle-summary{font-size:13px;color:var(--navy);font-weight:500;padding:8px 0;border-top:1px solid var(--gray-border);margin-top:8px}
+.comp-card-expand{display:none;padding:0 20px 18px;font-size:13px;line-height:1.7}
+.comp-card.expanded .comp-card-expand{display:block}
+.expand-section{margin-bottom:12px}
+.expand-section h4{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+.expand-section ul{padding-left:18px}
+.expand-section li{margin-bottom:3px;font-size:12px}
+.leadership-grid{display:flex;flex-wrap:wrap;gap:8px}
+.leader-chip{background:var(--gray);padding:6px 10px;border-radius:6px;font-size:12px}
+.leader-chip strong{display:block}
+.leader-chip a{font-size:11px}
+.pain-item{background:#fff8f0;padding:8px 10px;border-radius:6px;margin-bottom:6px;border-left:3px solid var(--orange);font-size:12px}
+.signal-item{background:var(--blue-light);padding:6px 10px;border-radius:6px;margin-bottom:4px;font-size:12px}
+.click-hint{text-align:center;padding:8px;font-size:11px;color:var(--blue);font-weight:500;border-top:1px solid var(--gray-border)}
+
+/* Comparison Table */
+.table-wrap{overflow-x:auto;margin-bottom:32px;background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--gray-border)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:var(--navy);color:var(--white);padding:12px 14px;text-align:left;font-weight:600;cursor:pointer;white-space:nowrap;user-select:none;position:relative}
+th:hover{background:#1e4a8a}
+th .sort-arrow{margin-left:4px;font-size:10px;opacity:.6}
+td{padding:10px 14px;border-bottom:1px solid var(--gray-border)}
+tr:hover td{background:var(--blue-light)}
+tr:nth-child(even) td{background:#fafbfc}
+tr:nth-child(even):hover td{background:var(--blue-light)}
+.threat-cell{font-weight:700;text-transform:uppercase;font-size:12px}
+.threat-cell.high{color:var(--red)}
+.threat-cell.medium{color:#d68910}
+.threat-cell.low{color:var(--green)}
+
+/* Gap Cards */
+.gaps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:16px;margin-bottom:32px}
+.gap-card{background:var(--white);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);border:1px solid var(--gray-border);border-top:3px solid var(--blue)}
+.gap-card h3{font-size:16px;margin-bottom:8px;color:var(--navy)}
+.gap-card .priority{display:inline-block;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:700;text-transform:uppercase;margin-bottom:8px}
+.priority-highest{background:#fde8e8;color:var(--red)}
+.priority-high{background:#fef3e2;color:#d68910}
+.gap-card p{font-size:13px;color:var(--text-light);margin-bottom:8px}
+.gap-detail{font-size:12px;display:flex;gap:16px;flex-wrap:wrap}
+.gap-detail span{background:var(--gray);padding:4px 10px;border-radius:6px}
+.gap-detail strong{color:var(--navy)}
+
+/* Watch List */
+.watch-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px}
+@media(max-width:900px){.watch-grid{grid-template-columns:1fr}}
+.watch-card{background:var(--white);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);border:1px solid var(--gray-border);border-left:4px solid var(--orange)}
+.watch-card h3{font-size:15px;color:var(--navy);margin-bottom:6px}
+.watch-card .timeframe{font-size:11px;background:var(--orange);color:var(--white);padding:2px 8px;border-radius:10px;display:inline-block;margin-bottom:8px}
+.watch-card p{font-size:13px;color:var(--text-light);margin-bottom:8px}
+.watch-card .action{font-size:12px;font-weight:600;color:var(--blue);padding-top:6px;border-top:1px solid var(--gray-border)}
+
+/* Intensity Bars */
+.intensity-section{background:var(--white);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);border:1px solid var(--gray-border);margin-bottom:32px}
+.intensity-row{display:flex;align-items:center;margin-bottom:14px;gap:16px}
+.intensity-label{min-width:180px;font-size:14px;font-weight:600;color:var(--navy)}
+.intensity-bar-wrap{flex:1;background:var(--gray);border-radius:20px;height:28px;overflow:hidden;position:relative}
+.intensity-bar{height:100%;border-radius:20px;display:flex;align-items:center;justify-content:flex-end;padding-right:12px;font-size:11px;font-weight:700;color:var(--white);transition:width .6s}
+.intensity-very_high{background:linear-gradient(90deg,var(--red),#c0392b);width:95%}
+.intensity-high{background:linear-gradient(90deg,var(--orange),#e67e22);width:75%}
+.intensity-medium{background:linear-gradient(90deg,#f1c40f,#d4ac0d);width:55%}
+.intensity-low{background:linear-gradient(90deg,var(--green),#1e8449);width:25%}
+.intensity-players{min-width:80px;text-align:right;font-size:12px;color:var(--text-light)}
+
+/* Export Button */
+.export-btn{display:inline-flex;align-items:center;gap:8px;background:var(--navy);color:var(--white);padding:12px 24px;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:background .2s;margin-bottom:32px}
+.export-btn:hover{background:var(--blue)}
+.export-btn svg{width:18px;height:18px;fill:currentColor}
+
+.footer{text-align:center;padding:24px;font-size:12px;color:var(--text-light);border-top:1px solid var(--gray-border)}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <h1>Trusting Social — Kenya Competitive Intelligence</h1>
+  <div class="header-meta">
+    <span id="header-date"></span>
+    <span>10 Competitors Analyzed</span>
+  </div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <div class="filter-group">
+    <label>Product Area</label>
+    <select id="filterProduct" onchange="applyFilters()">
+      <option value="">All Products</option>
+      <option value="credit_scoring">Credit Scoring</option>
+      <option value="ekyc">eKYC / Identity</option>
+      <option value="ai_agents">AI Agents</option>
+      <option value="fraud">Fraud Prevention</option>
+      <option value="embedded">Embedded Finance</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <label>Threat Level</label>
+    <select id="filterThreat" onchange="applyFilters()">
+      <option value="">All Levels</option>
+      <option value="high">High</option>
+      <option value="medium">Medium</option>
+      <option value="low">Low</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <label>Search</label>
+    <input type="text" id="filterSearch" placeholder="Search by name, description..." oninput="applyFilters()">
+  </div>
+</div>
+
+<div class="container" id="main-content">
+  <!-- JS renders everything here -->
+</div>
+
+<div class="footer">
+  Trusting Social Kenya Competitive Intelligence Dashboard &mdash; Generated March 2026
+</div>
+
+<script>
+// Embed the full JSON data
+const DATA = {"metadata": {"version": "2.0", "generated_at": "2026-03-26T11:08:33.992399", "skill": "competitive-intelligence", "chain_ready": true, "geography": "Kenya", "product_areas": ["Alternative Data Credit Scoring", "eKYC / Digital Identity", "AI Agents", "Fraud Prevention", "Embedded Finance"]}, "subject_company": {"name": "Trusting Social", "website": "https://trustingsocial.com", "hq": "Ho Chi Minh City, Vietnam", "founded_year": 2013, "ceo": "Nguyen Nguyen", "cto": "Tuyen Huynh", "cfo": "Jaideep Lakshminarayanan", "headcount": "200+", "description": "Full-stack AI suite for banks. 180+ FI clients, 800M+ scored consumers across India, Indonesia, Vietnam, Philippines. Products: Trust Insight (telco/selfie credit scoring), Trust Vision (eKYC, deepfake detection, face OTP), EFMS (fraud management platform), AI Agents (SOPHIA sales, FRANK fraud, ALICE servicing), Kompato AI (US collections agency). 70M+ monthly eKYC checks.", "key_stats": {"fi_clients": "180+", "consumers_scored": "800M+", "monthly_ekyc_checks": "70M+", "markets": ["India", "Indonesia", "Vietnam", "Philippines"], "expanding_to": ["Mexico", "Colombia", "Kenya"]}, "products": [{"name": "Trust Insight", "category": "Credit Scoring", "description": "Telco-data credit score, income score, selfie biometric credit score, AI agents for onboarding"}, {"name": "Trust Vision", "category": "eKYC / Digital Identity", "description": "Selfie ID matching, ID Reader OCR, deepfake detection, face authentication, face OTP"}, {"name": "EFMS", "category": "Fraud Prevention", "description": "Enterprise fraud management platform with centralized biometric fraud database (379K+ suspected hits)"}, {"name": "AI Agents", "category": "AI Banking Automation", "description": "SOPHIA (AI sales), FRANK (AI fraud), ALICE (AI servicing), collections AI via Kompato"}, {"name": "Embedded Finance Platform", "category": "Lending Infrastructure", "description": "Unified AI credit platform: pre-approval, application, decisioning, issuance, engagement, cross-sell"}], "management": [{"name": "Nguyen Nguyen", "title": "Founder & CEO", "bio": "25+ years in AI and banking"}, {"name": "Tuyen Huynh", "title": "Co-Founder & CTO", "bio": "25+ years AI and data science"}, {"name": "Jaideep Lakshminarayanan", "title": "CFO", "bio": "25+ years investment banking, Ex-Deutsche Bank MD"}, {"name": "Peter Schnall", "title": "VP Strategy", "bio": "35+ years US banking/credit card, Ex-Capital One"}, {"name": "Siddhartha Kohli", "title": "CEO Latin America", "bio": "20+ years telecom, Ex-Vodafone MD"}, {"name": "Pavel Vyhnalek", "title": "Board Member", "bio": "25+ years consumer lending, Ex Home Credit, GE Capital"}]}, "competitors": [{"rank": 1, "name": "TransUnion Kenya", "website": "https://www.transunionafrica.com", "linkedin_url": "https://www.linkedin.com/company/transunion/", "hq": "Nairobi, Kenya (parent: Chicago, USA)", "founded_year": 2010, "headcount": "200+ (Africa segment)", "description": "Kenya's first CBK-licensed CRB (2010). Subsidiary of NYSE-listed TransUnion ($4.6B global revenue). Africa segment revenue $66M FY2024. Launched FICO partnership Feb 2025 with CreditVision Variables (145 data sources) and Kenya-specific FICO Score built on 4M+ records.", "primary_category": "Credit Reference Bureau + Alt-Data Scoring", "products_overlap": ["alternative data credit scoring", "fraud prevention", "identity verification"], "threat_level": "high", "financials": {"revenue_estimate": "$66M (Africa segment FY2024)", "revenue_source": "disclosed", "funding_stage": "public_subsidiary", "parent_market_cap": "$12B+ (NYSE: TRU)", "key_investors": ["Public shareholders"]}, "leadership": [{"name": "Morris Maina", "title": "CEO Kenya", "linkedin_url": "https://www.linkedin.com/in/morris-maina-82b5a517/", "role_type": "ceo", "bio": "Leads TransUnion Kenya operations, oversaw FICO partnership launch"}, {"name": "Lee Naik", "title": "CEO Africa", "linkedin_url": "https://www.linkedin.com/in/leenaik/", "role_type": "ceo", "bio": "Previously CEO of TransUnion SA, now heads all Africa operations"}, {"name": "Michael Rogers", "title": "CPO Africa", "linkedin_url": "https://www.linkedin.com/in/michael-rogers-africa/", "role_type": "functional", "bio": "Appointed Jan 2026, drives product strategy across Africa"}], "products": {"summary": "Credit reporting bureau with regulatory mandate. Now expanding to AI-enhanced scoring via FICO partnership (CreditVision Variables using 145 alternative data points) and fraud/identity verification services.", "key_features": ["CreditVision Variables (145 data points)", "Kenya FICO Score", "Fraud alerts", "Identity verification APIs", "Consumer credit reports"], "pricing_model": "Per-query API + subscription", "pricing_notes": "Regulatory CRB checks are mandated \u2014 all lenders must query"}, "kenya_presence": {"office": "Nairobi", "regulatory": "CBK-licensed CRB (2010)", "key_clients": "All 43 licensed Kenyan banks (mandatory)"}, "pain_points": [{"pain": "Traditional bureau scores miss 60%+ of Kenya's adult population who are thin-file or credit-invisible", "source": "press", "quote": "Only ~5M of 30M+ adults have formal credit bureau records"}, {"pain": "FICO partnership scores still limited to 4M records \u2014 majority of population uncovered", "source": "press", "quote": "Kenya-specific FICO Score built on 4M+ credit records"}, {"pain": "Digital lender clients report CRB data staleness \u2014 scores lag real-time behavioral signals", "source": "linkedin", "quote": "CRB data captures what happened, not what's happening now"}], "battle_scenario": {"ts_wins": "Trusting Social's telco-native scoring covers ALL mobile subscribers (50M+) vs TransUnion's 4M records. Real-time behavioral data vs stale bureau records. Zero friction (no opt-in). Selfie credit score adds orthogonal signal.", "competitor_wins": "TransUnion owns regulated CRB infrastructure \u2014 CBK mandate means every lender MUST check TransUnion. 15-year data moat. FICO brand trust. Partnership strategy (complement, not displace).", "key_differentiator": "TransUnion is the regulated layer \u2014 best play is PARTNERSHIP: Trusting Social data feeding into TransUnion scores, not competing for the CRB contract."}, "strategic_signals": ["Feb 2025: FICO partnership launched with CreditVision Variables", "Jan 2026: Michael Rogers appointed CPO Africa", "FY2024: Africa segment grew 8-13% YoY to $66M revenue", "Investing in identity verification APIs (new competitive vector)"], "scale_metrics": [{"metric": "Kenya credit records", "value": "4M+", "source": "TransUnion press release"}, {"metric": "Africa segment revenue", "value": "$66M FY2024", "source": "TransUnion 10-K"}, {"metric": "Global revenue", "value": "$4.6B", "source": "NYSE filing"}]}, {"rank": 2, "name": "Smile ID", "website": "https://usesmileid.com", "linkedin_url": "https://www.linkedin.com/company/smile-identity/", "hq": "Lagos, Nigeria (pan-African offices)", "founded_year": 2017, "headcount": "51-100", "description": "Africa's largest identity verification provider. 200M+ verifications across 25+ African countries. SmartSelfie biometrics purpose-built for African faces with 99.8% accuracy. Mastercard strategic investment (Sep 2025). Verifies against 5 Kenyan government ID databases covering 36M+ records.", "primary_category": "eKYC / Digital Identity Verification", "products_overlap": ["eKYC", "biometrics", "fraud prevention"], "threat_level": "high", "financials": {"revenue_estimate": "$8-15M (estimated from headcount + funding stage)", "revenue_source": "estimated", "funding_stage": "Series A+", "total_raised": "$31.1M", "last_round": "Mastercard strategic investment", "last_round_date": "Sep 2025", "key_investors": ["Costanoa Ventures", "CRE Venture Capital", "Mastercard"]}, "leadership": [{"name": "Mark Straub", "title": "CEO", "linkedin_url": "https://www.linkedin.com/in/markstraub/", "role_type": "ceo", "bio": "Led Smile ID through Mastercard partnership and 200M+ verification milestone"}, {"name": "Dustin Strydom", "title": "VP Commercial", "linkedin_url": "https://www.linkedin.com/in/dustin-strydom/", "role_type": "cro", "bio": "Heads commercial/sales across Africa"}, {"name": "William Bares", "title": "Senior Advisor (former CTO)", "linkedin_url": "https://www.linkedin.com/in/william-bares/", "role_type": "cto", "bio": "Transitioned from CTO to advisor role; built core SmartSelfie platform"}], "products": {"summary": "Full eKYC stack: SmartSelfie biometric verification, document OCR (supports 8,500+ ID types), liveness detection, AML screening, KYB for businesses. Purpose-built for African faces and IDs.", "key_features": ["SmartSelfie (99.8% accuracy)", "Document Verification (8,500+ ID types)", "Liveness Detection", "AML Check", "KYB", "5 Kenya gov ID databases"], "pricing_model": "Per-verification API pricing", "pricing_notes": "Volume discounts for high-throughput clients"}, "kenya_presence": {"office": "Remote/distributed Kenya team", "regulatory": "Not a CRB \u2014 operates as tech vendor", "key_clients": "Flutterwave, Chipper Cash, multiple Kenyan fintechs"}, "pain_points": [{"pain": "No credit scoring capability \u2014 pure identity play means clients need a separate vendor for underwriting", "source": "g2", "quote": "Great for KYC but we still need TransUnion or another provider for credit checks"}, {"pain": "API latency issues during peak periods reported by some clients", "source": "g2", "quote": "Response times can spike during high-volume periods"}, {"pain": "Pricing becomes expensive at very high volumes compared to in-house alternatives", "source": "linkedin", "quote": "At our scale the per-check cost starts to add up significantly"}], "battle_scenario": {"ts_wins": "Trusting Social offers credit scoring + eKYC as integrated stack. Selfie-based credit score adds monetization on top of identity checks. EFMS fraud database (379K biometric hits) gives deeper fraud intelligence. AI agents add upsell opportunity.", "competitor_wins": "Smile ID has 200M+ Africa verification track record vs TS's zero African deployments. Africa-specific face models (99.8% accuracy across skin tones). 5 Kenya gov ID database integrations already live. Mastercard brand backing.", "key_differentiator": "Smile ID = pure identity. Trusting Social = identity + credit + fraud + AI agents. But Smile ID has the Africa deployment moat."}, "strategic_signals": ["Sep 2025: Mastercard strategic investment", "2023: Acquired Appruve (Ghanaian IDV provider) for geographic expansion", "200M+ verifications milestone reached", "Expanding into KYB for business verification"], "scale_metrics": [{"metric": "Total verifications", "value": "200M+", "source": "usesmileid.com"}, {"metric": "Kenya gov ID databases", "value": "5", "source": "usesmileid.com/countries/kenya"}, {"metric": "Countries covered", "value": "25+", "source": "usesmileid.com"}]}, {"rank": 3, "name": "JUMO", "website": "https://jumo.world", "linkedin_url": "https://www.linkedin.com/company/jumo-world/", "hq": "Cape Town, South Africa", "founded_year": 2014, "headcount": "271", "description": "AI-powered Banking-as-a-Service platform. $8.7B+ lending enabled to 35M people across 9 African countries. AI credit engine (Unify) uses 15,000 predictive features. $304M raised from Goldman Sachs, Fidelity, Visa. New CEO Paul Whelpton (Feb 2026); Joe Mucheru (former Kenya ICT Cabinet Secretary) as Nairobi-based President.", "primary_category": "Embedded Lending / AI BaaS Platform", "products_overlap": ["alternative data credit scoring", "AI agents for banks", "embedded finance"], "threat_level": "high", "financials": {"revenue_estimate": "$40-60M (estimated from headcount + $8.7B lending volume)", "revenue_source": "estimated", "funding_stage": "Series C+", "total_raised": "$304M", "valuation": "$400M", "last_round": "Not disclosed", "key_investors": ["Goldman Sachs", "Fidelity", "Visa", "Kingsway Capital", "Finnfund"]}, "leadership": [{"name": "Paul Whelpton", "title": "CEO (from Feb 2026)", "linkedin_url": "https://www.linkedin.com/in/paulwhelpton/", "role_type": "ceo", "bio": "New CEO Feb 2026, replacing founder Andrew Watkins-Ball"}, {"name": "Joe Mucheru", "title": "President (Nairobi-based)", "linkedin_url": "https://www.linkedin.com/in/joe-mucheru/", "role_type": "functional", "bio": "Former Kenya ICT Cabinet Secretary, leads East Africa strategy"}, {"name": "Andrew Watkins-Ball", "title": "Founder (transitioned)", "linkedin_url": "https://www.linkedin.com/in/andrewwatkinsball/", "role_type": "founder", "bio": "Founded JUMO 2014, transitioned to advisory role Feb 2026"}, {"name": "Buhle Goslar", "title": "CFO", "linkedin_url": "https://www.linkedin.com/in/buhle-goslar/", "role_type": "cfo", "bio": "Oversees JUMO's financial operations and investor relations"}], "products": {"summary": "Full-stack BaaS: AI-powered credit engine (Unify) with 15,000 predictive features, embedded lending (loans, savings, insurance), transaction processing. White-label financial product deployment for banks and MNOs.", "key_features": ["Unify AI credit engine (15,000 features)", "Embedded lending rails", "Savings products", "Insurance rails", "White-label financial products"], "pricing_model": "Revenue share on lending volume", "pricing_notes": "Typically takes revenue share of interest/fees on lending portfolio"}, "kenya_presence": {"office": "Nairobi (Joe Mucheru as President)", "regulatory": "Operates via bank/MNO partners (not directly licensed)", "key_clients": "MTN, Airtel Kenya, bank partners"}, "pain_points": [{"pain": "Platform lock-in \u2014 banks adopting JUMO lose control of their credit decisioning and customer data", "source": "press", "quote": "JUMO's full-stack approach means the bank becomes dependent on one platform for everything"}, {"pain": "Revenue share model erodes bank margins on high-volume lending", "source": "linkedin", "quote": "The rev-share pricing gets expensive at scale \u2014 banks want to internalize the scoring"}, {"pain": "CEO transition creates uncertainty \u2014 founder departing, new CEO establishing direction", "source": "press", "quote": "Paul Whelpton took over as CEO in February 2026, replacing founder Andrew Watkins-Ball"}], "battle_scenario": {"ts_wins": "Trusting Social is modular (buy just scoring, or just eKYC, or just AI agents) vs JUMO's all-or-nothing platform. No platform lock-in. Banks keep control of customer data. Per-API pricing vs revenue share = better economics at scale.", "competitor_wins": "JUMO has $8.7B lending track record + 35M users in Africa. Deep MNO partnerships (MTN, Airtel). Joe Mucheru's political network in Kenya is a major distribution advantage. Proven credit performance data.", "key_differentiator": "Modular vs platform: Trusting Social lets banks adopt individual products without full platform commitment. JUMO forces all-in adoption."}, "strategic_signals": ["Feb 2026: CEO transition \u2014 Paul Whelpton replaces founder Andrew Watkins-Ball", "Joe Mucheru (former Kenya ICT Cabinet Secretary) appointed Nairobi President", "$304M total raised, $400M valuation", "Expanding insurance and savings products beyond core lending"], "scale_metrics": [{"metric": "Total lending enabled", "value": "$8.7B+", "source": "jumo.world"}, {"metric": "People served", "value": "35M+", "source": "jumo.world"}, {"metric": "Countries", "value": "9", "source": "jumo.world"}, {"metric": "AI predictive features", "value": "15,000", "source": "jumo.world"}]}, {"rank": 4, "name": "Tala", "website": "https://tala.co", "linkedin_url": "https://www.linkedin.com/company/talamobile/", "hq": "Santa Monica, USA + Nairobi, Kenya", "founded_year": 2011, "headcount": "896", "description": "Global digital lending platform with patented InSight AI model using 250+ mobile behavioral indicators. 13M+ customers, $7B+ disbursed. $340M revenue (2025). Forbes Fintech 50 for 10th consecutive year. Kenya is flagship market with 130-person Nairobi team. Launched on-chain lending via Huma Finance/Solana ($50M USDC facility, Dec 2025).", "primary_category": "Digital Lending + Alt-Data Credit Scoring", "products_overlap": ["alternative data credit scoring", "embedded finance"], "threat_level": "high", "financials": {"revenue_estimate": "$340M (2025)", "revenue_source": "disclosed", "funding_stage": "Series E", "total_raised": "$350M+", "valuation": "$800M+", "last_round": "On-chain lending facility ($50M USDC)", "last_round_date": "Dec 2025", "key_investors": ["IVP", "Revolution Growth", "GGV Capital", "PayPal Ventures", "Huma Finance"]}, "leadership": [{"name": "Shivani Siroya", "title": "Founder & CEO", "linkedin_url": "https://www.linkedin.com/in/shivanisiroya/", "role_type": "ceo", "bio": "Ex-UBS/Citibank analyst, UN Population Fund. Named Time 100 Most Influential People."}, {"name": "Annstella Mumbi", "title": "General Manager Kenya", "linkedin_url": "https://www.linkedin.com/in/annstella-mumbi/", "role_type": "functional", "bio": "Leads 130-person Kenya team, Tala's flagship market"}, {"name": "Michael Olson", "title": "COO (from Oct 2024)", "linkedin_url": "https://www.linkedin.com/in/michaelolson/", "role_type": "coo", "bio": "Joined Oct 2024 to scale operations"}, {"name": "Nicolas Cabrera", "title": "CPO (from May 2025)", "linkedin_url": "https://www.linkedin.com/in/nicolas-cabrera/", "role_type": "functional", "bio": "Joined May 2025 to lead product development"}], "products": {"summary": "Digital lending app with embedded AI credit scoring. InSight model uses 250+ smartphone behavioral signals (app usage, social graphs, financial transactions, device data) for instant credit decisions. Expanding to savings, financial planning, and on-chain lending.", "key_features": ["InSight AI (250+ behavioral indicators)", "Instant mobile lending", "Savings products", "Financial planning tools", "On-chain lending (Solana/Huma)"], "pricing_model": "Direct lending (interest/fees on loans)", "pricing_notes": "B2C lender, not B2B scoring vendor \u2014 different business model from TS"}, "kenya_presence": {"office": "Nairobi (130 employees)", "regulatory": "CBK Digital Credit Provider license", "key_clients": "Direct consumer \u2014 5M+ Kenya users"}, "pain_points": [{"pain": "Regulatory pressure \u2014 CBK Digital Credit Providers Regulations (2022) increased compliance costs", "source": "press", "quote": "New CBK regulations require digital lenders to submit quarterly reports and cap interest rates"}, {"pain": "High customer acquisition costs in increasingly competitive Kenya market", "source": "linkedin", "quote": "The Kenya digital lending space has 50+ licensed providers competing for the same consumers"}, {"pain": "App-permission model (requires data access consent) limits reach vs passive telco scoring", "source": "press", "quote": "Tala requires app permissions for contacts, SMS, and device data \u2014 some users decline"}], "battle_scenario": {"ts_wins": "Trusting Social is B2B (sells to banks) vs Tala's B2C (is a bank). Telco-level scoring covers ALL subscribers vs app-only. No data consent friction. Can enable existing banks to compete WITH Tala rather than compete against Tala directly.", "competitor_wins": "Tala has 13M customers + $7B disbursed proof of concept in Africa. Proprietary loan performance data (actual default outcomes). $340M revenue = proven unit economics. Kenya team of 130 = deep local execution.", "key_differentiator": "Tala is a competitor's CUSTOMER \u2014 banks buying Trusting Social's scoring could use it to better compete with Tala. Different sides of the table."}, "strategic_signals": ["Dec 2025: $50M USDC on-chain lending facility via Huma Finance/Solana", "Oct 2024: Michael Olson hired as COO", "May 2025: Nicolas Cabrera hired as CPO", "2026: Forbes Fintech 50 for 10th consecutive year", "$340M revenue (2025) \u2014 approaching IPO readiness"], "scale_metrics": [{"metric": "Customers", "value": "13M+", "source": "tala.co"}, {"metric": "Total disbursed", "value": "$7B+", "source": "tala.co"}, {"metric": "Revenue (2025)", "value": "$340M", "source": "Forbes/press"}, {"metric": "Kenya team", "value": "130 employees", "source": "LinkedIn"}]}, {"rank": 5, "name": "CredoLab", "website": "https://www.credolab.com", "linkedin_url": "https://www.linkedin.com/company/credolab/", "hq": "Singapore (Kenya operations since 2019)", "founded_year": 2016, "headcount": "51-100", "description": "Smartphone metadata scoring platform. Extracts 50,000+ behavioral data points (typing speed, swipe patterns, app usage) via SDK to generate credit scores. 200+ clients in 52 countries. Active in Kenya since 2019 with NCBA partnership. Closest pure-play competitor to Trusting Social's behavioral scoring.", "primary_category": "Alternative Credit Scoring", "products_overlap": ["alternative data credit scoring", "fraud prevention"], "threat_level": "high", "financials": {"revenue_estimate": "$5-10M (estimated from headcount + client count)", "revenue_source": "estimated", "funding_stage": "Series A", "total_raised": "$10.1M", "last_round": "Series A", "last_round_date": "Aug 2020", "key_investors": ["Walden International", "GBG"]}, "leadership": [{"name": "Peter Barcak", "title": "CEO & Co-Founder", "linkedin_url": "https://www.linkedin.com/in/peter-barcak/", "role_type": "ceo", "bio": "Ex-Home Credit Group, founded CredoLab to bring smartphone scoring to emerging markets"}, {"name": "Dmytro Kurov", "title": "CTO", "linkedin_url": "https://ua.linkedin.com/in/dmytro-kurov", "role_type": "cto", "bio": "Built CredoLab's core SDK and 50K+ data point extraction engine"}], "products": {"summary": "SDK-based smartphone metadata scoring. Integrates into lender's app to extract 50,000+ behavioral data points (typing patterns, device settings, app usage, screen time) and generate a credit risk score in seconds.", "key_features": ["50,000+ behavioral data points", "SDK integration", "Real-time scoring", "Fraud detection", "Marketing segmentation"], "pricing_model": "Per-score API pricing", "pricing_notes": "Requires SDK integration in client's app \u2014 adds implementation friction"}, "kenya_presence": {"office": "No dedicated Kenya office", "regulatory": "Not a CRB \u2014 operates as data analytics vendor", "key_clients": "NCBA Kenya, multiple Kenya fintechs"}, "pain_points": [{"pain": "SDK requirement means only smartphone users with the client's app installed can be scored", "source": "press", "quote": "CredoLab requires SDK installation in the lender's app \u2014 feature phone users are excluded"}, {"pain": "No funding since Aug 2020 \u2014 potential capital constraints for growth", "source": "crunchbase", "quote": "Last funding round: $10.1M Series A in August 2020"}, {"pain": "Privacy concerns \u2014 extracting behavioral data from personal devices faces increasing regulatory scrutiny", "source": "linkedin", "quote": "Kenya's Data Protection Act 2019 raises questions about consent for deep device data extraction"}], "battle_scenario": {"ts_wins": "Trusting Social's telco-level scoring requires ZERO device access \u2014 no SDK, no app, no opt-in. Covers feature phones AND smartphones. 800M consumer track record vs CredoLab's smaller scale. Integrated eKYC + fraud + AI agents vs scoring-only.", "competitor_wins": "CredoLab's 50,000 data points offer granular behavioral signals. Already live with NCBA Kenya. Lighter-weight integration (SDK vs telco data partnership). Device-level data captures app-specific behavior that telco data misses.", "key_differentiator": "Telco-passive (TS) vs SDK-active (CredoLab). TS has fundamentally wider coverage (all subscribers) but CredoLab has deeper device-level behavioral data per user."}, "strategic_signals": ["No new funding in 5+ years \u2014 may indicate growth challenges or profitability", "Partnership with GBG for combined identity + scoring solutions", "Active in 52 countries \u2014 but thin presence in any single market", "Kenya Data Protection Act 2019 creates regulatory headwind for SDK-based data extraction"], "scale_metrics": [{"metric": "Behavioral data points", "value": "50,000+", "source": "credolab.com"}, {"metric": "Client count", "value": "200+", "source": "credolab.com"}, {"metric": "Countries", "value": "52", "source": "credolab.com"}]}, {"rank": 6, "name": "Metropol CRB", "website": "https://metropol.co.ke", "linkedin_url": "https://www.linkedin.com/company/metropol-corporation-limited/", "hq": "Nairobi, Kenya", "founded_year": 1996, "headcount": "245", "description": "Kenya's homegrown CRB, licensed by CBK in 2011. Serves 30+ of 43 licensed Kenyan banks plus MFIs and SACCOs. 19M Kenyans in database. Consumer access via USSD *433# and Crystobol app. Currently undergoing corporate restructuring (assets transferring to Geni 1/Geni 2 entities, Dec 2024).", "primary_category": "Credit Reference Bureau", "products_overlap": ["credit scoring", "fraud prevention"], "threat_level": "medium", "financials": {"revenue_estimate": "$5-10M (estimated from headcount + market position)", "revenue_source": "estimated", "funding_stage": "private", "key_investors": ["Private Kenyan shareholders"]}, "leadership": [{"name": "Sam Omukoko", "title": "CEO", "linkedin_url": "https://www.linkedin.com/in/sam-omukoko/", "role_type": "ceo", "bio": "Leads Metropol operations; navigating corporate restructuring"}, {"name": "Cynthia Wangui", "title": "Head of Business Development", "linkedin_url": "https://www.linkedin.com/in/cynthia-wangui/", "role_type": "cro", "bio": "Drives commercial relationships with banks and fintechs"}], "products": {"summary": "Credit bureau with Metro-Score proprietary scoring models. Direct integrations with all major Kenyan banks. Consumer-facing USSD (*433#) and mobile app (Crystobol) for credit report access.", "key_features": ["Metro-Score models", "USSD credit access *433#", "Crystobol app", "Lenders portal", "KYC verification"], "pricing_model": "Per-query + subscription", "pricing_notes": "Mandatory CRB checks for all formal lending"}, "kenya_presence": {"office": "Nairobi HQ", "regulatory": "CBK-licensed CRB (2011)", "key_clients": "30+ of 43 licensed Kenyan banks, MFIs, SACCOs"}, "pain_points": [{"pain": "Corporate restructuring creating instability \u2014 assets being transferred to Geni entities", "source": "press", "quote": "Metropol undertaking restructuring with assets being transferred to Geni 1 and Geni 2 Kenya entities"}, {"pain": "Static scoring models based on repayment history \u2014 misses behavioral and alternative data signals", "source": "linkedin", "quote": "Bureau scores only tell you what happened in the past, not the borrower's current trajectory"}, {"pain": "Limited digital lending infrastructure \u2014 built for traditional bank workflows", "source": "g2", "quote": "Integration is cumbersome for API-first digital lenders"}], "battle_scenario": {"ts_wins": "Trusting Social's AI-powered scoring is real-time and behavioral vs Metropol's backward-looking static scores. Metropol's restructuring creates uncertainty \u2014 banks may be open to alternatives. TS adds eKYC + fraud + AI agents on top of scoring.", "competitor_wins": "Metropol is CBK-licensed and embedded in Kenya's regulatory framework. 19M records = deep historical data. USSD access serves offline/feature-phone users. Kenyan-owned (political/regulatory advantage).", "key_differentiator": "Like TransUnion, Metropol is regulatory infrastructure. TS should position as complementary alt-data layer, not replacement."}, "strategic_signals": ["Dec 2024: Corporate restructuring \u2014 assets transferring to Geni 1/Geni 2 entities", "Vulnerability window: leadership distracted by restructuring, banks may explore alternatives", "USSD *433# gives consumer access \u2014 digital-first approach for Kenya"], "scale_metrics": [{"metric": "Kenyans in database", "value": "19M", "source": "metropol.co.ke"}, {"metric": "Bank clients", "value": "30+ of 43", "source": "metropol.co.ke"}, {"metric": "Employees", "value": "245", "source": "LinkedIn"}]}, {"rank": 7, "name": "Creditinfo Kenya", "website": "https://creditinfo.co.ke", "linkedin_url": "https://www.linkedin.com/company/creditinfo-group/", "hq": "Nairobi, Kenya (parent: Reykjavik, Iceland)", "founded_year": 2015, "headcount": "50-80 (Kenya); 450+ (global)", "description": "Third CBK-licensed CRB, backed by Creditinfo Group (33+ countries). Newest and smallest Kenya CRB but aggressively expanding via partnerships \u2014 Kamoa alternative data, Little App integration, BI Africa analytics platform (2025). New global CEO Satrajit Saha (ex-TransUnion Europe) hired Jan 2024.", "primary_category": "Credit Reference Bureau", "products_overlap": ["credit scoring", "fraud prevention"], "threat_level": "medium", "financials": {"revenue_estimate": "$3-5M Kenya; $80-100M global (estimated)", "revenue_source": "estimated", "funding_stage": "private", "key_investors": ["Creditinfo Group (Iceland)", "Private equity"]}, "leadership": [{"name": "Satrajit Saha", "title": "Global CEO (from Jan 2024)", "linkedin_url": "https://www.linkedin.com/in/satrajit-saha/", "role_type": "ceo", "bio": "Ex-TransUnion Europe; hired Jan 2024 to accelerate growth"}, {"name": "Jared Getenga", "title": "CEO Kenya", "linkedin_url": "https://www.linkedin.com/in/jared-getenga/", "role_type": "functional", "bio": "Leads Kenya operations and regulatory relationships"}], "products": {"summary": "Credit bureau with evolving analytics capabilities. BI Africa platform (2025) for advanced business intelligence. Kamoa partnership for alternative data scoring. Focus on expanding beyond traditional bureau to compete with TransUnion.", "key_features": ["Credit reports", "BI Africa analytics platform", "Kamoa alt-data integration", "Risk management tools", "Decisioning engine"], "pricing_model": "Per-query + platform subscription", "pricing_notes": "Aggressive pricing to gain market share vs TransUnion/Metropol"}, "kenya_presence": {"office": "Nairobi", "regulatory": "CBK-licensed CRB (2015)", "key_clients": "Kenya banks, MFIs, digital lenders"}, "pain_points": [{"pain": "Smallest CRB market share in Kenya \u2014 fighting for relevance vs established TransUnion and Metropol", "source": "press", "quote": "As the newest CRB, Creditinfo faces an uphill battle for bank adoption"}, {"pain": "Global parent's one-size-fits-all platform sometimes misses Kenya-specific nuances", "source": "linkedin", "quote": "The platform was built for European markets and adapted for Africa"}, {"pain": "Limited alternative data capabilities compared to dedicated alt-data players", "source": "press", "quote": "Kamoa partnership is new \u2014 alt-data scoring still in early stages"}], "battle_scenario": {"ts_wins": "Trusting Social's scoring is 10x richer than bureau data. Selfie score, telco score, income score = new signals Creditinfo can't match. AI agents and eKYC add full platform value vs bureau-only offering.", "competitor_wins": "Creditinfo is CBK-licensed (regulatory mandate). 33-country network = global compliance expertise. New aggressive CEO (ex-TransUnion) signals growth investment.", "key_differentiator": "Potential PARTNERSHIP target: Creditinfo needs better alt-data scoring to compete with TransUnion/FICO. Trusting Social's data could power Creditinfo's differentiation."}, "strategic_signals": ["Jan 2024: New global CEO Satrajit Saha (ex-TransUnion Europe) \u2014 signals growth ambition", "2025: Launched BI Africa analytics platform", "Kamoa partnership for alternative data integration", "Little App integration for consumer-facing credit access"], "scale_metrics": [{"metric": "Global presence", "value": "33+ countries", "source": "creditinfo.com"}, {"metric": "Global employees", "value": "450+", "source": "LinkedIn"}]}, {"rank": 8, "name": "Pezesha", "website": "https://pezesha.com", "linkedin_url": "https://www.linkedin.com/company/pezesha/", "hq": "Nairobi, Kenya", "founded_year": 2017, "headcount": "57", "description": "Kenyan-founded embedded MSME finance platform. Credit scoring APIs embedded into partner platforms (Twiga, MarketForce) for real-time lending decisions. 500K+ loans disbursed via 20+ partner platforms. $15M+ raised. CEO Hilda Moraa is Forbes-listed Kenyan tech leader.", "primary_category": "Embedded Finance Infrastructure", "products_overlap": ["embedded finance", "alternative data credit scoring"], "threat_level": "medium", "financials": {"revenue_estimate": "$2-5M (estimated from headcount + stage)", "revenue_source": "estimated", "funding_stage": "Pre-Series A", "total_raised": "$15M+", "key_investors": ["Verdant Frontiers", "Talanton", "OACB", "Google Black Founders"]}, "leadership": [{"name": "Hilda Moraa", "title": "Founder & CEO", "linkedin_url": "https://www.linkedin.com/in/hildamoraa/", "role_type": "ceo", "bio": "Forbes-listed Kenyan tech founder, UNCTAD eTrade Champion, built Pezesha from scratch"}, {"name": "Simon Ngunjiri", "title": "CTO", "linkedin_url": "https://www.linkedin.com/in/simon-ngunjiri/", "role_type": "cto", "bio": "Built Pezesha's GCP/Kubernetes tech stack and credit scoring engine"}, {"name": "Tedd Josiah", "title": "Head of Partnerships", "linkedin_url": "https://www.linkedin.com/in/teddjosiah/", "role_type": "cro", "bio": "Drives platform partnerships for embedded lending distribution"}], "products": {"summary": "Embedded lending APIs for digital platforms. Partners embed Pezesha's credit scoring and lending into their apps to offer MSME financing. Also provides direct credit scoring APIs.", "key_features": ["Embedded lending APIs", "MSME credit scoring", "Platform partnerships", "Real-time decisioning", "Multi-market (Kenya, Uganda, Ghana)"], "pricing_model": "Revenue share + API fees", "pricing_notes": "Takes percentage of interest earned through platform partners"}, "kenya_presence": {"office": "Nairobi HQ", "regulatory": "Licensed digital lender", "key_clients": "Twiga Foods, MarketForce, 20+ platform partners"}, "pain_points": [{"pain": "Capital constraints \u2014 needs more lending capital to scale through platform partners", "source": "press", "quote": "Pezesha needs to secure larger credit facilities to match demand from platform partners"}, {"pain": "MSME-focused scoring may not translate to consumer lending use cases", "source": "linkedin", "quote": "Our models are optimized for small business lending, not personal consumer credit"}, {"pain": "Dependent on platform partners for distribution \u2014 no direct customer acquisition", "source": "press", "quote": "Pezesha's growth is limited by the growth of its partner platforms"}], "battle_scenario": {"ts_wins": "Trusting Social operates at consumer scale (800M scored) vs Pezesha's MSME focus. Bank-grade platform vs startup API. eKYC + fraud + AI agents = comprehensive offering. Proven across 4 Asian markets.", "competitor_wins": "Pezesha is Kenyan-founded (local knowledge + regulatory relationships). MSME scoring expertise is deep and specific. Existing relationships with Twiga, MarketForce, and other key platforms. Hilda Moraa's reputation opens doors.", "key_differentiator": "POTENTIAL PARTNER: Pezesha needs better scoring data to scale. Trusting Social's telco scores could power Pezesha's MSME credit decisions = channel partnership opportunity."}, "strategic_signals": ["Google Black Founders fund investment signals continued VC interest", "Expanding to Uganda and Ghana \u2014 regional ambitions", "2000% disbursement growth in 2 years shows product-market fit", "Partnership model allows rapid geographic expansion"], "scale_metrics": [{"metric": "Loans disbursed", "value": "500K+", "source": "pezesha.com"}, {"metric": "Partner platforms", "value": "20+", "source": "pezesha.com"}, {"metric": "Disbursement growth", "value": "2000% in 2 years", "source": "press"}]}, {"rank": 9, "name": "iiDENTIFii", "website": "https://iidentifii.com", "linkedin_url": "https://www.linkedin.com/company/iidentifii/", "hq": "Johannesburg, South Africa", "founded_year": 2018, "headcount": "34", "description": "Biometric identity verification platform specializing in 4D Liveness technology (unique deepfake defense using light reflection sequences). 50M+ African face-match operations. ISO 30107-3:2023 Level 2 certified. Serves Standard Bank, Absa, Investec, Old Mutual. $15M Series A from Arise. Kenya presence via Stanbic Kenya.", "primary_category": "Biometric Identity Verification", "products_overlap": ["eKYC", "biometrics", "fraud prevention"], "threat_level": "medium", "financials": {"revenue_estimate": "$3-5M (estimated from headcount + client base)", "revenue_source": "estimated", "funding_stage": "Series A", "total_raised": "$15M", "last_round": "Series A (Arise)", "key_investors": ["Arise (Norfund + FMO)", "Nedbank CIB", "Hlayisani Capital"]}, "leadership": [{"name": "Gur Geva", "title": "CEO & Co-Founder", "linkedin_url": "https://www.linkedin.com/in/gur-geva-46b94015/", "role_type": "ceo", "bio": "Founded iiDENTIFii to bring enterprise-grade biometric verification to Africa"}, {"name": "Lance Sobey", "title": "CTO & Co-Founder", "linkedin_url": "https://www.linkedin.com/in/lance-sobey-25a06a6a/", "role_type": "cto", "bio": "Built the 4D Liveness technology and core biometric platform"}], "products": {"summary": "Enterprise biometric identity verification with proprietary 4D Liveness detection. Uses light reflection sequences to defeat deepfakes (ISO 30107-3:2023 Level 2). Deep Microsoft Azure integration.", "key_features": ["4D Liveness (deepfake defense)", "Face matching", "Document verification", "ISO 30107-3 certified", "Microsoft Azure integration"], "pricing_model": "Per-verification enterprise pricing", "pricing_notes": "Enterprise-focused \u2014 higher price point, larger deal sizes"}, "kenya_presence": {"office": "No Kenya office \u2014 via Stanbic Kenya (Standard Bank subsidiary)", "regulatory": "Not licensed \u2014 operates as tech vendor", "key_clients": "Stanbic Kenya (Standard Bank), potential East Africa expansion"}, "pain_points": [{"pain": "Very small team (34) limits implementation and support capacity for multi-market deployment", "source": "glassdoor", "quote": "Delivery and integration bottlenecks due to team size"}, {"pain": "SA-centric client base \u2014 Kenya/EA presence is minimal and via proxy only", "source": "linkedin", "quote": "iiDENTIFii's strength is in SA banks \u2014 East Africa is an expansion story not a proven market"}, {"pain": "No credit scoring capability \u2014 pure identity play like Smile ID but with smaller scale", "source": "press", "quote": "iiDENTIFii focuses exclusively on identity verification, no credit or lending products"}], "battle_scenario": {"ts_wins": "Trusting Social offers identity + credit + fraud + AI agents as integrated suite. Trust Vision's deepfake detection (379K biometric fraud database) has more data than iiDENTIFii. 800M consumer scale vs 50M face-matches. Kenya presence via direct deployment vs iiDENTIFii's proxy via Stanbic.", "competitor_wins": "iiDENTIFii's 4D Liveness is technically unique (light reflection sequences). ISO 30107-3:2023 Level 2 certification is industry gold standard. Standard Bank relationship gives enterprise credibility. Deep Azure integration for cloud-native deployment.", "key_differentiator": "iiDENTIFii is enterprise-premium biometrics for SA Tier-1 banks. TS is mass-market full-stack for all FIs. Different market segments."}, "strategic_signals": ["$15M Series A from Arise (Norfund + FMO) \u2014 development finance backing", "Microsoft Azure strategic partnership deepening", "Standard Bank OneHub integration gives automatic distribution to Standard Bank subsidiaries across Africa", "ISO 30107-3:2023 Level 2 certification achieved"], "scale_metrics": [{"metric": "African face-match operations", "value": "50M+", "source": "iidentifii.com"}, {"metric": "Employees", "value": "34", "source": "LinkedIn"}]}, {"rank": 10, "name": "Branch International", "website": "https://www.branch.co", "linkedin_url": "https://www.linkedin.com/company/branch-international/", "hq": "San Francisco, USA + Nairobi, Kenya", "founded_year": 2015, "headcount": "200+", "description": "Digital lending platform using smartphone data for credit scoring. 4M+ customers, 29M+ loans, $1B+ disbursed. $1.05B unicorn valuation. First Kenyan digital lender to acquire a bank (Century Microfinance Bank, 2022). Uses SMS patterns, GPS, battery usage, device metadata for scoring.", "primary_category": "Digital Lending + Smartphone Credit Scoring", "products_overlap": ["alternative data credit scoring", "embedded finance"], "threat_level": "medium", "financials": {"revenue_estimate": "$100-150M (estimated from lending volume + unicorn valuation)", "revenue_source": "estimated", "funding_stage": "Series C", "total_raised": "$350M+", "valuation": "$1.05B", "key_investors": ["Visa", "Andreessen Horowitz", "Foundation Capital", "Trinity Ventures"]}, "leadership": [{"name": "Matt Flannery", "title": "CEO & Co-Founder", "linkedin_url": "https://www.linkedin.com/in/mattflannery/", "role_type": "ceo", "bio": "Previously co-founded Kiva.org; built Branch into $1B+ unicorn"}, {"name": "Rose Muturi", "title": "Managing Director Kenya", "linkedin_url": "https://www.linkedin.com/in/rose-muturi/", "role_type": "functional", "bio": "Leads Kenya operations; founded Digital Lenders Association of Kenya"}, {"name": "Anshul Agrawal", "title": "CTO", "linkedin_url": "https://www.linkedin.com/in/anshul-agrawal/", "role_type": "cto", "bio": "Leads engineering and data science teams"}], "products": {"summary": "Consumer lending app with embedded smartphone-data credit scoring. ML algorithms process thousands of data points from device (SMS logs, GPS patterns, battery charging habits, device metadata) for instant credit decisions. Expanding to MSME lending via Solv Kenya partnership.", "key_features": ["Smartphone-data credit scoring", "Instant mobile loans", "Century Microfinance Bank (acquired)", "Solv Kenya MSME partnership", "Multi-market (Kenya, Tanzania, Nigeria, Mexico, India)"], "pricing_model": "Direct lending (interest/fees)", "pricing_notes": "B2C lender like Tala \u2014 competes at lending level, not scoring vendor level"}, "kenya_presence": {"office": "Nairobi", "regulatory": "CBK Digital Credit Provider + owns Century Microfinance Bank", "key_clients": "Direct consumer \u2014 millions of Kenya users"}, "pain_points": [{"pain": "Device-level scoring can be gamed \u2014 users learn to manipulate app permissions and device data", "source": "press", "quote": "Sophisticated borrowers know which apps to install and how to present their device data"}, {"pain": "Regulatory pressure from CBK on interest rate caps and data privacy", "source": "press", "quote": "CBK Digital Credit Providers Regulations 2022 cap interest and mandate data protection compliance"}, {"pain": "Acquisition of Century Microfinance Bank added regulatory complexity and legacy systems", "source": "linkedin", "quote": "Integrating a traditional microfinance bank with a digital-first platform has been challenging"}], "battle_scenario": {"ts_wins": "Like Tala, Branch is B2C (a lender). Trusting Social is B2B (powers lenders). Telco-level data is harder to game than device-level data. Banks buying TS scoring can compete with Branch directly. Full-stack (scoring + eKYC + fraud + AI agents) vs scoring-only.", "competitor_wins": "Branch owns a bank (Century MFB) \u2014 can offer full banking services. $1.05B valuation + 4M customers = proven product-market fit. Visa backing. Kenya's Digital Lenders Association founding member = regulatory influence.", "key_differentiator": "Same dynamic as Tala: Branch is a lending competitor TO Trusting Social's bank clients, not a competing vendor."}, "strategic_signals": ["2022: Acquired Century Microfinance Bank \u2014 first digital lender to own a bank in Kenya", "Solv Kenya partnership for MSME lending (up to $6,000 unsecured)", "$1.05B unicorn valuation", "Rose Muturi founded Digital Lenders Association of Kenya \u2014 regulatory influence"], "scale_metrics": [{"metric": "Customers", "value": "4M+", "source": "branch.co"}, {"metric": "Loans issued", "value": "29M+", "source": "branch.co"}, {"metric": "Total disbursed", "value": "$1B+", "source": "branch.co"}, {"metric": "Valuation", "value": "$1.05B", "source": "press"}]}], "landscape_analysis": {"market_overview": "Kenya is Africa's most dynamic fintech market with 50+ licensed digital credit providers, 3 CRBs, and M-Pesa processing $35B+ annually. The credit scoring landscape is dominated by mandatory CRB checks (TransUnion, Metropol, Creditinfo) but a massive gap exists: only ~5M of 30M+ adults have formal credit records. Alternative data scoring is the fastest-growing segment, with telco data, behavioral data, and smartphone metadata all competing to score the 'credit-invisible' majority.", "competitive_intensity_by_product": {"credit_scoring": {"intensity": "very_high", "players": 8, "note": "Most contested space \u2014 3 CRBs + Tala + Branch + CredoLab + JUMO + Pezesha all score"}, "ekyc_identity": {"intensity": "high", "players": 3, "note": "Smile ID dominant, iiDENTIFii entering via Standard Bank, no local pure-play"}, "fraud_prevention": {"intensity": "medium", "players": 5, "note": "Fragmented \u2014 CRBs, Smile ID, JUMO all have fraud features but no dominant platform"}, "ai_agents": {"intensity": "low", "players": 0, "note": "GREENFIELD \u2014 no third-party AI agent platform for Kenyan banks. Banks building in-house (Absa's Abby chatbot, Safaricom's Zuri) but no vendor dominates."}, "embedded_finance": {"intensity": "high", "players": 3, "note": "JUMO, Pezesha, Tala/Branch all provide embedded lending infrastructure"}}, "key_dynamics": ["M-Pesa ecosystem creates unique telco-data opportunity: Safaricom has 30M+ mobile money users with rich transaction data", "CBK Digital Credit Providers Regulations (2022) created a licensed framework \u2014 50+ providers competing", "CRB data covers only ~5M of 30M+ adults \u2014 massive thin-file opportunity for alternative data scoring", "Metropol CRB restructuring creates a vulnerability window for alternative scoring providers", "JUMO CEO transition (Feb 2026) may slow their Kenya momentum temporarily", "Smile ID's Mastercard backing makes them the eKYC incumbent to beat"]}, "gaps_and_opportunities": [{"gap": "AI Agents for Banks \u2014 Zero Competition", "description": "No third-party AI agent platform exists for Kenyan banks. Banks are building basic chatbots in-house (Absa Abby, Safaricom Zuri) but nobody offers sales agents (SOPHIA), fraud agents (FRANK), or collections AI (Kompato). This is a greenfield opportunity.", "ts_product_fit": "AI Agents (SOPHIA, FRANK, ALICE, Kompato)", "priority": "highest", "estimated_tam": "$20-50M annual (42 banks + 50+ digital lenders + telcos)"}, {"gap": "Telco-Native Credit Scoring (Non-SDK)", "description": "All alternative data scoring players require either SDK installation (CredoLab) or app data access (Tala, Branch). NO competitor offers passive telco-network-level scoring that covers feature phones and requires zero user friction. Safaricom's 30M+ mobile money users represent the richest untapped telco-data asset.", "ts_product_fit": "Trust Insight (Telco Credit Score + Income Score)", "priority": "highest", "estimated_tam": "$30-80M annual (scoring all 50M+ mobile subscribers)"}, {"gap": "Selfie-Based Credit Score (Novel Signal)", "description": "No competitor in Kenya offers biometric-derived creditworthiness signals. Trusting Social's selfie credit score (device quality, environment, psychophysical markers) is entirely novel in this market. Adds orthogonal signal on top of telco/bureau data.", "ts_product_fit": "Trust Insight (Selfie Credit Score)", "priority": "high", "estimated_tam": "$5-15M annual (add-on to existing scoring contracts)"}, {"gap": "Centralized Fraud Biometric Database", "description": "Kenya has no centralized fraudulent biometric database shared across FIs. Trusting Social's EFMS with 379K+ biometric fraud hits in Philippines could be replicated \u2014 massive value for fraud-ridden digital lending market.", "ts_product_fit": "EFMS (Enterprise Fraud Management System)", "priority": "high", "estimated_tam": "$10-25M annual (shared fraud intelligence service)"}, {"gap": "Integrated Full-Stack (Scoring + eKYC + Fraud + AI) in One Vendor", "description": "Every Kenya competitor is point-solution: CRBs do scoring, Smile ID does identity, JUMO does lending. NO single vendor offers scoring + eKYC + fraud + AI agents in one API integration. Banks today manage 3-5 vendor relationships for what Trusting Social delivers as one platform.", "ts_product_fit": "Full Trust Suite", "priority": "high", "estimated_tam": "$50-100M annual (platform deals with top 20 FIs)"}], "strategic_watch_list": [{"entity": "Safaricom (M-Pesa)", "why_watch": "Safaricom holds the richest telco data in Kenya (30M+ mobile money users). If they build or partner for alt-data credit scoring, they could dominate. Already powering M-Shwari (with KCB) and Fuliza. A Safaricom partnership would be the ultimate distribution play for Trusting Social.", "timeframe": "6-12 months", "action": "Explore Safaricom/M-Pesa partnership for telco-data scoring"}, {"entity": "M-Shwari / Fuliza (KCB + Safaricom)", "why_watch": "M-Shwari has 30M+ users and disbursed $7B+. Uses CBA (now NCBA) scoring. If they upgrade to more sophisticated AI scoring, that contract is worth $10M+/year. CredoLab already has NCBA relationship.", "timeframe": "3-6 months", "action": "Target NCBA Group for scoring contract \u2014 position against CredoLab"}, {"entity": "CBK Digital Lending Regulations Phase 2", "why_watch": "CBK is expected to tighten digital lending regulations further in 2026. This could include mandatory alt-data scoring standards, responsible AI requirements, or data sharing mandates \u2014 all of which would benefit enterprise-grade providers like TS.", "timeframe": "6-12 months", "action": "Engage CBK proactively to shape regulations around alt-data scoring standards"}], "agent_hints": {"account_intelligence_ready": true, "recommended_path": "A", "priority_targets_for_ai": ["KCB Group", "Equity Bank", "NCBA Group", "Safaricom", "Absa Kenya", "Standard Chartered Kenya", "Co-operative Bank"], "key_pain_theme": "credit-invisible population (25M+ adults with no bureau data)", "key_entry_product": "Trust Insight (telco credit score) + AI Agents (greenfield)", "partnership_opportunities": ["TransUnion Kenya (data partnership)", "Creditinfo Kenya (scoring partnership)", "Pezesha (channel partnership)", "Safaricom/M-Pesa (distribution)"]}};
+
+// Set header date
+document.getElementById('header-date').textContent = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+
+const productMap = {
+  credit_scoring: ['credit scoring','alternative data credit scoring','credit reference bureau','alt-data scoring','smartphone credit scoring','digital lending','embedded lending'],
+  ekyc: ['ekyc','biometrics','digital identity','identity verification'],
+  ai_agents: ['ai agents','ai banking automation','ai agents for banks'],
+  fraud: ['fraud prevention','fraud'],
+  embedded: ['embedded finance','embedded lending','lending infrastructure']
+};
+
+function matchesProduct(comp, filter) {
+  if (!filter) return true;
+  const terms = productMap[filter] || [];
+  const cat = (comp.primary_category || '').toLowerCase();
+  const overlaps = (comp.products_overlap || []).map(p => p.toLowerCase());
+  return terms.some(t => cat.includes(t) || overlaps.some(o => o.includes(t)));
+}
+
+function matchesThreat(comp, filter) {
+  if (!filter) return true;
+  return comp.threat_level === filter;
+}
+
+function matchesSearch(comp, query) {
+  if (!query) return true;
+  const q = query.toLowerCase();
+  return (comp.name||'').toLowerCase().includes(q)
+    || (comp.description||'').toLowerCase().includes(q)
+    || (comp.primary_category||'').toLowerCase().includes(q)
+    || (comp.hq||'').toLowerCase().includes(q);
+}
+
+function getFiltered() {
+  const p = document.getElementById('filterProduct').value;
+  const t = document.getElementById('filterThreat').value;
+  const s = document.getElementById('filterSearch').value;
+  return DATA.competitors.filter(c => matchesProduct(c,p) && matchesThreat(c,t) && matchesSearch(c,s));
+}
+
+function applyFilters() {
+  renderAll(getFiltered());
+}
+
+let sortCol = null, sortAsc = true;
+
+function renderAll(competitors) {
+  const el = document.getElementById('main-content');
+  el.innerHTML = '';
+
+  // Subject Card
+  el.innerHTML += renderSubject();
+
+  // Section: Competitor Cards
+  el.innerHTML += '<div class="section-title">Competitor Landscape (' + competitors.length + ' of ' + DATA.competitors.length + ')</div>';
+  el.innerHTML += '<div class="cards-grid" id="cards-grid">' + competitors.map(renderCard).join('') + '</div>';
+
+  // Comparison Matrix
+  el.innerHTML += '<div class="section-title">Competitor Comparison Matrix</div>';
+  el.innerHTML += renderTable(competitors);
+
+  // Gaps
+  el.innerHTML += '<div class="section-title">Gaps &amp; Opportunities</div>';
+  el.innerHTML += '<div class="gaps-grid">' + DATA.gaps_and_opportunities.map(renderGap).join('') + '</div>';
+
+  // Watch List
+  el.innerHTML += '<div class="section-title">Strategic Watch List</div>';
+  el.innerHTML += '<div class="watch-grid">' + DATA.strategic_watch_list.map(renderWatch).join('') + '</div>';
+
+  // Intensity Bars
+  el.innerHTML += '<div class="section-title">Competitive Intensity by Product Area</div>';
+  el.innerHTML += renderIntensity();
+
+  // Export
+  el.innerHTML += '<button class="export-btn" onclick="exportJSON()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>Export JSON</button>';
+
+  // Re-attach card click
+  document.querySelectorAll('.comp-card').forEach(card => {
+    card.addEventListener('click', function(e) {
+      if (e.target.tagName === 'A') return;
+      this.classList.toggle('expanded');
+      const hint = this.querySelector('.click-hint');
+      if (hint) hint.textContent = this.classList.contains('expanded') ? 'Click to collapse' : 'Click to expand full profile';
+    });
+  });
+}
+
+function renderSubject() {
+  const s = DATA.subject_company;
+  return `<div class="subject-card">
+    <h2>${s.name}</h2>
+    <div class="subtitle">${s.hq} &bull; Founded ${s.founded_year} &bull; ${s.headcount} employees &bull; <a href="${s.website}" style="color:#8ac4ff" target="_blank">${s.website}</a></div>
+    <div class="subject-stats">
+      <div class="subject-stat"><div class="num">${s.key_stats.fi_clients}</div><div class="lbl">FI Clients</div></div>
+      <div class="subject-stat"><div class="num">${s.key_stats.consumers_scored}</div><div class="lbl">Consumers Scored</div></div>
+      <div class="subject-stat"><div class="num">${s.key_stats.monthly_ekyc_checks}</div><div class="lbl">Monthly eKYC</div></div>
+      <div class="subject-stat"><div class="num">${s.key_stats.markets.length + s.key_stats.expanding_to.length}</div><div class="lbl">Markets</div></div>
+    </div>
+    <div class="product-tags">${s.products.map(p => `<span class="product-tag">${p.name} (${p.category})</span>`).join('')}</div>
+    <div class="management-list">${s.management.map(m => `<div class="mgmt-person"><strong>${m.name}</strong><span>${m.title}</span></div>`).join('')}</div>
+  </div>`;
+}
+
+function renderCard(c) {
+  const threatClass = c.threat_level === 'high' ? 'badge-high' : c.threat_level === 'medium' ? 'badge-medium' : 'badge-low';
+  const funding = c.financials.total_raised || c.financials.funding_stage || 'N/A';
+  const scaleStr = (c.scale_metrics||[]).slice(0,2).map(s => `<div class="comp-stat"><strong>${s.value}</strong> ${s.metric}</div>`).join('');
+  const battleSum = c.battle_scenario.key_differentiator || '';
+
+  return `<div class="comp-card" data-name="${c.name}">
+    <div class="comp-card-header">
+      <h3>${c.name} <a href="${c.website}" target="_blank" onclick="event.stopPropagation()">&nearr;</a></h3>
+      <div class="badges">
+        <span class="badge badge-category">${c.primary_category}</span>
+        <span class="badge ${threatClass}">${c.threat_level} threat</span>
+      </div>
+      <div class="overlap-tags">${(c.products_overlap||[]).map(t => `<span class="overlap-tag">${t}</span>`).join('')}</div>
+    </div>
+    <div class="comp-card-body">
+      <div class="comp-stats">
+        <div class="comp-stat"><strong>${c.headcount}</strong> headcount</div>
+        <div class="comp-stat"><strong>${typeof funding === 'string' ? funding : ''}</strong> ${c.financials.total_raised ? 'raised' : ''}</div>
+        ${scaleStr}
+      </div>
+      <div class="battle-summary">${battleSum}</div>
+    </div>
+    <div class="comp-card-expand">
+      <div class="expand-section"><h4>Description</h4><p>${c.description}</p></div>
+      <div class="expand-section"><h4>Kenya Presence</h4>
+        <p><strong>Office:</strong> ${c.kenya_presence.office}<br>
+        <strong>Regulatory:</strong> ${c.kenya_presence.regulatory}<br>
+        <strong>Key Clients:</strong> ${c.kenya_presence.key_clients}</p>
+      </div>
+      <div class="expand-section"><h4>Leadership</h4>
+        <div class="leadership-grid">${(c.leadership||[]).map(l => `<div class="leader-chip"><strong>${l.name}</strong>${l.title}<br><a href="${l.linkedin_url}" target="_blank" onclick="event.stopPropagation()">LinkedIn</a></div>`).join('')}</div>
+      </div>
+      <div class="expand-section"><h4>Products</h4><p>${c.products.summary}</p>
+        <ul>${(c.products.key_features||[]).map(f => `<li>${f}</li>`).join('')}</ul>
+      </div>
+      <div class="expand-section"><h4>Pain Points</h4>${(c.pain_points||[]).map(p => `<div class="pain-item">${p.pain}</div>`).join('')}</div>
+      <div class="expand-section"><h4>Battle Scenario</h4>
+        <p><strong>TS Wins:</strong> ${c.battle_scenario.ts_wins}</p>
+        <p style="margin-top:6px"><strong>Competitor Wins:</strong> ${c.battle_scenario.competitor_wins}</p>
+      </div>
+      <div class="expand-section"><h4>Strategic Signals</h4>${(c.strategic_signals||[]).map(s => `<div class="signal-item">${s}</div>`).join('')}</div>
+      <div class="expand-section"><h4>Financials</h4>
+        <p><strong>Revenue:</strong> ${c.financials.revenue_estimate} (${c.financials.revenue_source})<br>
+        <strong>Stage:</strong> ${c.financials.funding_stage}${c.financials.valuation ? '<br><strong>Valuation:</strong> '+c.financials.valuation : ''}${c.financials.key_investors ? '<br><strong>Investors:</strong> '+c.financials.key_investors.join(', ') : ''}</p>
+      </div>
+    </div>
+    <div class="click-hint">Click to expand full profile</div>
+  </div>`;
+}
+
+function renderTable(competitors) {
+  const cols = [
+    {key:'rank',label:'#'},
+    {key:'name',label:'Name'},
+    {key:'hq',label:'HQ'},
+    {key:'founded_year',label:'Founded'},
+    {key:'headcount',label:'Headcount'},
+    {key:'funding',label:'Funding'},
+    {key:'revenue',label:'Revenue'},
+    {key:'threat_level',label:'Threat'},
+    {key:'products_overlap',label:'Products'}
+  ];
+
+  let sorted = [...competitors];
+  if (sortCol) {
+    sorted.sort((a,b) => {
+      let av = getVal(a,sortCol), bv = getVal(b,sortCol);
+      if (typeof av === 'string') av = av.toLowerCase();
+      if (typeof bv === 'string') bv = bv.toLowerCase();
+      if (av < bv) return sortAsc ? -1 : 1;
+      if (av > bv) return sortAsc ? 1 : -1;
+      return 0;
+    });
+  }
+
+  function getVal(c,key) {
+    if (key==='funding') return c.financials.total_raised||c.financials.funding_stage||'';
+    if (key==='revenue') return c.financials.revenue_estimate||'';
+    if (key==='products_overlap') return (c.products_overlap||[]).join(', ');
+    return c[key]||'';
+  }
+
+  const ths = cols.map(c => {
+    const arrow = sortCol===c.key ? (sortAsc ? ' &#9650;' : ' &#9660;') : '';
+    return `<th onclick="sortTable('${c.key}')">${c.label}<span class="sort-arrow">${arrow}</span></th>`;
+  }).join('');
+
+  const rows = sorted.map(c => {
+    const threatCls = c.threat_level;
+    return `<tr>
+      <td>${c.rank}</td>
+      <td><strong>${c.name}</strong></td>
+      <td>${c.hq}</td>
+      <td>${c.founded_year}</td>
+      <td>${c.headcount}</td>
+      <td>${c.financials.total_raised||c.financials.funding_stage||'N/A'}</td>
+      <td>${c.financials.revenue_estimate||'N/A'}</td>
+      <td class="threat-cell ${threatCls}">${c.threat_level}</td>
+      <td>${(c.products_overlap||[]).map(p => `<span class="overlap-tag">${p}</span>`).join(' ')}</td>
+    </tr>`;
+  }).join('');
+
+  return `<div class="table-wrap"><table><thead><tr>${ths}</tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+function renderGap(g) {
+  const pClass = g.priority === 'highest' ? 'priority-highest' : 'priority-high';
+  return `<div class="gap-card">
+    <span class="priority ${pClass}">${g.priority} priority</span>
+    <h3>${g.gap}</h3>
+    <p>${g.description}</p>
+    <div class="gap-detail">
+      <span><strong>TS Fit:</strong> ${g.ts_product_fit}</span>
+      <span><strong>TAM:</strong> ${g.estimated_tam}</span>
+    </div>
+  </div>`;
+}
+
+function renderWatch(w) {
+  return `<div class="watch-card">
+    <h3>${w.entity}</h3>
+    <span class="timeframe">${w.timeframe}</span>
+    <p>${w.why_watch}</p>
+    <div class="action">${w.action}</div>
+  </div>`;
+}
+
+function renderIntensity() {
+  const ci = DATA.landscape_analysis.competitive_intensity_by_product;
+  const order = ['credit_scoring','ekyc_identity','fraud_prevention','ai_agents','embedded_finance'];
+  const labels = {credit_scoring:'Credit Scoring',ekyc_identity:'eKYC / Identity',fraud_prevention:'Fraud Prevention',ai_agents:'AI Agents',embedded_finance:'Embedded Finance'};
+  let html = '<div class="intensity-section">';
+  order.forEach(k => {
+    const d = ci[k];
+    html += `<div class="intensity-row">
+      <div class="intensity-label">${labels[k]}</div>
+      <div class="intensity-bar-wrap"><div class="intensity-bar intensity-${d.intensity}">${d.intensity.replace('_',' ')}</div></div>
+      <div class="intensity-players">${d.players} player${d.players!==1?'s':''}</div>
+    </div>`;
+  });
+  html += '</div>';
+  return html;
+}
+
+function sortTable(col) {
+  if (sortCol === col) { sortAsc = !sortAsc; } else { sortCol = col; sortAsc = true; }
+  applyFilters();
+}
+
+function exportJSON() {
+  const blob = new Blob([JSON.stringify(DATA, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'competitive_intelligence.json'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// Initial render
+renderAll(DATA.competitors);
+</script>
+</body>
+</html>
